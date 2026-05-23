@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>FarmConnect - Cloud Market Platform for Zambian Farmers</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2E8B57">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #2E8B57;
+            --primary-dark: #1f6b43;
+            --primary-light: #3CB371;
+            --secondary: #FFA500;
+            --secondary-dark: #e69500;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.15);
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+            --bg-primary: #f5f7fb;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --header-bg: #ffffff;
+            --footer-bg: #1a1a2e;
+            --footer-text: #c8d6e5;
+        }
+
+        body.dark-mode {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #f0f0f0;
+            --text-secondary: #cbd5e0;
+            --text-muted: #a0aec0;
+            --border-color: #2d3748;
+            --header-bg: #1a1a2e;
+            --footer-bg: #0a0a1a;
+            --footer-text: #a0aec0;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: all 0.3s ease; overflow-x: hidden; }
+
+        /* ===== DRAMATIC ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(46, 139, 87, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(46, 139, 87, 0.7); }
+        }
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-18px); }
+        }
+        @keyframes rotateIn {
+            from { opacity: 0; transform: rotate(-180deg) scale(0.5); }
+            to { opacity: 1; transform: rotate(0) scale(1); }
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        @keyframes priceFlash {
+            0% { background-color: rgba(46, 139, 87, 0); }
+            50% { background-color: rgba(46, 139, 87, 0.3); }
+            100% { background-color: rgba(46, 139, 87, 0); }
+        }
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .animate-fadeUp { animation: fadeInUp 0.8s ease forwards; }
+        .animate-fadeLeft { animation: fadeInLeft 0.8s ease forwards; }
+        .animate-fadeRight { animation: fadeInRight 0.8s ease forwards; }
+        .animate-scale { animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-glow { animation: glow 2s ease-in-out infinite; }
+        .animate-bounce { animation: bounce 2s ease-in-out infinite; }
+        .price-flash { animation: priceFlash 0.5s ease; }
+
+        .stagger-item { opacity: 0; }
+        .stagger-item:nth-child(1) { animation: fadeInUp 0.6s ease 0.1s forwards; }
+        .stagger-item:nth-child(2) { animation: fadeInUp 0.6s ease 0.2s forwards; }
+        .stagger-item:nth-child(3) { animation: fadeInUp 0.6s ease 0.3s forwards; }
+        .stagger-item:nth-child(4) { animation: fadeInUp 0.6s ease 0.4s forwards; }
+        .stagger-item:nth-child(5) { animation: fadeInUp 0.6s ease 0.5s forwards; }
+        .stagger-item:nth-child(6) { animation: fadeInUp 0.6s ease 0.6s forwards; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        /* Header */
+        .header { background: var(--header-bg); backdrop-filter: blur(10px); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 1000; padding: 16px 0; border-bottom: 1px solid var(--border-color); animation: slideInDown 0.6s ease; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.6rem; font-weight: 800; color: var(--primary); text-decoration: none; transition: all 0.3s ease; }
+        .logo:hover { transform: scale(1.05) rotate(-2deg); text-shadow: 0 0 10px rgba(46,139,87,0.5); }
+        .nav-links { display: flex; gap: 8px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text-primary); font-weight: 500; padding: 8px 18px; border-radius: var(--radius-md); transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; position: relative; overflow: hidden; }
+        .nav-links a::before { content: ''; position: absolute; bottom: 0; left: 0; width: 0%; height: 3px; background: var(--primary); transition: width 0.3s ease; }
+        .nav-links a:hover::before, .nav-links a.active::before { width: 100%; }
+        .nav-links a:hover { background: rgba(46, 139, 87, 0.1); color: var(--primary); transform: translateY(-2px); }
+        .admin-badge { background: var(--danger); color: white; font-size: 0.65rem; padding: 2px 8px; border-radius: 20px; margin-left: 6px; animation: pulse 1.5s infinite; }
+
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .dark-mode-toggle { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; color: var(--text-primary); }
+        .dark-mode-toggle:hover { background: var(--primary); color: white; transform: rotate(360deg) scale(1.1); }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary); padding: 8px; transition: transform 0.3s ease; }
+        .mobile-menu-btn:hover { transform: scale(1.1); }
+
+        /* Sidebar */
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1001; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100vh; background: linear-gradient(135deg, #0a0a2a 0%, #0f3460 100%); z-index: 1002; transition: left 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); overflow-y: auto; box-shadow: var(--shadow-lg); }
+        .sidebar.open { left: 0; }
+        .sidebar-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; color: white; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 800; color: white; }
+        .close-sidebar { width: 38px; height: 38px; border: 1px solid rgba(255,255,255,0.18); border-radius: 50%; background: rgba(255,255,255,0.08); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .close-sidebar:hover { background: var(--danger); transform: rotate(90deg); }
+        .sidebar-nav-link:hover { background: rgba(255,255,255,0.1); }
+        .price-meta { color: var(--text-secondary); font-size: 0.9rem; gap: 12px; flex-wrap: wrap; }
+
+        /* Hero Section */
+        .hero { position: relative; color: white; padding: 140px 0 120px; overflow: hidden; }
+        .hero-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        .hero-bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0; transition: opacity 1.8s ease-in-out, transform 5s ease; transform: scale(1.05); }
+        .hero-bg-image.active { opacity: 1; transform: scale(1); }
+        .hero-bg-image:nth-child(1) { background-image: url('felix.webp'); background-size: cover; }
+        .hero-bg-image:nth-child(2) { background-image: url('maize.jpg'); background-size: cover; }
+        .hero::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%); z-index: 1; }
+        .hero-content { position: relative; z-index: 2; text-align: center; max-width: 800px; margin: 0 auto; opacity: 0; animation: fadeInUp 1s ease 0.3s forwards; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; line-height: 1.2; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); background: linear-gradient(135deg, #fff, #e0e0e0); background-clip: text; -webkit-background-clip: text; color: transparent; text-shadow: none; }
+        .hero p { font-size: 1.2rem; margin-bottom: 30px; opacity: 0.95; }
+        .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .bg-indicators { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; gap: 12px; }
+        .bg-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s ease; }
+        .bg-dot.active { background: white; width: 24px; border-radius: 10px; }
+        .bg-dot:hover { transform: scale(1.2); background: white; }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; border-radius: var(--radius-md); font-weight: 600; text-decoration: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; border: none; font-size: 1rem; position: relative; overflow: hidden; }
+        .btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.3); transform: translate(-50%, -50%); transition: width 0.6s, height 0.6s; }
+        .btn:hover::before { width: 300px; height: 300px; }
+        .btn-primary { background: white; color: var(--primary); }
+        .btn-primary:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-secondary:hover { background: var(--secondary-dark); transform: translateY(-5px) scale(1.02); }
+        .btn-outline { background: transparent; border: 2px solid white; color: white; }
+        .btn-outline:hover { background: white; color: var(--primary); transform: translateY(-5px); }
+
+        /* Feature Cards */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .feature-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px 30px; text-align: center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); opacity: 0; animation: fadeInUp 0.8s ease forwards; }
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+        .feature-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 2rem; color: white; transition: all 0.3s ease; }
+        .feature-card:hover .feature-icon { transform: scale(1.1) rotate(360deg); }
+
+        /* Price Cards - DRAMATIC */
+        .live-prices-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-top: 30px; }
+        .price-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 20px; border-left: 4px solid var(--primary); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: var(--shadow-sm); opacity: 0; animation: fadeInRight 0.6s ease forwards; cursor: pointer; position: relative; overflow: hidden; }
+        .price-card::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: left 0.5s ease; }
+        .price-card:hover::after { left: 100%; }
+        .price-card:hover { transform: translateY(-8px) rotateX(5deg); box-shadow: var(--shadow-lg); }
+        .price-card .price-value { transition: all 0.3s ease; font-size: 1.8rem; font-weight: 800; }
+        .price-card:hover .price-value { transform: scale(1.05); color: var(--primary); }
+        .trend-up { color: #28a745; animation: pulse 1.5s infinite; }
+        .trend-down { color: #dc3545; }
+        .trend-stable { color: #ffc107; }
+
+        /* Login Prompt */
+        .login-prompt { background: linear-gradient(135deg, var(--primary-light), var(--primary)); border-radius: var(--radius-lg); padding: 40px; text-align: center; margin-top: 30px; color: white; transition: all 0.3s ease; animation: glow 2s infinite; cursor: pointer; }
+        .login-prompt:hover { transform: scale(1.02); }
+
+        /* Commodity Tags */
+        .commodities-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-height: 400px; overflow-y: auto; padding: 10px; }
+        .commodity-tag { background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px 24px; border-radius: 40px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: var(--text-primary); cursor: pointer; }
+        .commodity-tag:hover { background: var(--primary); color: white; transform: translateY(-5px) scale(1.05); box-shadow: var(--shadow-md); }
+
+        /* Live Ticker - REAL TIME */
+        .live-ticker { background: linear-gradient(90deg, var(--primary-dark), var(--primary), var(--primary-dark)); color: white; padding: 12px 0; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 999; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .live-ticker.visible { transform: translateY(0); animation: slideInUp 0.5s ease; }
+        .ticker-container { display: flex; align-items: center; gap: 20px; }
+        .ticker-label { font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); padding: 5px 12px; border-radius: 30px; }
+        .ticker-label i { animation: blink 1s infinite; }
+        .ticker-wrapper { flex: 1; overflow: hidden; }
+        .ticker-items { display: flex; gap: 40px; animation: tickerScroll 45s linear infinite; white-space: nowrap; }
+        .ticker-item { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 30px; transition: all 0.3s ease; }
+        .ticker-item:hover { transform: scale(1.05); background: rgba(255,255,255,0.2); }
+        .ticker-price { font-weight: 700; color: var(--secondary); font-size: 1.1rem; }
+
+        /* Stats Section */
+        .stats-section { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 60px 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: center; }
+        .stat-number { font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; transition: all 0.3s ease; }
+        .stat-item:hover .stat-number { transform: scale(1.1); text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        /* Toast Notifications */
+        .toast { position: fixed; bottom: 80px; right: 24px; padding: 14px 24px; border-radius: var(--radius-md); z-index: 2001; animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px); }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast.success { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
+        .toast.error { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .toast.info { background: linear-gradient(135deg, var(--info), #138496); color: white; }
+
+        .loading-spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid rgba(46, 139, 87, 0.3); border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .cta-section { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 80px 0; text-align: center; }
+        .footer { background: var(--footer-bg); color: var(--footer-text); padding: 60px 0 30px; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .hero { padding: 80px 0 60px; }
+            .stats-grid { gap: 25px; }
+            .stat-number { font-size: 2rem; }
+            .ticker-container { gap: 10px; padding: 0 12px; }
+            .ticker-label { font-size: 0.8rem; }
+            .toast { left: 16px; right: 16px; bottom: 76px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active"><i class="fas fa-home"></i> Home</a></li>
+                <li id="dashboardNavItem" style="display: none;"><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li id="adminNavItem" style="display: none;"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin <span class="admin-badge">ADMIN</span></a></li>
+                <li id="loginNavItem"><a href="login.html" id="loginNavLink"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                <li id="registerNavItem"><a href="register.html"><i class="fas fa-user-plus"></i> Register</a></li>
+            </ul>
+            <div class="header-actions">
+                <button class="dark-mode-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></div>
+            <button class="close-sidebar" id="closeSidebarBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="user-profile-card" id="sidebarProfile" style="display: none; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); align-items: center; gap: 14px;">
+            <div class="user-avatar" style="width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user"></i></div>
+            <div class="user-info"><h4 id="sidebarUserName" style="color:white;">--</h4><p id="sidebarUserRole" style="color:rgba(255,255,255,0.7);">--</p></div>
+        </div>
+        <div class="sidebar-nav" style="padding: 16px;">
+            <div class="sidebar-nav-item"><a href="index.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-home"></i> Home</a></div>
+            <div class="sidebar-nav-item" id="sidebarDashboardItem" style="display: none;"><a href="dashboard.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-tachometer-alt"></i> Dashboard</a></div>
+            <div class="sidebar-nav-item"><a href="prices.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-chart-line"></i> Market Intelligence</a></div>
+            <div class="sidebar-nav-item"><a href="find-buyers.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-users"></i> Find Buyers</a></div>
+            <div class="sidebar-nav-item"><a href="profile.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-user"></i> Profile</a></div>
+            <div class="sidebar-divider" style="height: 1px; background: rgba(255,255,255,0.1); margin: 16px 0;"></div>
+            <div class="sidebar-nav-item" id="sidebarLoginItem"><a href="login.html" class="sidebar-nav-link" id="sidebarLoginLink" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-sign-in-alt"></i> Login</a></div>
+            <div class="sidebar-nav-item" id="sidebarRegisterItem"><a href="register.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-user-plus"></i> Register</a></div>
+            <div class="sidebar-nav-item" id="sidebarLogoutItem" style="display: none;"><a href="#" class="sidebar-nav-link" id="sidebarLogoutBtn" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+        </div>
+    </aside>
+
+    <section class="hero">
+        <div class="hero-background"><div class="hero-bg-image" id="bgImage1"></div><div class="hero-bg-image" id="bgImage2"></div></div>
+        <div class="bg-indicators"><div class="bg-dot" data-index="0"></div><div class="bg-dot" data-index="1"></div></div>
+        <div class="container hero-content">
+            <h1>Cloud-Based Market Platform for Zambian Farmers</h1>
+            <p>Real-time commodity prices, AI-powered forecasts, and direct buyer connections. Access via Web, USSD (*384*7321#), or SMS.</p>
+            <div class="hero-buttons"><a href="#features" class="btn btn-primary"><i class="fas fa-rocket"></i> Get Started</a><a href="login.html" class="btn btn-outline" id="heroLoginBtn"><i class="fas fa-sign-in-alt"></i> Login</a></div>
+        </div>
+    </section>
+
+    <section id="live-prices" style="padding: 80px 0;">
+        <div class="container">
+            <div class="section-header" style="text-align: center; margin-bottom: 50px;">
+                <h2 style="font-size: 2.5rem; color: var(--primary);"><i class="fas fa-chart-line"></i> Live Market Prices</h2>
+                <p id="priceSectionSubtitle" style="color: var(--text-secondary);">Real-time commodity prices from Zambian markets - Updated from Database</p>
+            </div>
+            <div id="livePricesContainer"><div class="price-loading" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div> Loading latest prices from database...</div></div>
+            <div id="viewAllContainer" class="view-all-container" style="text-align: center; margin-top: 30px; display: none;"><button class="btn btn-outline" id="viewAllPricesBtn" style="background: transparent; border: 2px solid var(--primary); color: var(--primary);"><i class="fas fa-eye"></i> View All Commodities</button></div>
+            <div id="loginPrompt" class="login-prompt" style="display: none;"><h3><i class="fas fa-unlock-alt"></i> Unlock All Market Prices</h3><p style="margin: 15px 0;">Login to view prices for all commodities including detailed trends and forecasts.</p><a href="login.html" class="btn" style="background: white; color: var(--primary);"><i class="fas fa-sign-in-alt"></i> Login Now</a></div>
+        </div>
+    </section>
+
+    <section id="features" style="padding: 80px 0; background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header" style="text-align: center; margin-bottom: 50px;"><h2 style="font-size: 2.5rem; color: var(--primary);">Why Choose FarmConnect?</h2><p>Empowering Zambian farmers with technology-driven market solutions</p></div>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-cloud-upload-alt"></i></div><h3>Real-Time Data</h3><p>Access up-to-date market prices from all major Zambian markets directly from our database.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-brain"></i></div><h3>AI Price Forecasts</h3><p>Intelligent price predictions using historical database prices and market trends.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-handshake"></i></div><h3>Direct Buyer Network</h3><p>Connect directly with verified buyers and agricultural traders across Zambia.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 80px 0;"><div class="container"><div class="section-header" style="text-align: center; margin-bottom: 50px;"><h2 style="font-size: 2.5rem; color: var(--primary);">Multiple Ways to Access</h2><p>Designed for all farmers - with or without smartphones</p></div>
+    <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-globe"></i></div><h3>Web Dashboard</h3><p>Full-featured dashboard with charts, forecasts, and buyer connections.</p><div style="background: var(--primary); color: white; padding: 8px 20px; border-radius: 30px; display: inline-block; margin-top: 15px;">farmconnect.zm</div></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-alt"></i></div><h3>USSD Access</h3><p>Works on any mobile phone. No internet required.</p><div style="background: var(--primary); color: white; padding: 8px 20px; border-radius: 30px; display: inline-block; margin-top: 15px;" id="ussdCodeDisplay">*384*7321#</div></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-sms"></i></div><h3>SMS Service</h3><p>Get price alerts and market updates via SMS.</p><div style="background: var(--primary); color: white; padding: 8px 20px; border-radius: 30px; display: inline-block; margin-top: 15px;">SMS Alerts Active</div></div>
+    </div></div></section>
+
+    <section class="stats-section">
+        <div class="container"><div class="stats-grid">
+            <div class="stat-item"><div class="stat-number" id="statMarkets">0</div><div class="stat-label">Zambian Markets</div></div>
+            <div class="stat-item"><div class="stat-number" id="statCommodities">0</div><div class="stat-label">Commodities Tracked</div></div>
+            <div class="stat-item"><div class="stat-number" id="statUsers">0</div><div class="stat-label">Active Users</div></div>
+            <div class="stat-item"><div class="stat-number" id="statPrices">0</div><div class="stat-label">Price Records</div></div>
+        </div></div>
+    </section>
+
+    <!-- REAL-TIME LIVE TICKER - DATA FROM DATABASE -->
+    <div class="live-ticker" id="liveTicker">
+        <div class="container ticker-container">
+            <div class="ticker-label"><i class="fas fa-bolt"></i> LIVE PRICES</div>
+            <div class="ticker-wrapper">
+                <div class="ticker-items" id="tickerItems">
+                    <div class="ticker-item"><i class="fas fa-spinner fa-pulse"></i> Loading real-time prices from database...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="cta-section">
+        <div class="container"><h2>Ready to Get Started?</h2><p>Join Zambian farmers accessing better prices for their produce.</p><div class="hero-buttons"><a href="register.html" class="btn btn-secondary"><i class="fas fa-user-plus"></i> Create Free Account</a><a href="login.html" class="btn btn-outline" id="ctaLoginBtn"><i class="fas fa-sign-in-alt"></i> Login</a></div></div>
+    </section>
+
+    <footer class="footer">
+        <div class="container"><div class="footer-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px;">
+            <div class="footer-col"><h3 style="color: white; margin-bottom: 20px;"><i class="fas fa-tractor"></i> FarmConnect</h3><p>Cloud-Based Market Information Platform for Zambian Farmers.</p></div>
+            <div class="footer-col"><h3 style="color: white; margin-bottom: 20px;">Quick Links</h3><ul class="footer-links" style="list-style: none;"><li><a href="index.html" style="color: var(--footer-text); text-decoration: none;"><i class="fas fa-home"></i> Home</a></li><li><a href="login.html" id="footerLoginLink" style="color: var(--footer-text); text-decoration: none;"><i class="fas fa-sign-in-alt"></i> Login</a></li></ul></div>
+            <div class="footer-col"><h3 style="color: white; margin-bottom: 20px;">Project Info</h3><ul class="footer-links" style="list-style: none;"><li><i class="fas fa-university"></i> Mulungushi University</li><li><i class="fas fa-user-graduate"></i> Daka Felix (202206453)</li><li><i class="fas fa-server"></i> Status: <span id="backendStatus">Checking...</span></li></ul></div>
+        </div><div class="footer-bottom" style="text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);"><p>&copy; 2026 FarmConnect - Mulungushi University | Daka Felix (202206453) | Supervisor: Mr. E Nyirenda</p></div></div>
+    </footer>
+
+    <script>
+        // =========================================================
+        // FARMCONNECT - FULL DATABASE INTEGRATION
+        // All prices from PostgreSQL database via API
+        // Live ticker shows REAL-TIME data from database
+        // Dramatic animations and HCI feedback
+        // =========================================================
+
+        const API_BASE = window.location.origin + '/api';
+        
+        const COMMODITY_ICONS = {
+            'Maize': 'fa-seedling', 'Rice': 'fa-bowl-rice', 'Beans': 'fa-seedling', 'Groundnuts': 'fa-seedling', 'Tomatoes': 'fa-apple-whole',
+            'Onions': 'fa-seedling', 'Cabbage': 'fa-leaf', 'Cassava': 'fa-leaf', 'Sweet Potatoes': 'fa-seedling', 'Soybeans': 'fa-seedling',
+            'Wheat': 'fa-wheat-awn', 'Chicken': 'fa-drumstick-bite', 'Eggs': 'fa-egg', 'Mangoes': 'fa-apple-whole', 'Avocado': 'fa-seedling'
+        };
+        
+        const DEFAULT_COMMODITIES = ['Maize', 'Tomatoes', 'Beans', 'Groundnuts', 'Rice', 'Onions', 'Cabbage', 'Sweet Potatoes'];
+        
+        let state = { isLoggedIn: false, currentUser: null, isAdmin: false };
+        let currentBgIndex = 0;
+        let bgInterval;
+        let allPrices = [];
+        let lastPriceUpdate = null;
+
+        // ===== HCI: VISIBLE FEEDBACK =====
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        function formatPrice(value) {
+            const amount = Number.parseFloat(value);
+            return Number.isFinite(amount) ? amount.toFixed(2) : '0.00';
+        }
+
+        function formatUnit(unit) {
+            return String(unit || 'kg').replace(/^ZMW\s*\/\s*/i, '');
+        }
+
+        function safeTrend(value) {
+            return ['up', 'down', 'stable'].includes(value) ? value : 'stable';
+        }
+
+        function safeUserName(user) {
+            return user.name || user.username || 'FarmConnect User';
+        }
+
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = document.createElement('i');
+            icon.className = `fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}`;
+            toast.append(icon, document.createTextNode(` ${message}`));
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // ===== DRAMATIC PRICE UPDATE ANIMATION =====
+        function animatePriceUpdate(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.classList.add('price-flash');
+                setTimeout(() => element.classList.remove('price-flash'), 500);
+            }
+        }
+
+        function initBackgroundSlideshow() {
+            const bgImage1 = document.getElementById('bgImage1');
+            const bgImage2 = document.getElementById('bgImage2');
+            const dots = document.querySelectorAll('.bg-dot');
+            bgImage1.classList.add('active');
+            bgInterval = setInterval(() => { setActiveBackground((currentBgIndex + 1) % 2); }, 5000);
+            dots.forEach((dot, index) => { dot.addEventListener('click', () => { clearInterval(bgInterval); setActiveBackground(index); bgInterval = setInterval(() => { setActiveBackground((currentBgIndex + 1) % 2); }, 5000); }); });
+        }
+        
+        function setActiveBackground(index) {
+            const bgImage1 = document.getElementById('bgImage1');
+            const bgImage2 = document.getElementById('bgImage2');
+            const dots = document.querySelectorAll('.bg-dot');
+            currentBgIndex = index;
+            if (index === 0) { bgImage1.classList.add('active'); bgImage2.classList.remove('active'); }
+            else { bgImage2.classList.add('active'); bgImage1.classList.remove('active'); }
+            dots.forEach((dot, i) => { if (i === index) dot.classList.add('active'); else dot.classList.remove('active'); });
+        }
+
+        // ===== DATABASE FETCH FUNCTIONS =====
+        async function fetchLivePrices() {
+            const container = document.getElementById('livePricesContainer');
+            const viewAllContainer = document.getElementById('viewAllContainer');
+            const loginPrompt = document.getElementById('loginPrompt');
+            
+            try {
+                const response = await fetch(`${API_BASE}/prices?limit=200`);
+                if (response.ok) {
+                    const data = await response.json();
+                    allPrices = data.prices || [];
+                    
+                    if (allPrices.length > 0) {
+                        // Get unique commodities
+                        const commodityMap = new Map();
+                        for (const price of allPrices) {
+                            const commodityName = price.commodity_name || price.commodity;
+                            if (!commodityMap.has(commodityName)) commodityMap.set(commodityName, price);
+                        }
+                        let uniquePrices = Array.from(commodityMap.values());
+                        
+                        // Filter based on login status
+                        let displayPrices = uniquePrices;
+                        if (!state.isLoggedIn) {
+                            displayPrices = uniquePrices.filter(p => DEFAULT_COMMODITIES.includes(p.commodity_name || p.commodity));
+                            if (loginPrompt) loginPrompt.style.display = 'block';
+                            if (viewAllContainer) viewAllContainer.style.display = 'block';
+                        } else { 
+                            if (loginPrompt) loginPrompt.style.display = 'none'; 
+                            if (viewAllContainer) viewAllContainer.style.display = 'none';
+                        }
+                        
+                        // Build price cards with dramatic animations
+                        const pricesHtml = displayPrices.map((price, idx) => {
+                            const commodityName = price.commodity_name || price.commodity;
+                            const marketName = price.market_name || price.market || 'Various Markets';
+                            const icon = COMMODITY_ICONS[commodityName] || 'fa-seedling';
+                            const trend = safeTrend(price.trend || price.price_trend || 'stable');
+                            const trendIcon = trend === 'up' ? 'fa-arrow-up' : (trend === 'down' ? 'fa-arrow-down' : 'fa-minus');
+                            const trendClass = trend === 'up' ? 'trend-up' : (trend === 'down' ? 'trend-down' : 'trend-stable');
+                            const delay = idx * 0.05;
+                            const priceId = `price-${String(commodityName || 'commodity').replace(/[^\w-]/g, '')}`;
+                            const updatedDate = price.last_updated ? new Date(price.last_updated).toLocaleDateString() : 'Recent';
+                            return `<div class="price-card" style="animation: fadeInRight 0.6s ease ${delay}s forwards; opacity: 0;">
+                                <div class="price-commodity" style="font-size: 1.2rem; font-weight: 700; color: var(--primary);"><i class="fas ${icon}"></i> ${escapeHtml(commodityName)}</div>
+                                <div class="price-value" id="${escapeHtml(priceId)}">ZMW ${formatPrice(price.price)} <span style="font-size:0.9rem;">/${escapeHtml(formatUnit(price.unit))}</span></div>
+                                <div class="price-meta" style="display: flex; justify-content: space-between; margin-top: 10px;">
+                                    <span><i class="fas fa-store"></i> ${escapeHtml(marketName)}</span>
+                                    <span class="${trendClass}"><i class="fas ${trendIcon}"></i> ${trend === 'up' ? 'Rising' : (trend === 'down' ? 'Falling' : 'Stable')}</span>
+                                </div>
+                                <div class="price-meta">
+                                    <span><i class="fas fa-calendar"></i> ${escapeHtml(updatedDate)}</span>
+                                    <span><i class="fas fa-check-circle" style="color:#28a745;"></i> Verified</span>
+                                </div>
+                            </div>`;
+                        }).join('');
+                        
+                        container.innerHTML = `<div class="live-prices-grid">${pricesHtml}</div>`;
+                        document.getElementById('statCommodities').textContent = uniquePrices.length;
+                        document.getElementById('statPrices').textContent = data.count || uniquePrices.length;
+                        
+                        showToast(`Loaded ${displayPrices.length} verified prices from database`, 'success');
+                        return true;
+                    } else {
+                        container.innerHTML = '<div class="price-loading"><i class="fas fa-inbox"></i> No price data available in database. Please contact admin.</div>';
+                        return false;
+                    }
+                } else {
+                    throw new Error('API response not OK');
+                }
+            } catch(e) { 
+                console.error('Price fetch error:', e); 
+                container.innerHTML = '<div class="price-loading"><i class="fas fa-exclamation-triangle"></i> Unable to load prices. Please check connection.</div>';
+                return false;
+            }
+        }
+
+        // ===== REAL-TIME TICKER - DATA FROM DATABASE =====
+        async function fetchAndUpdateTicker() {
+            const tickerContainer = document.getElementById('tickerItems');
+            try {
+                const response = await fetch(`${API_BASE}/prices?limit=50`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const prices = data.prices || [];
+                    
+                    if (prices.length > 0) {
+                        // Get unique commodities for ticker
+                        const commodityMap = new Map();
+                        for (const price of prices) {
+                            const commodityName = price.commodity_name || price.commodity;
+                            if (!commodityMap.has(commodityName)) commodityMap.set(commodityName, price);
+                        }
+                        const uniquePrices = Array.from(commodityMap.values()).slice(0, 20);
+                        
+                        const tickerHtml = uniquePrices.map(p => {
+                            const commodityName = p.commodity_name || p.commodity;
+                            const icon = COMMODITY_ICONS[commodityName] || 'fa-seedling';
+                            const priceValue = formatPrice(p.price);
+                            const trend = safeTrend(p.trend || p.price_trend || 'stable');
+                            const trendArrow = trend === 'up' ? 'up' : (trend === 'down' ? 'down' : 'stable');
+                            const trendColor = trend === 'up' ? '#28a745' : (trend === 'down' ? '#dc3545' : '#ffc107');
+                            return `<div class="ticker-item">
+                                <span><i class="fas ${icon}"></i> ${escapeHtml(commodityName)}</span>
+                                <span class="ticker-price" style="color: ${trendColor}">ZMW ${priceValue}</span>
+                                <span style="font-size:0.7rem;">${trendArrow}</span>
+                            </div>`;
+                        }).join('');
+                        
+                        // Double the items for seamless scrolling
+                        tickerContainer.innerHTML = tickerHtml + tickerHtml;
+                        
+                        // Animate ticker update
+                        tickerContainer.style.animation = 'none';
+                        tickerContainer.offsetHeight; // Trigger reflow
+                        tickerContainer.style.animation = 'tickerScroll 45s linear infinite';
+                        
+                        return true;
+                    }
+                }
+                return false;
+            } catch(e) { 
+                console.error('Ticker fetch error:', e);
+                return false;
+            }
+        }
+
+        async function fetchAllCommodities() {
+            const container = document.getElementById('commoditiesList');
+            if (!container) return;
+            try {
+                const response = await fetch(`${API_BASE}/commodities`);
+                if (response.ok) {
+                    const data = await response.json();
+                    let commodities = data.commodities || [];
+                    let displayCommodities = state.isLoggedIn ? commodities : commodities.filter(c => DEFAULT_COMMODITIES.includes(c.name));
+                    const commoditiesHtml = displayCommodities.map(c => {
+                        const icon = COMMODITY_ICONS[c.name] || 'fa-seedling';
+                        return `<a class="commodity-tag" href="prices.html?commodity=${encodeURIComponent(c.name)}" style="text-decoration:none;"><i class="fas ${icon}"></i> ${escapeHtml(c.name)}</a>`;
+                    }).join('');
+                    container.innerHTML = commoditiesHtml;
+                    document.getElementById('statCommodities').textContent = commodities.length;
+                }
+            } catch(e) { console.error('Commodities fetch error:', e); }
+        }
+
+        async function fetchMarketsStats() {
+            try {
+                const response = await fetch(`${API_BASE}/markets`);
+                if (response.ok) { 
+                    const data = await response.json(); 
+                    document.getElementById('statMarkets').textContent = data.count || 0;
+                    animatePriceUpdate('statMarkets');
+                }
+            } catch(e) { document.getElementById('statMarkets').textContent = '31'; }
+        }
+
+        async function fetchBackendStatus() {
+            const statusEl = document.getElementById('backendStatus');
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                if (response.ok) { 
+                    const data = await response.json(); 
+                    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Online'; 
+                    statusEl.style.color = '#28a745';
+                    const ussdDisplay = document.getElementById('ussdCodeDisplay');
+                    if (ussdDisplay && data.ussd_code) ussdDisplay.textContent = data.ussd_code;
+                    statusEl.style.animation = 'pulse 1s';
+                    setTimeout(() => statusEl.style.animation = '', 1000);
+                } else throw new Error();
+            } catch(e) { statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Offline'; statusEl.style.color = '#ffc107'; }
+        }
+
+        async function fetchUserStats() {
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('statUsers').textContent = data.stats?.users || 0;
+                }
+            } catch(e) { document.getElementById('statUsers').textContent = 'Join Free'; }
+        }
+
+        // ===== DRAMATIC REAL-TIME UPDATES =====
+        async function refreshAllData() {
+            showToast('Refreshing data from database...', 'info');
+            await fetchLivePrices();
+            await fetchAndUpdateTicker();
+            await fetchMarketsStats();
+            await fetchUserStats();
+            showToast('Data refreshed. Latest market prices loaded.', 'success');
+        }
+
+        // ===== AUTO-REFRESH FOR REAL-TIME FEEL =====
+        function startAutoRefresh() {
+            // Refresh every 60 seconds
+            setInterval(async () => {
+                await fetchAndUpdateTicker();
+                await fetchLivePrices();
+                const now = new Date();
+                if (lastPriceUpdate && (now - lastPriceUpdate) > 60000) {
+                    showToast('Auto-refreshing market prices...', 'info');
+                }
+                lastPriceUpdate = now;
+            }, 60000);
+            
+            // Refresh ticker every 30 seconds (more frequent for live feel)
+            setInterval(fetchAndUpdateTicker, 30000);
+        }
+
+        // ===== AUTH CHECK =====
+        async function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            let userData = {};
+            try {
+                userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            } catch (error) {
+                localStorage.removeItem('userData');
+            }
+            state.isLoggedIn = !!token;
+            state.currentUser = userData;
+            state.isAdmin = userData.role === 'admin';
+            
+            const elements = {
+                dashboardNav: document.getElementById('dashboardNavItem'),
+                adminNav: document.getElementById('adminNavItem'),
+                loginNav: document.getElementById('loginNavItem'),
+                registerNav: document.getElementById('registerNavItem'),
+                heroLogin: document.getElementById('heroLoginBtn'),
+                ctaLogin: document.getElementById('ctaLoginBtn'),
+                footerLogin: document.getElementById('footerLoginLink'),
+                sidebarProfile: document.getElementById('sidebarProfile'),
+                sidebarDashboard: document.getElementById('sidebarDashboardItem'),
+                sidebarLogin: document.getElementById('sidebarLoginItem'),
+                sidebarRegister: document.getElementById('sidebarRegisterItem'),
+                sidebarLogout: document.getElementById('sidebarLogoutItem')
+            };
+            
+            if (state.isLoggedIn) {
+                if (elements.dashboardNav) elements.dashboardNav.style.display = 'block';
+                if (elements.adminNav) elements.adminNav.style.display = state.isAdmin ? 'block' : 'none';
+                if (elements.loginNav) elements.loginNav.style.display = 'none';
+                if (elements.registerNav) elements.registerNav.style.display = 'none';
+                if (elements.heroLogin) elements.heroLogin.style.display = 'none';
+                if (elements.ctaLogin) elements.ctaLogin.style.display = 'none';
+                if (elements.footerLogin) elements.footerLogin.style.display = 'none';
+                if (elements.sidebarProfile) elements.sidebarProfile.style.display = 'flex';
+                if (elements.sidebarDashboard) elements.sidebarDashboard.style.display = 'block';
+                if (elements.sidebarLogin) elements.sidebarLogin.style.display = 'none';
+                if (elements.sidebarRegister) elements.sidebarRegister.style.display = 'none';
+                if (elements.sidebarLogout) elements.sidebarLogout.style.display = 'block';
+                
+                document.getElementById('sidebarUserName').textContent = safeUserName(userData);
+                document.getElementById('sidebarUserRole').textContent = userData.role || 'Farmer';
+                document.getElementById('priceSectionSubtitle').innerHTML = '<i class="fas fa-check-circle"></i> Showing all commodities from database';
+            } else {
+                if (elements.dashboardNav) elements.dashboardNav.style.display = 'none';
+                if (elements.adminNav) elements.adminNav.style.display = 'none';
+                if (elements.loginNav) elements.loginNav.style.display = 'block';
+                if (elements.registerNav) elements.registerNav.style.display = 'block';
+                if (elements.heroLogin) elements.heroLogin.style.display = 'inline-flex';
+                if (elements.ctaLogin) elements.ctaLogin.style.display = 'inline-flex';
+                if (elements.footerLogin) elements.footerLogin.style.display = 'block';
+                if (elements.sidebarProfile) elements.sidebarProfile.style.display = 'none';
+                if (elements.sidebarDashboard) elements.sidebarDashboard.style.display = 'none';
+                if (elements.sidebarLogin) elements.sidebarLogin.style.display = 'block';
+                if (elements.sidebarRegister) elements.sidebarRegister.style.display = 'block';
+                if (elements.sidebarLogout) elements.sidebarLogout.style.display = 'none';
+                document.getElementById('priceSectionSubtitle').innerHTML = '<i class="fas fa-info-circle"></i> Showing 8 popular commodities. Login to view all 30+ commodities!';
+            }
+            
+            // All login links now point to login.html
+            const loginLinks = [elements.heroLogin, elements.ctaLogin, elements.footerLogin, document.getElementById('loginNavLink'), document.getElementById('sidebarLoginLink')];
+            loginLinks.forEach(link => { if (link) link.href = 'login.html'; });
+            
+            const logoutBtn = document.getElementById('sidebarLogoutBtn');
+            if (logoutBtn) { logoutBtn.onclick = (e) => { e.preventDefault(); localStorage.removeItem('authToken'); localStorage.removeItem('userData'); showToast('Logged out successfully!', 'success'); setTimeout(() => window.location.reload(), 500); }; }
+            
+            await fetchLivePrices();
+            await fetchAllCommodities();
+        }
+
+        // ===== UI SETUP =====
+        function initDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                const icon = document.querySelector('#darkModeToggle i');
+                if (icon) icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+                showToast(`Dark mode ${document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled'}`, 'info');
+            });
+        }
+
+        function initMobileMenu() {
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const closeBtn = document.getElementById('closeSidebarBtn');
+            function close() { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+            menuBtn.onclick = () => { sidebar.classList.add('open'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; };
+            closeBtn.onclick = close; overlay.onclick = close;
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+        }
+
+        // ===== HCI: ERROR PREVENTION & RECOVERY =====
+        window.addEventListener('online', () => { showToast('Back online. Fetching latest data...', 'success'); refreshAllData(); });
+        window.addEventListener('offline', () => showToast('Network disconnected. Please check your connection.', 'error'));
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', async function() {
+            initDarkMode();
+            initMobileMenu();
+            initBackgroundSlideshow();
+            document.getElementById('viewAllPricesBtn')?.addEventListener('click', () => { window.location.href = 'login.html'; });
+            
+            await checkAuth();
+            await fetchBackendStatus();
+            await fetchMarketsStats();
+            await fetchUserStats();
+            await fetchAndUpdateTicker();
+            
+            startAutoRefresh();
+            
+            // Show ticker after load
+            setTimeout(() => document.getElementById('liveTicker').classList.add('visible'), 1000);
+            
+            showToast('Welcome to FarmConnect. Real-time market data loaded from database.', 'success');
+        });
+        
+        window.refreshAllData = refreshAllData;
+    </script>
+</body>
+</html>

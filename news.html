@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Agricultural News - FarmConnect Zambia</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2E8B57">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* FarmConnect news page styles */
+        :root {
+            --primary: #2E8B57;
+            --primary-dark: #1f6b43;
+            --primary-light: #3CB371;
+            --secondary: #FFA500;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+            --transition: all 0.2s ease;
+        }
+
+        :root {
+            --bg-primary: #f5f7fb;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --header-bg: #ffffff;
+            --footer-bg: #1a1a2e;
+            --footer-text: #c8d6e5;
+        }
+
+        body.dark-mode {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #7a7a8e;
+            --border-color: #2a2a4a;
+            --header-bg: #1a1a2e;
+            --footer-bg: #0a0a1a;
+            --footer-text: #8e8ea8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: var(--transition); line-height: 1.5; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        .top-nav {
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 20px; }
+        .nav-left .logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .menu-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--primary); padding: 10px; border-radius: var(--radius-sm); }
+        .menu-btn:hover { background: rgba(46, 139, 87, 0.1); }
+        .page-title { font-size: 1.2rem; font-weight: 600; color: var(--text-primary); padding-left: 15px; border-left: 2px solid var(--border-color); }
+        .admin-badge { background: #dc3545; color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; margin-left: 12px; display: none; }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .icon-btn, .dark-mode-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 10px; border-radius: 50%; transition: var(--transition); color: var(--text-secondary); }
+        .icon-btn:hover, .dark-mode-btn:hover { background: rgba(46, 139, 87, 0.1); color: var(--primary); }
+
+        .sidebar {
+            position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
+            background: linear-gradient(180deg, #0a0a2a 0%, #0f3460 100%);
+            z-index: 1000; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; box-shadow: var(--shadow-lg);
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-header { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; color: white; font-weight: 700; font-size: 1.2rem; }
+        .close-sidebar { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.2rem; cursor: pointer; padding: 8px; border-radius: 50%; }
+        .close-sidebar:hover { background: rgba(255,255,255,0.1); color: white; }
+        .user-profile-card { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 14px; }
+        .user-avatar { width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: white; }
+        .user-info h4 { color: white; font-size: 0.95rem; margin-bottom: 4px; }
+        .user-info p { color: rgba(255,255,255,0.7); font-size: 0.7rem; }
+        .sidebar-nav { padding: 16px; }
+        .sidebar-nav-item { margin-bottom: 4px; }
+        .sidebar-nav-link { display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.85); text-decoration: none; border-radius: var(--radius-md); transition: var(--transition); font-size: 0.9rem; }
+        .sidebar-nav-link:hover, .sidebar-nav-link.active { background: rgba(46, 139, 87, 0.2); color: white; }
+        .sidebar-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 16px 0; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 999; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        .main-content { min-height: 100vh; }
+        .content { padding: 28px 32px; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; padding: 50px 40px; text-align: center; border-radius: var(--radius-lg); margin-bottom: 30px;
+        }
+        .hero h1 { font-size: 2rem; margin-bottom: 15px; }
+        .hero p { font-size: 1rem; max-width: 700px; margin: 0 auto; opacity: 0.9; }
+
+        .stats-bar {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .stat-item { display: flex; align-items: center; gap: 10px; }
+        .stat-number { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .stat-label { color: var(--text-secondary); }
+
+        .admin-actions { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+            background: var(--primary); color: white; border: none; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: var(--transition);
+        }
+        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background: var(--secondary); color: #1a1a2e; }
+        .btn-secondary:hover { background: #e69500; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .news-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .news-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .news-image { width: 100%; height: 200px; object-fit: cover; background: var(--bg-primary); }
+        .news-image-placeholder {
+            width: 100%; height: 200px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;
+        }
+        .news-content { padding: 20px; }
+        .news-category {
+            display: inline-block; padding: 4px 12px; background: rgba(46, 139, 87, 0.1);
+            color: var(--primary); border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-bottom: 12px;
+        }
+        .news-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: var(--text-primary); line-height: 1.4; }
+        .news-summary { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5; }
+        .news-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.7rem; color: var(--text-muted); padding-top: 12px; border-top: 1px solid var(--border-color);
+        }
+        .news-stats { display: flex; gap: 12px; }
+        .news-stats span { display: flex; align-items: center; gap: 4px; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 20px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 10;
+        }
+        .modal-header h3 { color: var(--text-primary); font-size: 1.2rem; }
+        .modal-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-secondary); }
+        .modal-body { padding: 25px; }
+        .modal-image { width: 100%; max-height: 300px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 20px; }
+        .modal-date { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 15px; }
+        .modal-content-text { font-size: 1rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .modal-stats { display: flex; gap: 20px; margin: 20px 0; padding: 15px 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
+        .like-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 0.9rem; }
+        .like-btn.liked { color: #e74c3c; }
+        .share-buttons { display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+        .share-btn { background: none; border: none; cursor: pointer; padding: 5px 10px; border-radius: var(--radius-sm); font-size: 0.8rem; transition: var(--transition); }
+        .share-btn:hover { background: rgba(0,0,0,0.05); }
+        .comments-section { margin-top: 25px; }
+        .comment-input { display: flex; gap: 10px; margin-bottom: 20px; }
+        .comment-input input { flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); color: var(--text-primary); }
+        .comment { padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .comment-author { font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; color: var(--primary); }
+        .comment-text { font-size: 0.85rem; color: var(--text-secondary); }
+        .comment-date { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: var(--text-primary); }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm); background: var(--bg-primary);
+            color: var(--text-primary); font-size: 0.85rem;
+        }
+        .form-textarea { min-height: 150px; resize: vertical; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); }
+        .image-preview { margin-top: 10px; max-width: 200px; border-radius: var(--radius-sm); overflow: hidden; }
+        .image-preview img { width: 100%; height: auto; }
+
+        .loading-spinner { display: none; text-align: center; padding: 40px; }
+        .loading-spinner.active { display: block; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; background: var(--primary);
+            color: white; padding: 12px 20px; border-radius: var(--radius-md);
+            z-index: 3000; animation: slideIn 0.3s ease; box-shadow: var(--shadow-md);
+            font-size: 0.85rem; display: flex; align-items: center; gap: 10px;
+        }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: #17a2b8; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .admin-edit-buttons { display: flex; gap: 8px; margin-top: 10px; justify-content: flex-end; }
+
+        footer { background: var(--footer-bg); color: var(--footer-text); padding: 30px 0 20px; margin-top: 50px; }
+        .footer-bottom { text-align: center; font-size: 0.75rem; }
+
+        @media (max-width: 768px) {
+            .content { padding: 20px; }
+            .news-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.5rem; }
+            .page-title { display: none; }
+            .stats-bar { flex-direction: column; align-items: stretch; }
+            .modal-stats { flex-wrap: wrap; }
+            .share-buttons { margin-left: 0; }
+            .toast { left: 16px; right: 16px; bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+            <a href="index.html" class="logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></a>
+            <h1 class="page-title">Agricultural News</h1>
+            <span id="adminBadge" class="admin-badge">ADMIN</span>
+        </div>
+        <div class="nav-right">
+            <button class="dark-mode-btn" id="darkModeBtn"><i class="fas fa-moon"></i></button>
+            <a href="dashboard.html" class="icon-btn"><i class="fas fa-tachometer-alt"></i></a>
+            <a href="profile.html" class="icon-btn"><i class="fas fa-user"></i></a>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></div>
+            <button class="close-sidebar" id="closeSidebarBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="user-profile-card">
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+            <div class="user-info">
+                <h4 id="sidebarUserName">Loading...</h4>
+                <p id="sidebarUserRole">User</p>
+            </div>
+        </div>
+        <div class="sidebar-nav">
+            <div class="sidebar-nav-item"><a href="index.html" class="sidebar-nav-link"><i class="fas fa-home"></i><span>Home</span></a></div>
+            <div class="sidebar-nav-item"><a href="dashboard.html" class="sidebar-nav-link"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
+            <div class="sidebar-nav-item"><a href="prices.html" class="sidebar-nav-link"><i class="fas fa-chart-line"></i><span>Market Intelligence</span></a></div>
+            <div class="sidebar-nav-item"><a href="dashboard.html" class="sidebar-nav-link"><i class="fas fa-chart-simple"></i><span>Dashboard Forecast</span></a></div>
+            <div class="sidebar-nav-item"><a href="find-buyers.html" class="sidebar-nav-link"><i class="fas fa-users"></i><span>Find Buyers</span></a></div>
+            <div class="sidebar-nav-item"><a href="news.html" class="sidebar-nav-link active"><i class="fas fa-newspaper"></i><span>Agricultural News</span></a></div>
+            <div class="sidebar-nav-item"><a href="profile.html" class="sidebar-nav-link"><i class="fas fa-user"></i><span>Profile</span></a></div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-nav-item"><a href="#" class="sidebar-nav-link" id="sidebarLogoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></div>
+        </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content">
+        <div class="content">
+            <div class="hero">
+                <h1><i class="fas fa-newspaper"></i> Agricultural News & Updates</h1>
+                <p>Stay informed with the latest agricultural news, farming tips, market updates, and government policies affecting Zambian farmers.</p>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item"><span class="stat-number" id="totalNews">0</span><span class="stat-label">News Articles</span></div>
+                <div class="stat-item"><span class="stat-number" id="totalViews">0</span><span class="stat-label">Total Views</span></div>
+                <div class="stat-item"><span class="stat-number" id="totalLikes">0</span><span class="stat-label">Total Likes</span></div>
+                <div class="stat-item"><span class="stat-number" id="totalComments">0</span><span class="stat-label">Comments</span></div>
+            </div>
+
+            <div class="admin-actions" id="adminActions" style="display: none;">
+                <button class="btn" id="createNewsBtn"><i class="fas fa-plus-circle"></i> Create News Article</button>
+            </div>
+
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p>Loading news...</p>
+            </div>
+
+            <div class="news-grid" id="newsGrid"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2026 FarmConnect - Mulungushi University | Daka Felix (202206453) | Mr. E Nyirenda</p>
+        </div>
+    </footer>
+
+    <!-- News Detail Modal -->
+    <div class="modal" id="newsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">News Title</h3>
+                <button class="modal-close" onclick="closeModal('newsModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <img id="modalImage" class="modal-image" style="display: none;">
+                <div id="modalDate" class="modal-date"></div>
+                <div id="modalContent" class="modal-content-text"></div>
+                <div class="modal-stats">
+                    <button class="like-btn" id="likeBtn"><i class="far fa-heart"></i> <span id="likeCount">0</span> Likes</button>
+                    <span><i class="far fa-eye"></i> <span id="viewCount">0</span> Views</span>
+                    <span><i class="far fa-comment"></i> <span id="commentCount">0</span> Comments</span>
+                    <div class="share-buttons">
+                        <button class="share-btn" onclick="shareNews('whatsapp')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                        <button class="share-btn" onclick="shareNews('facebook')"><i class="fab fa-facebook"></i> Facebook</button>
+                        <button class="share-btn" onclick="shareNews('twitter')"><i class="fab fa-twitter"></i> Twitter</button>
+                        <button class="share-btn" onclick="shareNews('copy')"><i class="fas fa-link"></i> Copy Link</button>
+                    </div>
+                </div>
+                <div id="adminEditButtons" class="admin-edit-buttons" style="display: none;">
+                    <button class="btn btn-secondary btn-sm" onclick="editCurrentNews()"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteCurrentNews()"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+                <div class="comments-section">
+                    <h4>Comments</h4>
+                    <div class="comment-input">
+                        <input type="text" id="commentInput" placeholder="Write a comment...">
+                        <button class="btn btn-sm" id="postCommentBtn">Post</button>
+                    </div>
+                    <div id="commentsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit News Modal -->
+    <div class="modal" id="newsFormModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="formModalTitle">Create News Article</h3>
+                <button class="modal-close" onclick="closeModal('newsFormModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="newsForm" enctype="multipart/form-data">
+                    <input type="hidden" id="newsId">
+                    <div class="form-group">
+                        <label class="form-label">Title *</label>
+                        <input type="text" class="form-input" id="newsTitle" required placeholder="Enter news title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="newsCategory">
+                            <option value="general">General</option>
+                            <option value="market">Market Update</option>
+                            <option value="farming">Farming Tips</option>
+                            <option value="policy">Government Policy</option>
+                            <option value="weather">Weather Alert</option>
+                            <option value="event">Event</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Summary (Short description)</label>
+                        <input type="text" class="form-input" id="newsSummary" placeholder="Brief summary of the article">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Content *</label>
+                        <textarea class="form-textarea" id="newsContent" required placeholder="Write the full news content here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Featured Image</label>
+                        <input type="file" class="form-input" id="newsImage" accept="image/*">
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+                    <div class="form-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('newsFormModal')">Cancel</button>
+                        <button type="submit" class="btn">Publish Article</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let currentNewsId = null;
+        let allNews = [];
+        let userLikedNews = new Set();
+
+        // Helper functions
+        function authToken() {
+            return localStorage.getItem('authToken') || '';
+        }
+
+        function authHeaders(extra = {}) {
+            return { ...extra, 'Authorization': `Bearer ${authToken()}` };
+        }
+
+        function normalizeUser(user = {}) {
+            return {
+                ...user,
+                name: user.name || [user.first_name, user.last_name].filter(Boolean).join(' ').trim() || user.username || 'User'
+            };
+        }
+
+        function safeImageUrl(url) {
+            const value = String(url || '').trim();
+            if (!value) return '';
+            if (value.startsWith('/') || value.startsWith('http://') || value.startsWith('https://') || value.startsWith('data:image/')) {
+                return value;
+            }
+            return '';
+        }
+
+        function showToast(message, type) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = document.createElement('i');
+            icon.className = `fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}`;
+            toast.append(icon, document.createTextNode(` ${message}`));
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Recent';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            showToast('Logged out!', 'success');
+            setTimeout(() => window.location.href = 'login.html', 1000);
+        }
+        function showModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('userData');
+            if (token && userData) {
+                try {
+                    currentUser = normalizeUser(JSON.parse(userData));
+                    document.getElementById('sidebarUserName').textContent = currentUser.name || currentUser.username;
+                    document.getElementById('sidebarUserRole').textContent = currentUser.role || 'User';
+                    if (currentUser.role === 'admin') {
+                        document.getElementById('adminBadge').style.display = 'inline-block';
+                        document.getElementById('adminActions').style.display = 'flex';
+                    }
+                } catch(e) {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userData');
+                }
+            } else {
+                document.getElementById('sidebarUserName').textContent = 'Guest User';
+                document.getElementById('sidebarUserRole').textContent = 'Not Logged In';
+            }
+        }
+
+        async function fetchNews() {
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.classList.add('active');
+            try {
+                const response = await fetch(`${API_BASE}/news?limit=50`);
+                if (response.ok) {
+                    const data = await response.json();
+                    allNews = data.news || [];
+                    displayNews(allNews);
+                    updateStats();
+                } else {
+                    throw new Error('Failed to fetch news');
+                }
+            } catch (error) {
+                showToast('Error loading news', 'error');
+                document.getElementById('newsGrid').innerHTML = '<div style="text-align:center;padding:40px;">Unable to load news. Please try again later.</div>';
+            } finally {
+                spinner.classList.remove('active');
+            }
+        }
+
+        function displayNews(news) {
+            const grid = document.getElementById('newsGrid');
+            if (!news.length) {
+                grid.innerHTML = '<div style="text-align:center;padding:40px;">No news articles yet. Check back later!</div>';
+                return;
+            }
+            grid.innerHTML = news.map(item => `
+                <div class="news-card" data-news-id="${escapeHtml(item.id)}">
+                    ${safeImageUrl(item.image_url) ? `<img src="${escapeHtml(safeImageUrl(item.image_url))}" class="news-image" alt="${escapeHtml(item.title || 'News image')}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="news-image-placeholder" style="display:none;"><i class="fas fa-newspaper"></i></div>` : 
+                        `<div class="news-image-placeholder"><i class="fas fa-newspaper"></i></div>`}
+                    <div class="news-content">
+                        <span class="news-category"><i class="fas fa-tag"></i> ${escapeHtml(item.category || 'General')}</span>
+                        <h3 class="news-title">${escapeHtml(item.title)}</h3>
+                        <p class="news-summary">${escapeHtml(item.summary || (item.content ? item.content.substring(0, 120) + '...' : 'Read more'))}</p>
+                        <div class="news-meta">
+                            <span><i class="far fa-calendar-alt"></i> ${formatDate(item.published_at || item.created_at)}</span>
+                            <div class="news-stats">
+                                <span><i class="far fa-eye"></i> ${item.view_count || 0}</span>
+                                <span><i class="far fa-heart"></i> ${item.like_count || 0}</span>
+                                <span><i class="far fa-comment"></i> ${item.comment_count || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            grid.querySelectorAll('.news-card').forEach((card) => {
+                card.addEventListener('click', () => viewNews(Number(card.dataset.newsId)));
+            });
+        }
+
+        function updateStats() {
+            let totalViews = 0, totalLikes = 0, totalComments = 0;
+            allNews.forEach(item => {
+                totalViews += item.view_count || 0;
+                totalLikes += item.like_count || 0;
+                totalComments += item.comment_count || 0;
+            });
+            document.getElementById('totalNews').textContent = allNews.length;
+            document.getElementById('totalViews').textContent = totalViews;
+            document.getElementById('totalLikes').textContent = totalLikes;
+            document.getElementById('totalComments').textContent = totalComments;
+        }
+
+        async function viewNews(newsId) {
+            currentNewsId = newsId;
+            const news = allNews.find(n => n.id === newsId);
+            if (!news) return;
+
+            document.getElementById('modalTitle').textContent = news.title;
+            document.getElementById('modalDate').textContent = formatDate(news.published_at || news.created_at);
+            document.getElementById('modalContent').innerHTML = escapeHtml(news.content).replace(/\n/g, '<br>');
+            document.getElementById('likeCount').textContent = news.like_count || 0;
+            document.getElementById('viewCount').textContent = (news.view_count || 0) + 1;
+            document.getElementById('commentCount').textContent = news.comment_count || 0;
+
+            const modalImage = document.getElementById('modalImage');
+            const imageUrl = safeImageUrl(news.image_url);
+            if (imageUrl) {
+                modalImage.src = imageUrl;
+                modalImage.alt = news.title || 'News image';
+                modalImage.style.display = 'block';
+            } else {
+                modalImage.removeAttribute('src');
+                modalImage.style.display = 'none';
+            }
+
+            // Check if user has liked
+            if (currentUser && userLikedNews.has(newsId)) {
+                const likeBtn = document.getElementById('likeBtn');
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('i').className = 'fas fa-heart';
+            } else {
+                const likeBtn = document.getElementById('likeBtn');
+                likeBtn.classList.remove('liked');
+                likeBtn.querySelector('i').className = 'far fa-heart';
+            }
+
+            // Show edit/delete buttons for admin
+            if (currentUser && currentUser.role === 'admin') {
+                document.getElementById('adminEditButtons').style.display = 'flex';
+            } else {
+                document.getElementById('adminEditButtons').style.display = 'none';
+            }
+
+            await loadComments(newsId);
+            await incrementViewCount(newsId);
+            showModal('newsModal');
+        }
+
+        async function incrementViewCount(newsId) {
+            try {
+                const response = await fetch(`${API_BASE}/news/${newsId}/view`, { method: 'POST' });
+                if (response.ok) {
+                    const news = allNews.find(n => n.id === newsId);
+                    if (news) news.view_count = (news.view_count || 0) + 1;
+                }
+            } catch (error) {
+                console.log('View count error:', error);
+            }
+        }
+
+        async function toggleLike() {
+            if (!currentUser) {
+                showToast('Please login to like articles', 'error');
+                return;
+            }
+
+            const isLiked = document.getElementById('likeBtn').classList.contains('liked');
+            const likeBtn = document.getElementById('likeBtn');
+            const likeSpan = document.getElementById('likeCount');
+            let currentLikes = parseInt(likeSpan.textContent);
+
+            try {
+                const response = await fetch(`${API_BASE}/news/${currentNewsId}/like`, {
+                    method: 'POST',
+                    headers: authHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const liked = data.liked !== false;
+                    if (liked) {
+                        likeBtn.classList.add('liked');
+                        likeBtn.querySelector('i').className = 'fas fa-heart';
+                        likeSpan.textContent = data.like_count;
+                        userLikedNews.add(currentNewsId);
+                        showToast('You liked this article!', 'success');
+                    } else {
+                        likeBtn.classList.remove('liked');
+                        likeBtn.querySelector('i').className = 'far fa-heart';
+                        likeSpan.textContent = data.like_count;
+                        userLikedNews.delete(currentNewsId);
+                        showToast('You unliked this article', 'info');
+                    }
+                    
+                    // Update local data
+                    const news = allNews.find(n => n.id === currentNewsId);
+                    if (news) news.like_count = data.like_count;
+                    updateStats();
+                }
+            } catch (error) {
+                showToast('Error processing like', 'error');
+            }
+        }
+
+        async function loadComments(newsId) {
+            try {
+                const response = await fetch(`${API_BASE}/news/${newsId}/comments`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayComments(data.comments || []);
+                }
+            } catch (error) {
+                console.log('Comments error:', error);
+            }
+        }
+
+        function displayComments(comments) {
+            const container = document.getElementById('commentsList');
+            if (!comments || comments.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No comments yet. Be the first to comment!</p>';
+                return;
+            }
+            container.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <div class="comment-author">${escapeHtml(comment.author_name || comment.user_name || comment.user_id || 'Anonymous')}</div>
+                    <div class="comment-text">${escapeHtml(comment.comment)}</div>
+                    <div class="comment-date">${formatDate(comment.created_at)}</div>
+                </div>
+            `).join('');
+        }
+
+        async function postComment() {
+            if (!currentUser) {
+                showToast('Please login to comment', 'error');
+                return;
+            }
+
+            const commentInput = document.getElementById('commentInput');
+            const comment = commentInput.value.trim();
+            if (!comment) {
+                showToast('Please enter a comment', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/news/${currentNewsId}/comments`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        ...authHeaders()
+                    },
+                    body: JSON.stringify({ comment: comment })
+                });
+
+                if (response.ok) {
+                    showToast('Comment posted!', 'success');
+                    commentInput.value = '';
+                    await loadComments(currentNewsId);
+                    
+                    // Update comment count
+                    const commentSpan = document.getElementById('commentCount');
+                    commentSpan.textContent = parseInt(commentSpan.textContent) + 1;
+                    const news = allNews.find(n => n.id === currentNewsId);
+                    if (news) news.comment_count = (news.comment_count || 0) + 1;
+                    updateStats();
+                } else {
+                    const error = await response.json();
+                    showToast(error.error || 'Error posting comment', 'error');
+                }
+            } catch (error) {
+                showToast('Error posting comment', 'error');
+            }
+        }
+
+        function shareNews(platform) {
+            const news = allNews.find(n => n.id === currentNewsId);
+            if (!news) return;
+            
+            const url = encodeURIComponent(window.location.origin + `/news.html?id=${currentNewsId}`);
+            const title = encodeURIComponent(news.title);
+            
+            let shareUrl = '';
+            switch(platform) {
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${title}%20${url}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${title}&url=${url}`;
+                    break;
+                case 'copy':
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(window.location.origin + `/news.html?id=${currentNewsId}`);
+                        showToast('Link copied to clipboard!', 'success');
+                    } else {
+                        showToast('Copy is not available in this browser', 'error');
+                    }
+                    return;
+            }
+            if (shareUrl) window.open(shareUrl, '_blank');
+        }
+
+        function showCreateNewsForm() {
+            document.getElementById('formModalTitle').textContent = 'Create News Article';
+            document.getElementById('newsId').value = '';
+            document.getElementById('newsTitle').value = '';
+            document.getElementById('newsCategory').value = 'general';
+            document.getElementById('newsSummary').value = '';
+            document.getElementById('newsContent').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('newsImage').value = '';
+            showModal('newsFormModal');
+        }
+
+        function editCurrentNews() {
+            const news = allNews.find(n => n.id === currentNewsId);
+            if (!news) return;
+            editNews(news.id);
+        }
+
+        function editNews(newsId) {
+            const news = allNews.find(n => n.id === newsId);
+            if (!news) return;
+
+            closeModal('newsModal');
+            document.getElementById('formModalTitle').textContent = 'Edit News Article';
+            document.getElementById('newsId').value = news.id;
+            document.getElementById('newsTitle').value = news.title;
+            document.getElementById('newsCategory').value = news.category || 'general';
+            document.getElementById('newsSummary').value = news.summary || '';
+            document.getElementById('newsContent').value = news.content;
+            
+            const imageUrl = safeImageUrl(news.image_url);
+            if (imageUrl) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${escapeHtml(imageUrl)}" alt="Current news image" style="max-width: 100%;">`;
+            } else {
+                document.getElementById('imagePreview').innerHTML = '';
+            }
+            showModal('newsFormModal');
+        }
+
+        function deleteCurrentNews() {
+            if (confirm('Are you sure you want to delete this news article? This action cannot be undone.')) {
+                deleteNews(currentNewsId);
+            }
+        }
+
+        async function deleteNews(newsId) {
+            try {
+                const response = await fetch(`${API_BASE}/news/${newsId}`, {
+                    method: 'DELETE',
+                    headers: authHeaders()
+                });
+                if (response.ok) {
+                    showToast('Article deleted successfully!', 'success');
+                    closeModal('newsModal');
+                    fetchNews();
+                } else {
+                    const error = await response.json();
+                    showToast(error.error || 'Error deleting article', 'error');
+                }
+            } catch (error) {
+                showToast('Error deleting article', 'error');
+            }
+        }
+
+        // Image preview
+        document.getElementById('newsImage')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('imagePreview').innerHTML = `<img src="${escapeHtml(event.target.result)}" alt="Selected news image" style="max-width: 100%; border-radius: 8px;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle form submit (create/update)
+        async function handleNewsSubmit(e) {
+            e.preventDefault();
+            
+            const newsId = document.getElementById('newsId').value;
+            const title = document.getElementById('newsTitle').value.trim();
+            const category = document.getElementById('newsCategory').value;
+            const summary = document.getElementById('newsSummary').value.trim();
+            const content = document.getElementById('newsContent').value.trim();
+            const imageFile = document.getElementById('newsImage').files[0];
+
+            if (!title || !content) {
+                showToast('Please fill in title and content', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('category', category);
+            formData.append('summary', summary);
+            formData.append('content', content);
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            const method = newsId ? 'PUT' : 'POST';
+            const url = newsId ? `${API_BASE}/news/${newsId}` : `${API_BASE}/news`;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: authHeaders(),
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showToast(newsId ? 'Article updated successfully!' : 'Article published successfully!', 'success');
+                    closeModal('newsFormModal');
+                    fetchNews();
+                } else {
+                    const error = await response.json();
+                    showToast(error.error || 'Error saving article', 'error');
+                }
+            } catch (error) {
+                showToast('Error saving article', 'error');
+            }
+        }
+
+        // Dark mode
+        function initDarkMode() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                const icon = document.querySelector('#darkModeBtn i');
+                if (icon) icon.className = 'fas fa-sun';
+            }
+            document.getElementById('darkModeBtn').addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                const icon = document.querySelector('#darkModeBtn i');
+                if (icon) icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            initDarkMode();
+            fetchNews();
+
+            document.getElementById('menuBtn').addEventListener('click', openSidebar);
+            document.getElementById('closeSidebarBtn').addEventListener('click', closeSidebar);
+            document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+            document.getElementById('sidebarLogoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
+            
+            document.getElementById('createNewsBtn')?.addEventListener('click', showCreateNewsForm);
+            
+            document.getElementById('likeBtn')?.addEventListener('click', toggleLike);
+            document.getElementById('postCommentBtn')?.addEventListener('click', postComment);
+            document.getElementById('commentInput')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') postComment();
+            });
+            
+            document.getElementById('newsForm')?.addEventListener('submit', handleNewsSubmit);
+        });
+
+        window.closeModal = closeModal;
+        window.viewNews = viewNews;
+        window.editNews = editNews;
+        window.deleteNews = deleteNews;
+        window.logout = logout;
+        window.closeSidebar = closeSidebar;
+        window.shareNews = shareNews;
+        window.editCurrentNews = editCurrentNews;
+        window.deleteCurrentNews = deleteCurrentNews;
+    </script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Register - FarmConnect Zambia</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2E8B57">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #2E8B57;
+            --primary-dark: #1f6b43;
+            --primary-light: #3CB371;
+            --secondary: #FFA500;
+            --danger: #dc3545;
+            --success: #28a745;
+            --info: #17a2b8;
+            --bg-primary: #f5f7fb;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        body.dark-mode {
+            --bg-primary: #0f0f1a;
+            --bg-card: #16213e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --border-color: #2a2a4a;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: all 0.3s ease; min-height: 100vh; }
+
+        /* Dramatic Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(46,139,87,0.3); } 50% { box-shadow: 0 0 20px rgba(46,139,87,0.6); } }
+        @keyframes slideInDown { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+
+        .animate-fadeUp { animation: fadeInUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+        .animate-fadeLeft { animation: fadeInLeft 0.8s ease forwards; }
+        .animate-fadeRight { animation: fadeInRight 0.8s ease forwards; }
+        .animate-scale { animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+        .animate-glow { animation: glow 2s ease-in-out infinite; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        /* Header - Simplified */
+        .header { background: var(--bg-card); backdrop-filter: blur(10px); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 100; padding: 16px 32px; border-bottom: 1px solid var(--border-color); animation: slideInDown 0.5s ease; }
+        .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 800; color: var(--primary); text-decoration: none; transition: all 0.3s ease; }
+        .logo:hover { transform: scale(1.05) rotate(-2deg); text-shadow: 0 0 10px rgba(46,139,87,0.5); }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { text-decoration: none; color: var(--text-primary); font-weight: 500; transition: all 0.3s ease; padding: 8px 16px; border-radius: 12px; }
+        .nav-links a:hover { background: rgba(46, 139, 87, 0.1); color: var(--primary); transform: translateY(-2px); }
+        .dark-mode-toggle { background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; transition: all 0.3s ease; color: var(--text-primary); }
+        .dark-mode-toggle:hover { background: var(--primary); color: white; transform: rotate(360deg) scale(1.1); }
+
+        /* Main Content */
+        .main-content { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 80px); padding: 40px 20px; }
+
+        /* Register Card */
+        .register-card { background: var(--bg-card); border-radius: 24px; max-width: 500px; width: 100%; padding: 40px; box-shadow: var(--shadow-lg); animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); border: 1px solid var(--border-color); transition: all 0.3s ease; }
+        .register-card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .register-header { text-align: center; margin-bottom: 32px; }
+        .register-icon { width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem; color: white; transition: all 0.3s ease; }
+        .register-icon:hover { transform: scale(1.1) rotate(360deg); }
+        .register-header h1 { font-size: 1.8rem; color: var(--primary); margin-bottom: 8px; }
+        .register-header p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* Form Styles */
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-primary); }
+        .form-group input { width: 100%; padding: 14px 16px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--bg-primary); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease; }
+        .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(46, 139, 87, 0.2); transform: scale(1.02); }
+        .form-group input:hover { border-color: var(--primary-light); }
+        .form-group i { position: absolute; right: 16px; top: 42px; color: var(--text-secondary); transition: all 0.3s ease; }
+        .form-group input:focus + i { color: var(--primary); transform: scale(1.1); }
+
+        /* Password Strength */
+        .password-strength { margin-top: 8px; display: flex; gap: 8px; }
+        .strength-bar { flex: 1; height: 4px; background: var(--border-color); border-radius: 4px; transition: all 0.3s ease; }
+        .strength-bar.active { background: var(--success); }
+        .strength-text { font-size: 0.7rem; margin-top: 5px; color: var(--text-secondary); }
+
+        /* Role Selector */
+        .role-selector { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .role-option { flex: 1; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: var(--bg-primary); }
+        .role-option:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .role-option.selected { border-color: var(--primary); background: rgba(46, 139, 87, 0.1); }
+        .role-option i { font-size: 1.5rem; display: block; margin-bottom: 5px; color: var(--primary); }
+        .role-option span { font-size: 0.8rem; font-weight: 500; }
+
+        /* Additional Fields */
+        .additional-fields { display: none; animation: fadeInUp 0.4s ease; }
+        .additional-fields.show { display: block; }
+
+        /* Button */
+        .register-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; }
+        .register-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.3); transform: translate(-50%, -50%); transition: width 0.6s, height 0.6s; }
+        .register-btn:hover::before { width: 300px; height: 300px; }
+        .register-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: var(--shadow-lg); }
+        .register-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        /* Login Link */
+        .login-link { text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .login-link a { color: var(--primary); text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+        .login-link a:hover { text-decoration: underline; transform: translateX(5px); display: inline-block; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 30px; right: 30px; padding: 14px 24px; border-radius: 12px; z-index: 2000; animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px); }
+        .toast.success { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
+        .toast.error { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .toast.info { background: linear-gradient(135deg, var(--info), #138496); color: white; }
+
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; margin-right: 8px; }
+
+        footer { background: var(--bg-card); color: var(--text-secondary); text-align: center; padding: 20px; border-top: 1px solid var(--border-color); font-size: 0.8rem; }
+
+        @media (max-width: 768px) {
+            .register-card { padding: 24px; margin: 20px; }
+            .role-selector { flex-direction: column; }
+            .header { padding: 12px 20px; }
+            .nav-links { gap: 10px; }
+            .nav-links a { padding: 6px 12px; font-size: 0.9rem; }
+            .toast { left: 16px; right: 16px; bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></a>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="login.html" id="loginNavLink"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </div>
+            <button class="dark-mode-toggle" id="darkModeBtn"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="register-icon animate-float"><i class="fas fa-user-plus"></i></div>
+                <h1>Create Account</h1>
+                <p>Join FarmConnect - Access real-time market prices and connect with buyers</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Full Name *</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name" required autocomplete="name">
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email Address *</label>
+                    <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+                    <i class="fas fa-envelope"></i>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Phone Number *</label>
+                    <input type="tel" id="phone" placeholder="+260 XXX XXX XXX" required autocomplete="tel">
+                    <i class="fas fa-phone"></i>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user-circle"></i> Username *</label>
+                    <input type="text" id="username" placeholder="Choose a username" required autocomplete="username">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password *</label>
+                    <input type="password" id="password" placeholder="Create a password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                </div>
+                <div id="strengthText" class="strength-text"></div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Confirm Password *</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Select Role *</label>
+                <div class="role-selector">
+                    <div class="role-option selected" data-role="farmer">
+                        <i class="fas fa-tractor"></i>
+                        <span>Farmer</span>
+                    </div>
+                    <div class="role-option" data-role="buyer">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Buyer</span>
+                    </div>
+                    <div class="role-option" data-role="trader">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Trader</span>
+                    </div>
+                </div>
+                <input type="hidden" id="role" value="farmer">
+
+                <!-- Additional Farmer Fields -->
+                <div id="farmerFields" class="additional-fields">
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Location/Province</label>
+                        <input type="text" id="location" placeholder="e.g., Lusaka, Central, Copperbelt">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-seedling"></i> Main Crops (comma separated)</label>
+                        <input type="text" id="mainCrops" placeholder="e.g., Maize, Beans, Tomatoes">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-chart-line"></i> Farm Size (hectares)</label>
+                        <input type="number" id="farmSize" placeholder="0">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+
+                <!-- Additional Buyer/Trader Fields -->
+                <div id="buyerFields" class="additional-fields">
+                    <div class="form-group">
+                        <label><i class="fas fa-building"></i> Business Name</label>
+                        <input type="text" id="businessName" placeholder="Your business name">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                        <input type="text" id="buyerLocation" placeholder="Your location">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="register-btn" id="registerBtn"><i class="fas fa-user-plus"></i> Create Account</button>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 FarmConnect - Mulungushi University | Daka Felix (202206453) | Supervisor: Mr. E Nyirenda</p>
+    </footer>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let selectedRole = 'farmer';
+
+        function redirectAfterRegister(user) {
+            window.location.href = user && user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+        }
+
+        // ===== Show Toast =====
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = document.createElement('i');
+            icon.className = `fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}`;
+            toast.append(icon, document.createTextNode(` ${message}`));
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // ===== Password Strength Checker =====
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            const bars = document.querySelectorAll('.strength-bar');
+            bars.forEach((bar, i) => {
+                if (i < strength) bar.classList.add('active');
+                else bar.classList.remove('active');
+            });
+            
+            const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+            const textEl = document.getElementById('strengthText');
+            textEl.textContent = texts[Math.min(strength, 4)];
+            textEl.style.color = strength < 2 ? '#dc3545' : strength < 4 ? '#ffc107' : '#28a745';
+            return strength;
+        }
+
+        // ===== Role Selection =====
+        function setupRoleSelection() {
+            const roles = document.querySelectorAll('.role-option');
+            roles.forEach(role => {
+                role.addEventListener('click', () => {
+                    roles.forEach(r => r.classList.remove('selected'));
+                    role.classList.add('selected');
+                    selectedRole = role.dataset.role;
+                    document.getElementById('role').value = selectedRole;
+                    
+                    document.getElementById('farmerFields').classList.remove('show');
+                    document.getElementById('buyerFields').classList.remove('show');
+                    
+                    if (selectedRole === 'farmer') {
+                        document.getElementById('farmerFields').classList.add('show');
+                    } else if (selectedRole === 'buyer' || selectedRole === 'trader') {
+                        document.getElementById('buyerFields').classList.add('show');
+                    }
+                });
+            });
+        }
+
+        // ===== Validate Form =====
+        function validateForm() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!fullName || !email || !phone || !username || !password) {
+                showToast('Please fill all required fields', 'error');
+                return false;
+            }
+            
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return false;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('Please enter a valid email address', 'error');
+                return false;
+            }
+            
+            const phoneRegex = /^\+?[0-9]{9,15}$/;
+            if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
+                showToast('Please enter a valid phone number', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // ===== Register User =====
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) return;
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            
+            const registerData = {
+                username: username,
+                password: password,
+                name: fullName,
+                phone: phone,
+                email: email,
+                role: role
+            };
+            
+            if (role === 'farmer') {
+                registerData.location = document.getElementById('location').value.trim();
+                registerData.main_crops = document.getElementById('mainCrops').value.trim();
+                registerData.farm_size_hectares = parseFloat(document.getElementById('farmSize').value) || null;
+            } else if (role === 'buyer' || role === 'trader') {
+                registerData.business_name = document.getElementById('businessName').value.trim();
+                registerData.location = document.getElementById('buyerLocation').value.trim();
+            }
+            
+            const btn = document.getElementById('registerBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="loading-spinner"></div> Creating account...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(registerData)
+                });
+                
+                const data = await response.json().catch(() => ({}));
+                
+                if (response.ok && data.success) {
+                    showToast('Account created successfully. Redirecting...', 'success');
+                    if (data.token) {
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+                        setTimeout(() => {
+                            redirectAfterRegister(data.user);
+                        }, 2000);
+                    } else {
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    }
+                } else {
+                    showToast(data.error || 'Registration failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showToast('Network error. Please check your connection.', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // ===== Dark Mode =====
+        function initDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                const icon = document.querySelector('#darkModeBtn i');
+                if (icon) icon.className = 'fas fa-sun';
+            }
+            document.getElementById('darkModeBtn').addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                const icon = document.querySelector('#darkModeBtn i');
+                if (icon) icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+            });
+        }
+
+        // ===== Password Listeners =====
+        function setupPasswordListener() {
+            const passwordField = document.getElementById('password');
+            const confirmField = document.getElementById('confirmPassword');
+            
+            passwordField.addEventListener('input', (e) => {
+                checkPasswordStrength(e.target.value);
+            });
+            
+            confirmField.addEventListener('input', () => {
+                const password = passwordField.value;
+                const confirm = confirmField.value;
+                const icon = confirmField.nextElementSibling;
+                if (confirm && password === confirm) {
+                    icon.style.color = '#28a745';
+                } else if (confirm) {
+                    icon.style.color = '#dc3545';
+                } else {
+                    icon.style.color = 'var(--text-secondary)';
+                }
+            });
+        }
+
+        // ===== Network Status =====
+        window.addEventListener('online', () => showToast('Back online.', 'success'));
+        window.addEventListener('offline', () => showToast('No internet connection.', 'error'));
+
+        // ===== Initialize =====
+        document.addEventListener('DOMContentLoaded', () => {
+            initDarkMode();
+            setupRoleSelection();
+            setupPasswordListener();
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            
+            const token = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('userData');
+            if (token) {
+                showToast('You are already logged in! Redirecting...', 'info');
+                let user = null;
+                try { user = JSON.parse(userData || '{}'); } catch(e) {}
+                setTimeout(() => redirectAfterRegister(user), 1500);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Buyers & Sellers - FarmConnect Zambia</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2E8B57">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2E8B57;
+            --primary-dark: #1f6b43;
+            --primary-light: #3CB371;
+            --secondary: #FFA500;
+            --danger: #dc3545;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --bg-primary: #f5f7fb;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --border-color: #e2e8f0;
+            --header-bg: #ffffff;
+            --footer-bg: #1a1a2e;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        body.dark-mode {
+            --bg-primary: #0f0f1a;
+            --bg-card: #16213e;
+            --text-primary: #e9eef7;
+            --text-secondary: #aab3c5;
+            --border-color: #2a2a4a;
+            --header-bg: #1a1a2e;
+            --footer-bg: #0a0a1a;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInDown { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .top-nav {
+            background: var(--header-bg);
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            animation: slideInDown 0.35s ease;
+        }
+        .nav-left, .nav-right { display: flex; align-items: center; gap: 16px; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+        .page-title { font-size: 1.15rem; font-weight: 700; }
+        .menu-btn, .icon-btn, .dark-mode-btn {
+            background: transparent;
+            border: 0;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+        .menu-btn { color: var(--primary); font-size: 1.35rem; }
+        .menu-btn:hover, .icon-btn:hover, .dark-mode-btn:hover { background: rgba(46,139,87,0.1); color: var(--primary); transform: translateY(-1px); }
+        .admin-badge {
+            display: none;
+            background: var(--danger);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            background: var(--bg-card);
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); }
+        .status-dot.online { background: var(--success); box-shadow: 0 0 0 4px rgba(40,167,69,0.12); }
+        .status-dot.offline { background: var(--danger); box-shadow: 0 0 0 4px rgba(220,53,69,0.12); }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 -280px;
+            width: 280px;
+            background: linear-gradient(135deg, #0a0a2a 0%, #0f3460 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-logo { color: white; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .close-sidebar { background: transparent; border: 0; color: rgba(255,255,255,0.75); font-size: 1.2rem; cursor: pointer; }
+        .user-profile-card { padding: 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .user-avatar { width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; }
+        .user-info h4 { color: white; font-size: 0.95rem; }
+        .user-info p { color: rgba(255,255,255,0.72); font-size: 0.72rem; }
+        .sidebar-nav { padding: 16px; }
+        .sidebar-nav-link { display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.86); text-decoration: none; border-radius: 12px; transition: all 0.2s ease; }
+        .sidebar-nav-link:hover, .sidebar-nav-link.active { background: rgba(46,139,87,0.24); color: white; transform: translateX(5px); }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.2s ease; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        .content { padding: 28px 32px; max-width: 1480px; margin: 0 auto; }
+        .market-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: 1.35fr 0.65fr;
+            gap: 20px;
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.35s ease both;
+        }
+        .market-panel h2 { font-size: 1.35rem; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .market-panel p { color: var(--text-secondary); line-height: 1.55; max-width: 760px; }
+        .market-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: center; }
+        .action-tile {
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            border-radius: 14px;
+            padding: 16px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            color: var(--text-primary);
+        }
+        .action-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+        .action-tile i { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; background: rgba(46,139,87,0.12); color: var(--primary); font-size: 1.1rem; }
+        .action-tile strong { display: block; font-size: 0.95rem; margin-bottom: 4px; }
+        .action-tile span { color: var(--text-secondary); font-size: 0.76rem; line-height: 1.35; }
+
+        .login-prompt {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: rgba(255,165,0,0.12);
+            border: 1px solid rgba(255,165,0,0.35);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+        .login-prompt p { color: var(--text-secondary); font-size: 0.86rem; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(170px, 1fr)); gap: 18px; margin-bottom: 24px; }
+        .stat-card {
+            background: var(--bg-card);
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.35s ease both;
+        }
+        .stat-card:nth-child(2) { border-left-color: var(--secondary); }
+        .stat-card:nth-child(3) { border-left-color: var(--info); }
+        .stat-card:nth-child(4) { border-left-color: var(--success); }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 800; letter-spacing: 0.08em; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); }
+        .stat-icon { color: var(--primary); font-size: 1.2rem; }
+        .stat-foot { color: var(--text-secondary); font-size: 0.74rem; margin-top: 5px; }
+
+        .toolbar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .toolbar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tabs { display: inline-flex; gap: 8px; background: var(--bg-primary); padding: 5px; border-radius: 14px; border: 1px solid var(--border-color); }
+        .tab-btn {
+            border: 0;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 10px;
+            padding: 9px 14px;
+            cursor: pointer;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: var(--shadow-sm); }
+        .view-toggle { display: inline-flex; gap: 8px; }
+        .view-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .view-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .filters { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)) auto; gap: 14px; padding: 16px 18px; align-items: end; }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; }
+        .filter-group label, .form-label { font-size: 0.72rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 800; letter-spacing: 0.06em; }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.88rem;
+        }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,139,87,0.16); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 800;
+            color: white;
+            background: var(--primary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); background: var(--primary-dark); }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); }
+        .btn-outline:hover { color: var(--primary); border-color: var(--primary); background: rgba(46,139,87,0.08); }
+        .btn-secondary { background: var(--secondary); color: #1a1a2e; }
+        .btn-secondary:hover { background: #e69500; }
+        .btn-danger { background: var(--danger); }
+        .btn-success { background: var(--success); }
+        .btn-small { padding: 7px 10px; font-size: 0.76rem; }
+
+        .listings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .listings-header h3 { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; }
+        .listings-header p { color: var(--text-secondary); font-size: 0.82rem; margin-top: 3px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 18px; margin-bottom: 28px; }
+        .market-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            animation: fadeInUp 0.35s ease both;
+            transition: all 0.2s ease;
+        }
+        .market-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(46,139,87,0.45); }
+        .card-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .card-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(46,139,87,0.12);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+        }
+        .card-title { display: flex; gap: 12px; min-width: 0; }
+        .card-name { font-weight: 800; overflow-wrap: anywhere; }
+        .card-subtitle { color: var(--text-secondary); font-size: 0.78rem; margin-top: 3px; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .badge-success { background: rgba(40,167,69,0.12); color: var(--success); }
+        .badge-warning { background: rgba(255,193,7,0.16); color: #8a6500; }
+        .badge-info { background: rgba(23,162,184,0.12); color: var(--info); }
+        .card-body { padding: 16px; display: grid; gap: 12px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .detail-box { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px; padding: 11px; min-height: 72px; }
+        .detail-label { color: var(--text-secondary); font-size: 0.67rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.07em; margin-bottom: 5px; }
+        .detail-value { font-weight: 800; overflow-wrap: anywhere; }
+        .price-value { color: var(--primary); font-size: 1.02rem; }
+        .notes { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.45; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px; padding: 11px; min-height: 44px; }
+        .card-footer { border-top: 1px solid var(--border-color); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .contact-buttons, .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .contact-icon, .row-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .contact-icon:hover, .row-action:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .contact-call { background: var(--success); }
+        .contact-wa { background: #25D366; }
+        .contact-msg { background: var(--info); }
+        .row-edit { background: var(--info); }
+        .row-delete { background: var(--danger); }
+
+        .table-container { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); display: none; }
+        .table-scroll { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 880px; }
+        .data-table th, .data-table td { padding: 13px 16px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.84rem; }
+        .data-table th { background: rgba(0,0,0,0.025); color: var(--text-secondary); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 800; }
+        .data-table tr:hover td { background: rgba(46,139,87,0.06); }
+        .empty-state { grid-column: 1 / -1; padding: 38px; text-align: center; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; }
+        .empty-state i { display: block; font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.58); z-index: 2000; align-items: center; justify-content: center; padding: 18px; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; max-width: 620px; width: min(620px, 100%); max-height: 92vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border-color); gap: 12px; }
+        .modal-header h3 { font-size: 1rem; display: flex; gap: 9px; align-items: center; }
+        .modal-close { background: transparent; border: 0; color: var(--text-secondary); font-size: 1.15rem; cursor: pointer; width: 38px; height: 38px; border-radius: 10px; }
+        .modal-close:hover { background: rgba(46,139,87,0.1); color: var(--primary); }
+        .modal-body { padding: 20px; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .form-group { display: flex; flex-direction: column; gap: 7px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .admin-fields { display: none; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+
+        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 16px; border-radius: 12px; z-index: 3000; animation: slideInRight 0.3s ease; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; color: white; max-width: min(380px, calc(100vw - 32px)); }
+        .toast.success { background: linear-gradient(135deg, #28a745, #1e7e34); }
+        .toast.error { background: linear-gradient(135deg, #dc3545, #c82333); }
+        .toast.info { background: linear-gradient(135deg, var(--info), #138496); }
+        .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(46,139,87,0.25); border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; }
+        footer { background: var(--footer-bg); color: #c8d6e5; text-align: center; padding: 28px; margin-top: 30px; }
+
+        @media (max-width: 1100px) {
+            .market-panel { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 760px) {
+            .top-nav { padding: 12px 16px; }
+            .content { padding: 18px; }
+            .page-title, .status-pill span { display: none; }
+            .market-actions, .stats-grid, .filters, .form-grid { grid-template-columns: 1fr; }
+            .toolbar-top, .listings-header, .login-prompt { align-items: stretch; flex-direction: column; }
+            .tabs, .view-toggle { width: 100%; }
+            .tab-btn { flex: 1; justify-content: center; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuBtn" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+            <a href="index.html" class="logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></a>
+            <h1 class="page-title">Find Buyers</h1>
+            <span id="adminBadge" class="admin-badge">ADMIN</span>
+        </div>
+        <div class="nav-right">
+            <div class="status-pill"><span class="status-dot" id="apiDot"></span><span id="apiStatusText">Checking API</span></div>
+            <button class="dark-mode-btn" id="darkModeBtn" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+            <button class="icon-btn" id="refreshBtn" aria-label="Refresh marketplace"><i class="fas fa-sync-alt"></i></button>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></div>
+            <button class="close-sidebar" id="closeSidebarBtn" aria-label="Close menu"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="user-profile-card">
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+            <div class="user-info">
+                <h4 id="sidebarUserName">Guest</h4>
+                <p id="sidebarUserRole">Not Logged In</p>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="sidebar-nav-link"><i class="fas fa-home"></i> Home</a>
+            <a href="dashboard.html" class="sidebar-nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="prices.html" class="sidebar-nav-link"><i class="fas fa-chart-line"></i> Market Intelligence</a>
+            <a href="find-buyers.html" class="sidebar-nav-link active"><i class="fas fa-users"></i> Find Buyers</a>
+            <a href="news.html" class="sidebar-nav-link"><i class="fas fa-newspaper"></i> News</a>
+            <a href="profile.html" class="sidebar-nav-link"><i class="fas fa-user"></i> Profile</a>
+            <div style="height:1px;background:rgba(255,255,255,0.1);margin:16px 0;"></div>
+            <a href="#" class="sidebar-nav-link" id="adminPanelLink" style="display:none;"><i class="fas fa-shield"></i> Admin Panel</a>
+            <a href="#" class="sidebar-nav-link" id="sidebarLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content">
+        <div class="content">
+            <section class="market-panel">
+                <div>
+                    <h2><i class="fas fa-handshake"></i> Buyer & Seller Exchange</h2>
+                    <p id="marketSummary">Browse real buying requests and produce offers from the FarmConnect database. Farmers can post what they want to sell, while buyers and traders can post exactly what they want to buy.</p>
+                </div>
+                <div class="market-actions">
+                    <button class="action-tile" id="postBuyerBtn">
+                        <i class="fas fa-basket-shopping"></i>
+                        <strong>Post Buying Request</strong>
+                        <span>Tell farmers what commodity, volume, and price you are looking for.</span>
+                    </button>
+                    <button class="action-tile" id="postSellerBtn">
+                        <i class="fas fa-seedling"></i>
+                        <strong>Post Selling Offer</strong>
+                        <span>List produce you have available and connect with interested buyers.</span>
+                    </button>
+                </div>
+            </section>
+
+            <section id="loginPrompt" class="login-prompt">
+                <div>
+                    <strong>Login required for posting and direct messages.</strong>
+                    <p>You can still browse public listings. Sign in to post buyer requests, seller offers, or message a contact.</p>
+                </div>
+                <div class="contact-buttons">
+                    <button class="btn btn-small" onclick="showLoginModal()"><i class="fas fa-right-to-bracket"></i> Login</button>
+                    <a class="btn btn-small btn-outline" href="register.html"><i class="fas fa-user-plus"></i> Register</a>
+                </div>
+            </section>
+
+            <section id="adminPanel" class="toolbar" style="display:none;background:rgba(220,53,69,0.08);border-color:rgba(220,53,69,0.25);margin-bottom:24px;">
+                <div class="toolbar-top">
+                    <div>
+                        <strong style="color:var(--danger);display:flex;align-items:center;gap:8px;"><i class="fas fa-shield"></i>Admin Management Panel</strong>
+                        <p style="color:var(--text-secondary);font-size:0.8rem;margin-top:4px;">View, create, edit, delete, and approve buyer and seller listings.</p>
+                    </div>
+                    <div class="view-toggle" aria-label="Admin actions">
+                        <button class="btn btn-small" id="adminCreateNewBtn"><i class="fas fa-plus-circle"></i> Create New</button>
+                        <button class="btn btn-small btn-outline" id="adminApprovalBtn"><i class="fas fa-check-double"></i> Pending Approvals</button>
+                        <button class="btn btn-small btn-outline" id="adminBulkActionBtn"><i class="fas fa-gears"></i> Bulk Actions</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header"><span class="stat-label">Buying Requests</span><i class="fas fa-basket-shopping stat-icon"></i></div>
+                    <div class="stat-value" id="buyersCount">0</div>
+                    <div class="stat-foot">People ready to buy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header"><span class="stat-label">Selling Offers</span><i class="fas fa-seedling stat-icon"></i></div>
+                    <div class="stat-value" id="sellersCount">0</div>
+                    <div class="stat-foot">Produce available now</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header"><span class="stat-label">Verified</span><i class="fas fa-circle-check stat-icon"></i></div>
+                    <div class="stat-value" id="verifiedCount">0</div>
+                    <div class="stat-foot">Trusted profiles in current view</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header"><span class="stat-label">Locations</span><i class="fas fa-location-dot stat-icon"></i></div>
+                    <div class="stat-value" id="locationsCount">0</div>
+                    <div class="stat-foot">Districts and towns represented</div>
+                </div>
+            </section>
+
+            <section class="toolbar">
+                <div class="toolbar-top">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="buyers"><i class="fas fa-basket-shopping"></i> Buyers</button>
+                        <button class="tab-btn" data-tab="sellers"><i class="fas fa-seedling"></i> Sellers</button>
+                    </div>
+                    <div class="view-toggle" aria-label="Switch view">
+                        <button class="view-btn active" id="gridViewBtn" title="Grid view"><i class="fas fa-table-cells-large"></i></button>
+                        <button class="view-btn" id="tableViewBtn" title="Table view"><i class="fas fa-table-list"></i></button>
+                        <button class="btn btn-small btn-outline" id="exportCsvBtn"><i class="fas fa-download"></i> Export</button>
+                    </div>
+                </div>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="searchFilter">Search</label>
+                        <input id="searchFilter" class="form-input" type="search" placeholder="Name, location, notes">
+                    </div>
+                    <div class="filter-group">
+                        <label for="commodityFilter">Commodity</label>
+                        <select id="commodityFilter" class="form-select"><option value="all">All Commodities</option></select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="locationFilter">Location</label>
+                        <select id="locationFilter" class="form-select"><option value="all">All Locations</option></select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="sortFilter">Sort By</label>
+                        <select id="sortFilter" class="form-select">
+                            <option value="newest">Newest First</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="volume_desc">Volume: High to Low</option>
+                            <option value="name_asc">Name: A to Z</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-outline" id="resetFiltersBtn"><i class="fas fa-filter-circle-xmark"></i> Reset</button>
+                </div>
+            </section>
+
+            <div class="listings-header">
+                <div>
+                    <h3 id="listingTitle"><i class="fas fa-basket-shopping"></i> Buyers Want to Buy</h3>
+                    <p id="listingSubtitle">Demand listings from buyers, traders, processors, and markets.</p>
+                </div>
+                <button class="btn" id="quickPostBtn"><i class="fas fa-plus"></i> Post Buying Request</button>
+            </div>
+
+            <section id="cardsGrid" class="cards-grid"></section>
+
+            <section id="tableView" class="table-container">
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead id="tableHead"></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer><p>&copy; 2026 FarmConnect - Mulungushi University | Daka Felix (202206453) | Supervisor: Mr. E Nyirenda</p></footer>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-right-to-bracket"></i> Login</h3><button class="modal-close" onclick="closeModal('loginModal')"><i class="fas fa-times"></i></button></div>
+            <form id="loginForm" class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group full"><label class="form-label" for="loginUsername">Username</label><input type="text" id="loginUsername" class="form-input" required></div>
+                    <div class="form-group full"><label class="form-label" for="loginPassword">Password</label><input type="password" id="loginPassword" class="form-input" required></div>
+                </div>
+                <div class="form-actions"><button type="button" class="btn btn-outline" onclick="closeModal('loginModal')">Cancel</button><button type="submit" class="btn">Login</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="buyerModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="buyerModalTitle"><i class="fas fa-basket-shopping"></i> Post Buying Request</h3><button class="modal-close" onclick="closeModal('buyerModal')"><i class="fas fa-times"></i></button></div>
+            <form id="buyerForm" class="modal-body">
+                <input type="hidden" id="buyerId">
+                <div class="form-grid">
+                    <div class="form-group"><label class="form-label" for="buyerName">Buyer or Business Name</label><input type="text" id="buyerName" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label" for="buyerPhone">Phone</label><input type="tel" id="buyerPhone" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label" for="buyerCommodity">Commodity Needed</label><select id="buyerCommodity" class="form-select" required></select></div>
+                    <div class="form-group"><label class="form-label" for="buyerLocation">Pickup/Buying Location</label><input type="text" id="buyerLocation" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label" for="buyerMaxPrice">Max Price (ZMW/kg)</label><input type="number" step="0.01" min="0" id="buyerMaxPrice" class="form-input"></div>
+                    <div class="form-group"><label class="form-label" for="buyerMinVolume">Minimum Volume (kg)</label><input type="number" step="0.01" min="0" id="buyerMinVolume" class="form-input"></div>
+                    <div class="form-group full"><label class="form-label" for="buyerNotes">Buying Notes</label><textarea id="buyerNotes" class="form-input" rows="3" placeholder="Preferred quality, delivery requirements, payment terms"></textarea></div>
+                    <div class="form-group admin-fields"><label class="form-label" for="buyerRating">Rating</label><input type="number" step="0.1" min="1" max="5" id="buyerRating" class="form-input" value="4.0"></div>
+                    <div class="form-group admin-fields"><label class="form-label" for="buyerVerified">Verified</label><select id="buyerVerified" class="form-select"><option value="true">Yes</option><option value="false">No</option></select></div>
+                </div>
+                <div class="form-actions"><button type="button" class="btn btn-outline" onclick="closeModal('buyerModal')">Cancel</button><button type="submit" class="btn">Save Buying Request</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="sellerModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="sellerModalTitle"><i class="fas fa-seedling"></i> Post Selling Offer</h3><button class="modal-close" onclick="closeModal('sellerModal')"><i class="fas fa-times"></i></button></div>
+            <form id="sellerForm" class="modal-body">
+                <input type="hidden" id="sellerId">
+                <div class="form-grid">
+                    <div class="form-group"><label class="form-label" for="sellerName">Farm or Business Name</label><input type="text" id="sellerName" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label" for="sellerPhone">Phone</label><input type="tel" id="sellerPhone" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label" for="sellerCommodity">Commodity Available</label><select id="sellerCommodity" class="form-select" required></select></div>
+                    <div class="form-group"><label class="form-label" for="sellerLocation">Produce Location</label><input type="text" id="sellerLocation" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label" for="sellerPrice">Price (ZMW/kg)</label><input type="number" step="0.01" min="0" id="sellerPrice" class="form-input"></div>
+                    <div class="form-group"><label class="form-label" for="sellerVolume">Available Volume (kg)</label><input type="number" step="0.01" min="0" id="sellerVolume" class="form-input"></div>
+                    <div class="form-group full"><label class="form-label" for="sellerNotes">Selling Notes</label><textarea id="sellerNotes" class="form-input" rows="3" placeholder="Quality, harvest date, packaging, delivery options"></textarea></div>
+                    <div class="form-group admin-fields"><label class="form-label" for="sellerRating">Rating</label><input type="number" step="0.1" min="1" max="5" id="sellerRating" class="form-input" value="4.0"></div>
+                    <div class="form-group admin-fields"><label class="form-label" for="sellerVerified">Verified</label><select id="sellerVerified" class="form-select"><option value="true">Yes</option><option value="false">No</option></select></div>
+                </div>
+                <div class="form-actions"><button type="button" class="btn btn-outline" onclick="closeModal('sellerModal')">Cancel</button><button type="submit" class="btn btn-secondary">Save Selling Offer</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-envelope"></i> Contact Listing Owner</h3><button class="modal-close" onclick="closeModal('contactModal')"><i class="fas fa-times"></i></button></div>
+            <form id="contactForm" class="modal-body">
+                <input type="hidden" id="contactId"><input type="hidden" id="contactType">
+                <div class="form-grid">
+                    <div class="form-group full"><label class="form-label" for="contactName">Recipient</label><input type="text" id="contactName" class="form-input" readonly></div>
+                    <div class="form-group"><label class="form-label" for="contactYourName">Your Name</label><input type="text" id="contactYourName" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label" for="contactYourPhone">Your Phone</label><input type="tel" id="contactYourPhone" class="form-input" required></div>
+                    <div class="form-group full"><label class="form-label" for="contactMessage">Message</label><textarea id="contactMessage" class="form-input" rows="4" required></textarea></div>
+                </div>
+                <div class="form-actions"><button type="button" class="btn btn-outline" onclick="closeModal('contactModal')">Cancel</button><button type="submit" class="btn btn-success">Send Message</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="adminApprovalModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-check-double"></i> Approve/Reject Pending Listings</h3><button class="modal-close" onclick="closeModal('adminApprovalModal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body">
+                <div id="approvalList" style="display:grid;gap:12px;">
+                    <p style="color:var(--text-secondary);text-align:center;padding:24px;">Loading pending listings...</p>
+                </div>
+                <div class="form-actions" style="margin-top:20px;"><button type="button" class="btn btn-outline" onclick="closeModal('adminApprovalModal')">Close</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="adminVerifyModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="verifyModalTitle"><i class="fas fa-circle-check"></i> Verify Listing</h3><button class="modal-close" onclick="closeModal('adminVerifyModal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body">
+                <div id="verifyDetails"></div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('adminVerifyModal')">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="rejectBtn"><i class="fas fa-times"></i> Reject</button>
+                    <button type="button" class="btn btn-success" id="approveBtn"><i class="fas fa-check"></i> Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let currentTab = 'buyers';
+        let buyers = [];
+        let sellers = [];
+        let filteredData = [];
+        let commoditiesList = [];
+        let viewMode = 'grid';
+        let appState = { user: null, token: null, isAuthenticated: false, isAdmin: false };
+
+        const fallbackCommodities = ['Maize', 'Tomatoes', 'Beans', 'Groundnuts', 'Rice', 'Soybeans', 'Cassava', 'Sweet Potatoes', 'Onions', 'Cabbage'];
+
+        function showToast(message, type = 'info') {
+            const oldToast = document.querySelector('.toast');
+            if (oldToast) oldToast.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info';
+            toast.innerHTML = `<i class="fas ${icon}"></i><span>${escapeHtml(message)}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        }
+        function normalizePhone(phone) { return String(phone || '').replace(/[^0-9]/g, ''); }
+        function formatNumber(value) { return Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 1 }); }
+        function formatPrice(value) { return Number(value || 0) > 0 ? `ZMW ${Number(value).toFixed(2)}/kg` : 'Negotiable'; }
+        function itemPrice(item) { return currentTab === 'buyers' ? Number(item.max_price || 0) : Number(item.price || 0); }
+        function itemVolume(item) { return currentTab === 'buyers' ? Number(item.min_volume || 0) : Number(item.volume || 0); }
+        function currentDataset() { return currentTab === 'buyers' ? buyers : sellers; }
+
+        async function apiFetch(path, options = {}) {
+            const token = localStorage.getItem('authToken');
+            const headers = { ...(options.headers || {}) };
+            if (options.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+            if (token) headers.Authorization = `Bearer ${token}`;
+            const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || data.message || 'Request failed');
+            return data;
+        }
+
+        function setApiStatus(online, label) {
+            const dot = document.getElementById('apiDot');
+            const text = document.getElementById('apiStatusText');
+            dot.classList.toggle('online', online);
+            dot.classList.toggle('offline', !online);
+            text.textContent = label;
+        }
+
+        async function fetchCommodities() {
+            try {
+                const data = await apiFetch('/commodities');
+                commoditiesList = (data.commodities || []).map(c => c.name).filter(Boolean);
+            } catch (error) {
+                commoditiesList = [];
+            }
+            if (!commoditiesList.length) commoditiesList = fallbackCommodities;
+            populateCommoditySelects();
+        }
+
+        async function fetchBuyers() {
+            const endpoint = appState.isAdmin ? '/admin/buyers' : '/buyers?limit=500';
+            const data = await apiFetch(endpoint);
+            buyers = ((appState.isAdmin ? data.buyers : data.buyers) || []).map(item => ({
+                id: item.id,
+                user_id: item.user_id || null,
+                name: item.business_name || item.name || item.contact_person || 'Buyer',
+                phone: item.contact_phone || item.phone || '',
+                commodity: item.commodity || 'Various',
+                location: item.location || 'Zambia',
+                max_price: Number(item.max_price || item.price || 0),
+                min_volume: Number(item.min_volume || item.volume || 0),
+                rating: Number(item.rating || 4),
+                verified: item.is_verified === true || item.is_verified === 1,
+                notes: item.notes || '',
+                created_at: item.created_at || '',
+                status: item.status || 'active'
+            }));
+        }
+
+        async function fetchSellers() {
+            const endpoint = appState.isAdmin ? '/admin/sellers' : '/sellers?limit=500';
+            const data = await apiFetch(endpoint);
+            sellers = ((appState.isAdmin ? data.sellers : data.sellers) || []).map(item => ({
+                id: item.id,
+                user_id: item.user_id || null,
+                name: item.farm_name || item.business_name || item.name || 'Seller',
+                phone: item.contact_phone || item.phone || '',
+                commodity: item.commodity || 'Various',
+                location: item.location || 'Zambia',
+                price: Number(item.price_per_kg || item.price || 0),
+                volume: Number(item.available_volume || item.volume || 0),
+                rating: Number(item.rating || 4),
+                verified: item.is_verified === true || item.is_verified === 1,
+                notes: item.notes || '',
+                created_at: item.created_at || '',
+                status: item.status || 'active'
+            }));
+        }
+
+        async function refreshAll(showReadyToast = false) {
+            try {
+                await Promise.all([fetchCommodities(), fetchBuyers(), fetchSellers()]);
+                setApiStatus(true, 'Marketplace Online');
+                filterData();
+                if (showReadyToast) showToast('Marketplace listings loaded', 'success');
+            } catch (error) {
+                setApiStatus(false, 'API Error');
+                showToast(error.message || 'Failed to load marketplace', 'error');
+            }
+        }
+
+        function populateCommoditySelects() {
+            ['commodityFilter', 'buyerCommodity', 'sellerCommodity'].forEach(id => {
+                const select = document.getElementById(id);
+                if (!select) return;
+                const first = id === 'commodityFilter' ? '<option value="all">All Commodities</option>' : '<option value="">Select commodity</option>';
+                select.innerHTML = first + commoditiesList.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+            });
+        }
+
+        function populateLocationFilter() {
+            const select = document.getElementById('locationFilter');
+            const current = select.value;
+            const locations = [...new Set(currentDataset().map(item => item.location).filter(Boolean))].sort();
+            select.innerHTML = '<option value="all">All Locations</option>' + locations.map(location => `<option value="${escapeHtml(location)}">${escapeHtml(location)}</option>`).join('');
+            if (locations.includes(current)) select.value = current;
+        }
+
+        function filterData() {
+            let data = [...currentDataset()];
+            const search = document.getElementById('searchFilter').value.trim().toLowerCase();
+            const commodity = document.getElementById('commodityFilter').value;
+            const location = document.getElementById('locationFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            if (search) {
+                data = data.filter(item => [item.name, item.commodity, item.location, item.notes].join(' ').toLowerCase().includes(search));
+            }
+            if (commodity !== 'all') data = data.filter(item => item.commodity === commodity);
+            if (location !== 'all') data = data.filter(item => item.location === location);
+
+            data.sort((a, b) => {
+                if (sort === 'price_desc') return (currentTab === 'buyers' ? b.max_price - a.max_price : b.price - a.price);
+                if (sort === 'price_asc') return (currentTab === 'buyers' ? a.max_price - b.max_price : a.price - b.price);
+                if (sort === 'volume_desc') return itemVolume(b) - itemVolume(a);
+                if (sort === 'name_asc') return a.name.localeCompare(b.name);
+                return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+            });
+
+            filteredData = data;
+            populateLocationFilter();
+            updateStats();
+            render();
+        }
+
+        function updateStats() {
+            const activeData = currentDataset();
+            const locations = new Set(filteredData.map(item => item.location).filter(Boolean));
+            document.getElementById('buyersCount').textContent = buyers.length;
+            document.getElementById('sellersCount').textContent = sellers.length;
+            document.getElementById('verifiedCount').textContent = filteredData.filter(item => item.verified).length;
+            document.getElementById('locationsCount').textContent = locations.size;
+            document.getElementById('marketSummary').textContent = `${buyers.length} buying requests and ${sellers.length} selling offers are available from the database. Showing ${filteredData.length} ${currentTab === 'buyers' ? 'buyer' : 'seller'} listing${filteredData.length === 1 ? '' : 's'}.`;
+            document.getElementById('listingTitle').innerHTML = currentTab === 'buyers' ? '<i class="fas fa-basket-shopping"></i> Buyers Want to Buy' : '<i class="fas fa-seedling"></i> Sellers Want to Sell';
+            document.getElementById('listingSubtitle').textContent = currentTab === 'buyers' ? 'Demand listings from buyers, traders, processors, and markets.' : 'Available produce from farmers, cooperatives, and traders.';
+            document.getElementById('quickPostBtn').innerHTML = currentTab === 'buyers' ? '<i class="fas fa-plus"></i> Post Buying Request' : '<i class="fas fa-plus"></i> Post Selling Offer';
+            document.getElementById('quickPostBtn').classList.toggle('btn-secondary', currentTab === 'sellers');
+        }
+
+        function render() {
+            if (viewMode === 'grid') {
+                document.getElementById('cardsGrid').style.display = 'grid';
+                document.getElementById('tableView').style.display = 'none';
+                renderGrid();
+            } else {
+                document.getElementById('cardsGrid').style.display = 'none';
+                document.getElementById('tableView').style.display = 'block';
+                renderTable();
+            }
+        }
+
+        function renderGrid() {
+            const container = document.getElementById('cardsGrid');
+            if (!filteredData.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-magnifying-glass"></i><strong>No ${currentTab} found</strong><br>Try another commodity, location, or post the first listing.</div>`;
+                return;
+            }
+            container.innerHTML = filteredData.map(item => {
+                const isBuyer = currentTab === 'buyers';
+                const callUrl = `tel:${escapeHtml(item.phone)}`;
+                const whatsappUrl = `https://wa.me/${normalizePhone(item.phone)}`;
+                const priceLabel = isBuyer ? 'Max Price' : 'Price';
+                const volumeLabel = isBuyer ? 'Minimum Volume' : 'Available Volume';
+                const avatar = isBuyer ? 'fa-basket-shopping' : 'fa-seedling';
+                return `
+                    <article class="market-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-avatar"><i class="fas ${avatar}"></i></div>
+                                <div>
+                                    <div class="card-name">${escapeHtml(item.name)}</div>
+                                    <div class="card-subtitle">${escapeHtml(item.commodity)} in ${escapeHtml(item.location)}</div>
+                                </div>
+                            </div>
+                            <span class="badge ${item.verified ? 'badge-success' : 'badge-warning'}"><i class="fas ${item.verified ? 'fa-circle-check' : 'fa-clock'}"></i>${item.verified ? 'Verified' : 'Pending'}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="detail-grid">
+                                <div class="detail-box"><div class="detail-label">${priceLabel}</div><div class="detail-value price-value">${formatPrice(itemPrice(item))}</div></div>
+                                <div class="detail-box"><div class="detail-label">${volumeLabel}</div><div class="detail-value">${formatNumber(itemVolume(item))} kg</div></div>
+                                <div class="detail-box"><div class="detail-label">Location</div><div class="detail-value">${escapeHtml(item.location)}</div></div>
+                                <div class="detail-box"><div class="detail-label">Contact</div><div class="detail-value">${escapeHtml(item.phone || 'Not listed')}</div></div>
+                            </div>
+                            <div class="notes">${escapeHtml(item.notes || (isBuyer ? 'Buyer has not added extra buying requirements.' : 'Seller has not added extra selling details.'))}</div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="contact-buttons">
+                                <a href="${callUrl}" class="contact-icon contact-call" title="Call"><i class="fas fa-phone"></i></a>
+                                <a href="${whatsappUrl}" class="contact-icon contact-wa" title="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                                <button class="contact-icon contact-msg" title="Message" onclick="showContactModal(${item.id}, '${currentTab}')"><i class="fas fa-envelope"></i></button>
+                            </div>
+                            ${appState.isAdmin ? `<div class="action-buttons">
+                                ${!item.verified ? `<button class="row-action btn-success" title="Approve" onclick="adminVerifyListing('${currentTab}', ${item.id})" style="background:var(--success);"><i class="fas fa-check"></i></button>` : ''}
+                                <button class="row-action row-edit" title="Edit" onclick="openEditModal('${currentTab}', ${item.id})"><i class="fas fa-pen"></i></button>
+                                <button class="row-action row-delete" title="Delete" onclick="deleteEntry('${currentTab}', ${item.id})"><i class="fas fa-trash"></i></button>
+                            </div>` : ''}
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function renderTable() {
+            const head = document.getElementById('tableHead');
+            const body = document.getElementById('tableBody');
+            const priceLabel = currentTab === 'buyers' ? 'Max Price' : 'Price';
+            const volumeLabel = currentTab === 'buyers' ? 'Min Volume' : 'Available';
+            head.innerHTML = `<tr><th>Name</th><th>Commodity</th><th>Location</th><th>${priceLabel}</th><th>${volumeLabel}</th><th>Status</th><th>Contact</th>${appState.isAdmin ? '<th>Actions</th>' : ''}</tr>`;
+            if (!filteredData.length) {
+                body.innerHTML = `<tr><td colspan="${appState.isAdmin ? 8 : 7}" style="text-align:center;color:var(--text-secondary);padding:28px;">No listings found</td></tr>`;
+                return;
+            }
+            body.innerHTML = filteredData.map(item => {
+                const callUrl = `tel:${escapeHtml(item.phone)}`;
+                const whatsappUrl = `https://wa.me/${normalizePhone(item.phone)}`;
+                return `<tr>
+                    <td><strong>${escapeHtml(item.name)}</strong><br><span style="color:var(--text-secondary);font-size:0.74rem;">${escapeHtml(item.notes || '')}</span></td>
+                    <td>${escapeHtml(item.commodity)}</td>
+                    <td>${escapeHtml(item.location)}</td>
+                    <td class="price-value">${formatPrice(itemPrice(item))}</td>
+                    <td>${formatNumber(itemVolume(item))} kg</td>
+                    <td><span class="badge ${item.verified ? 'badge-success' : 'badge-warning'}">${item.verified ? 'Verified' : 'Pending'}</span></td>
+                    <td><div class="contact-buttons"><a href="${callUrl}" class="contact-icon contact-call"><i class="fas fa-phone"></i></a><a href="${whatsappUrl}" target="_blank" rel="noopener" class="contact-icon contact-wa"><i class="fab fa-whatsapp"></i></a><button class="contact-icon contact-msg" onclick="showContactModal(${item.id}, '${currentTab}')"><i class="fas fa-envelope"></i></button></div></td>
+                    ${appState.isAdmin ? `<td><div class="action-buttons">
+                        ${!item.verified ? `<button class="row-action btn-success" title="Approve" onclick="adminVerifyListing('${currentTab}', ${item.id})" style="background:var(--success);"><i class="fas fa-check"></i></button>` : ''}
+                        <button class="row-action row-edit" onclick="openEditModal('${currentTab}', ${item.id})"><i class="fas fa-pen"></i></button>
+                        <button class="row-action row-delete" onclick="deleteEntry('${currentTab}', ${item.id})"><i class="fas fa-trash"></i></button>
+                    </div></td>` : ''}
+                </tr>`;
+            }).join('');
+        }
+
+        function requireAuth() {
+            if (appState.isAuthenticated) return true;
+            showLoginModal();
+            showToast('Please login to post or send messages', 'info');
+            return false;
+        }
+
+        function prefillUserFields(prefix) {
+            const user = appState.user || {};
+            const name = user.business_name || user.name || user.username || '';
+            const phone = user.phone || '';
+            const location = user.location || '';
+            document.getElementById(`${prefix}Name`).value = name;
+            document.getElementById(`${prefix}Phone`).value = phone;
+            document.getElementById(`${prefix}Location`).value = location;
+        }
+
+        function showPostBuyerModal() {
+            if (!requireAuth()) return;
+            document.getElementById('buyerModalTitle').innerHTML = '<i class="fas fa-basket-shopping"></i> Post Buying Request';
+            document.getElementById('buyerForm').reset();
+            document.getElementById('buyerId').value = '';
+            prefillUserFields('buyer');
+            showModal('buyerModal');
+        }
+
+        function showPostSellerModal() {
+            if (!requireAuth()) return;
+            document.getElementById('sellerModalTitle').innerHTML = '<i class="fas fa-seedling"></i> Post Selling Offer';
+            document.getElementById('sellerForm').reset();
+            document.getElementById('sellerId').value = '';
+            prefillUserFields('seller');
+            showModal('sellerModal');
+        }
+
+        function openEditModal(type, id) {
+            if (!appState.isAdmin) return;
+            const item = (type === 'buyers' ? buyers : sellers).find(entry => entry.id === id);
+            if (!item) return;
+            if (type === 'buyers') {
+                document.getElementById('buyerModalTitle').innerHTML = '<i class="fas fa-pen"></i> Edit Buying Request';
+                document.getElementById('buyerId').value = item.id;
+                document.getElementById('buyerName').value = item.name;
+                document.getElementById('buyerPhone').value = item.phone;
+                document.getElementById('buyerCommodity').value = item.commodity;
+                document.getElementById('buyerLocation').value = item.location;
+                document.getElementById('buyerMaxPrice').value = item.max_price;
+                document.getElementById('buyerMinVolume').value = item.min_volume;
+                document.getElementById('buyerNotes').value = item.notes;
+                document.getElementById('buyerRating').value = item.rating;
+                document.getElementById('buyerVerified').value = item.verified ? 'true' : 'false';
+                showModal('buyerModal');
+            } else {
+                document.getElementById('sellerModalTitle').innerHTML = '<i class="fas fa-pen"></i> Edit Selling Offer';
+                document.getElementById('sellerId').value = item.id;
+                document.getElementById('sellerName').value = item.name;
+                document.getElementById('sellerPhone').value = item.phone;
+                document.getElementById('sellerCommodity').value = item.commodity;
+                document.getElementById('sellerLocation').value = item.location;
+                document.getElementById('sellerPrice').value = item.price;
+                document.getElementById('sellerVolume').value = item.volume;
+                document.getElementById('sellerNotes').value = item.notes;
+                document.getElementById('sellerRating').value = item.rating;
+                document.getElementById('sellerVerified').value = item.verified ? 'true' : 'false';
+                showModal('sellerModal');
+            }
+        }
+
+        async function handleBuyerSubmit(event) {
+            event.preventDefault();
+            if (!requireAuth()) return;
+            const payload = {
+                business_name: document.getElementById('buyerName').value.trim(),
+                contact_person: document.getElementById('buyerName').value.trim(),
+                contact_phone: document.getElementById('buyerPhone').value.trim(),
+                commodity: document.getElementById('buyerCommodity').value,
+                location: document.getElementById('buyerLocation').value.trim(),
+                max_price: Number(document.getElementById('buyerMaxPrice').value || 0),
+                min_volume: Number(document.getElementById('buyerMinVolume').value || 0),
+                notes: document.getElementById('buyerNotes').value.trim()
+            };
+            if (appState.isAdmin) {
+                payload.rating = Number(document.getElementById('buyerRating').value || 4);
+                payload.is_verified = document.getElementById('buyerVerified').value === 'true';
+            }
+            const id = document.getElementById('buyerId').value;
+            try {
+                const endpoint = appState.isAdmin 
+                    ? (id ? `/admin/buyers/${id}` : '/admin/buyers')
+                    : (id ? `/buyers/${id}` : '/buyers');
+                await apiFetch(endpoint, { method: id ? 'PUT' : 'POST', body: JSON.stringify(payload) });
+                closeModal('buyerModal');
+                await refreshAll();
+                currentTab = 'buyers';
+                syncTabs();
+                showToast(id ? 'Buying request updated' : 'Buying request posted', 'success');
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        async function handleSellerSubmit(event) {
+            event.preventDefault();
+            if (!requireAuth()) return;
+            const payload = {
+                farm_name: document.getElementById('sellerName').value.trim(),
+                business_name: document.getElementById('sellerName').value.trim(),
+                contact_person: document.getElementById('sellerName').value.trim(),
+                contact_phone: document.getElementById('sellerPhone').value.trim(),
+                commodity: document.getElementById('sellerCommodity').value,
+                location: document.getElementById('sellerLocation').value.trim(),
+                price_per_kg: Number(document.getElementById('sellerPrice').value || 0),
+                available_volume: Number(document.getElementById('sellerVolume').value || 0),
+                notes: document.getElementById('sellerNotes').value.trim()
+            };
+            if (appState.isAdmin) {
+                payload.rating = Number(document.getElementById('sellerRating').value || 4);
+                payload.is_verified = document.getElementById('sellerVerified').value === 'true';
+            }
+            const id = document.getElementById('sellerId').value;
+            try {
+                const endpoint = appState.isAdmin 
+                    ? (id ? `/admin/sellers/${id}` : '/admin/sellers')
+                    : (id ? `/sellers/${id}` : '/sellers');
+                await apiFetch(endpoint, { method: id ? 'PUT' : 'POST', body: JSON.stringify(payload) });
+                closeModal('sellerModal');
+                await refreshAll();
+                currentTab = 'sellers';
+                syncTabs();
+                showToast(id ? 'Selling offer updated' : 'Selling offer posted', 'success');
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        async function deleteEntry(type, id) {
+            if (!appState.isAdmin) {
+                showToast('Admin access required', 'error');
+                return;
+            }
+            if (!confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;
+            try {
+                const endpoint = `/api/admin/${type}/${id}`;
+                console.log('Deleting at endpoint:', endpoint);
+                const response = await apiFetch(endpoint, { method: 'DELETE' });
+                console.log('Delete response:', response);
+                await refreshAll();
+                showToast('Listing deleted successfully', 'success');
+            } catch (error) {
+                console.error('Delete error:', error);
+                showToast(error.message || 'Failed to delete listing', 'error');
+            }
+        }
+
+        function showContactModal(id, type) {
+            if (!requireAuth()) return;
+            const item = (type === 'buyers' ? buyers : sellers).find(entry => entry.id === id);
+            if (!item) return showToast('Listing not found. Refresh and try again.', 'error');
+            document.getElementById('contactId').value = id;
+            document.getElementById('contactType').value = type;
+            document.getElementById('contactName').value = item.name;
+            document.getElementById('contactYourName').value = appState.user?.name || appState.user?.username || '';
+            document.getElementById('contactYourPhone').value = appState.user?.phone || '';
+            document.getElementById('contactMessage').value = type === 'buyers'
+                ? `Hello, I can supply ${item.commodity} for your buying request in ${item.location}.`
+                : `Hello, I am interested in buying your ${item.commodity} listed in ${item.location}.`;
+            showModal('contactModal');
+        }
+
+        async function handleContactSubmit(event) {
+            event.preventDefault();
+            if (!requireAuth()) return;
+            const id = document.getElementById('contactId').value;
+            const type = document.getElementById('contactType').value;
+            const item = (type === 'buyers' ? buyers : sellers).find(entry => String(entry.id) === String(id));
+            const message = document.getElementById('contactMessage').value.trim();
+            try {
+                await apiFetch('/messages', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        to_user_id: item?.user_id || null,
+                        subject: `Marketplace inquiry: ${item?.commodity || type}`,
+                        message: `${message}\n\nSender: ${document.getElementById('contactYourName').value}\nPhone: ${document.getElementById('contactYourPhone').value}\nListing: ${type} #${id}`
+                    })
+                });
+                closeModal('contactModal');
+                document.getElementById('contactForm').reset();
+                showToast('Message sent', 'success');
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            try {
+                const data = await apiFetch('/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: document.getElementById('loginUsername').value,
+                        password: document.getElementById('loginPassword').value
+                    })
+                });
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userData', JSON.stringify(data.user));
+                closeModal('loginModal');
+                checkAuth();
+                showToast('Login successful', 'success');
+            } catch (error) {
+                showToast(error.message || 'Login failed', 'error');
+            }
+        }
+
+        function exportCsv() {
+            const headers = currentTab === 'buyers'
+                ? ['Name', 'Phone', 'Commodity', 'Location', 'Max Price', 'Minimum Volume', 'Notes', 'Verified']
+                : ['Name', 'Phone', 'Commodity', 'Location', 'Price', 'Available Volume', 'Notes', 'Verified'];
+            const rows = filteredData.map(item => [
+                item.name, item.phone, item.commodity, item.location, itemPrice(item), itemVolume(item), item.notes, item.verified ? 'Yes' : 'No'
+            ]);
+            const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${currentTab}_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function syncTabs() {
+            document.querySelectorAll('.tab-btn').forEach(button => button.classList.toggle('active', button.dataset.tab === currentTab));
+            filterData();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchFilter').value = '';
+            document.getElementById('commodityFilter').value = 'all';
+            document.getElementById('locationFilter').value = 'all';
+            document.getElementById('sortFilter').value = 'newest';
+            filterData();
+        }
+
+        function showModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function showLoginModal() { showModal('loginModal'); }
+
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('userData');
+            appState.token = token;
+            appState.user = null;
+            appState.isAuthenticated = false;
+            appState.isAdmin = false;
+            if (token && userData) {
+                try {
+                    appState.user = JSON.parse(userData);
+                    appState.isAuthenticated = true;
+                    appState.isAdmin = appState.user.role === 'admin';
+                } catch (error) {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userData');
+                }
+            }
+            document.getElementById('sidebarUserName').textContent = appState.user?.name || appState.user?.username || 'Guest';
+            document.getElementById('sidebarUserRole').textContent = appState.user?.role || 'Not Logged In';
+            document.getElementById('loginPrompt').style.display = appState.isAuthenticated ? 'none' : 'flex';
+            document.getElementById('adminPanel').style.display = appState.isAdmin ? 'block' : 'none';
+            document.getElementById('adminBadge').style.display = appState.isAdmin ? 'inline-flex' : 'none';
+            document.getElementById('adminPanelLink').style.display = appState.isAdmin ? 'flex' : 'none';
+            document.querySelectorAll('.admin-fields').forEach(el => el.style.display = appState.isAdmin ? 'flex' : 'none');
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            checkAuth();
+            showToast('Logged out', 'success');
+        }
+
+        async function adminVerifyListing(type, id) {
+            if (!appState.isAdmin) {
+                showToast('Admin access required', 'error');
+                return;
+            }
+            const item = (type === 'buyers' ? buyers : sellers).find(entry => entry.id === id);
+            if (!item) {
+                showToast('Listing not found. Refresh and try again.', 'error');
+                return;
+            }
+            
+            const detailsHtml = type === 'buyers' 
+                ? `<div style="display:grid;gap:12px;"><p><strong>Business:</strong> ${escapeHtml(item.name)}</p><p><strong>Contact:</strong> ${escapeHtml(item.phone)}</p><p><strong>Commodity:</strong> ${escapeHtml(item.commodity)}</p><p><strong>Location:</strong> ${escapeHtml(item.location)}</p><p><strong>Max Price:</strong> ZMW ${item.max_price}/kg</p><p><strong>Min Volume:</strong> ${item.min_volume} kg</p><p><strong>Notes:</strong> ${escapeHtml(item.notes || 'N/A')}</p></div>`
+                : `<div style="display:grid;gap:12px;"><p><strong>Farm:</strong> ${escapeHtml(item.name)}</p><p><strong>Contact:</strong> ${escapeHtml(item.phone)}</p><p><strong>Commodity:</strong> ${escapeHtml(item.commodity)}</p><p><strong>Location:</strong> ${escapeHtml(item.location)}</p><p><strong>Price:</strong> ZMW ${item.price}/kg</p><p><strong>Available Volume:</strong> ${item.volume} kg</p><p><strong>Notes:</strong> ${escapeHtml(item.notes || 'N/A')}</p></div>`;
+            
+            document.getElementById('verifyDetails').innerHTML = detailsHtml;
+            document.getElementById('verifyModalTitle').innerHTML = `<i class="fas fa-circle-check"></i> ${type === 'buyers' ? 'Verify Buyer' : 'Verify Seller'}`;
+            
+            // Create new button handlers to avoid stale closures
+            const approveHandler = async () => {
+                try {
+                    const endpoint = `/api/admin/${type}/${id}/verify`;
+                    console.log('Approving at endpoint:', endpoint);
+                    const response = await apiFetch(endpoint, { method: 'POST' });
+                    console.log('Approve response:', response);
+                    closeModal('adminVerifyModal');
+                    await refreshAll();
+                    showToast(`${type === 'buyers' ? 'Buyer' : 'Seller'} approved successfully`, 'success');
+                } catch (error) {
+                    console.error('Approve error:', error);
+                    showToast(error.message || 'Failed to approve listing', 'error');
+                }
+            };
+            
+            const rejectHandler = async () => {
+                try {
+                    const endpoint = `/api/admin/${type}/${id}/reject`;
+                    console.log('Rejecting at endpoint:', endpoint);
+                    const response = await apiFetch(endpoint, { method: 'POST' });
+                    console.log('Reject response:', response);
+                    closeModal('adminVerifyModal');
+                    await refreshAll();
+                    showToast(`${type === 'buyers' ? 'Buyer' : 'Seller'} rejected successfully`, 'success');
+                } catch (error) {
+                    console.error('Reject error:', error);
+                    showToast(error.message || 'Failed to reject listing', 'error');
+                }
+            };
+            
+            // Remove old listeners and add new ones
+            const approveBtn = document.getElementById('approveBtn');
+            const rejectBtn = document.getElementById('rejectBtn');
+            const newApproveBtn = approveBtn.cloneNode(true);
+            const newRejectBtn = rejectBtn.cloneNode(true);
+            approveBtn.replaceWith(newApproveBtn);
+            rejectBtn.replaceWith(newRejectBtn);
+            
+            document.getElementById('approveBtn').onclick = approveHandler;
+            document.getElementById('rejectBtn').onclick = rejectHandler;
+            
+            showModal('adminVerifyModal');
+        }
+
+        async function showAdminApprovalPanel() {
+            if (!appState.isAdmin) return;
+            try {
+                const [buyersData, sellersData] = await Promise.all([
+                    apiFetch('/api/admin/buyers/pending'),
+                    apiFetch('/api/admin/sellers/pending')
+                ]);
+                
+                const pendingBuyers = buyersData.buyers || [];
+                const pendingSellers = sellersData.sellers || [];
+                
+                let html = '';
+                if (pendingBuyers.length === 0 && pendingSellers.length === 0) {
+                    html = '<p style="text-align:center;color:var(--text-secondary);padding:24px;"><i class="fas fa-check-circle" style="font-size:2rem;margin-bottom:10px;display:block;"></i>All listings are approved!</p>';
+                } else {
+                    if (pendingBuyers.length > 0) {
+                        html += `<div style="background:rgba(220,53,69,0.08);padding:12px;border-radius:10px;margin-bottom:12px;"><strong style="color:var(--danger);">Pending Buyers (${pendingBuyers.length})</strong></div>`;
+                        html += pendingBuyers.map(buyer => `
+                            <div style="border:1px solid var(--border-color);padding:12px;border-radius:10px;margin-bottom:8px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <strong>${escapeHtml(buyer.business_name || buyer.name || 'Buyer')}</strong><br>
+                                        <small style="color:var(--text-secondary);">${escapeHtml(buyer.commodity || 'Various')} - ${escapeHtml(buyer.location || 'Unknown')}</small>
+                                    </div>
+                                    <button class="btn btn-small btn-success" onclick="adminVerifyListing('buyers', ${buyer.id})"><i class="fas fa-check"></i> Review</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                    if (pendingSellers.length > 0) {
+                        html += `<div style="background:rgba(40,167,69,0.08);padding:12px;border-radius:10px;margin-bottom:12px;margin-top:12px;"><strong style="color:var(--success);">Pending Sellers (${pendingSellers.length})</strong></div>`;
+                        html += pendingSellers.map(seller => `
+                            <div style="border:1px solid var(--border-color);padding:12px;border-radius:10px;margin-bottom:8px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <strong>${escapeHtml(seller.farm_name || seller.business_name || seller.name || 'Seller')}</strong><br>
+                                        <small style="color:var(--text-secondary);">${escapeHtml(seller.commodity || 'Various')} - ${escapeHtml(seller.location || 'Unknown')}</small>
+                                    </div>
+                                    <button class="btn btn-small btn-success" onclick="adminVerifyListing('sellers', ${seller.id})"><i class="fas fa-check"></i> Review</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+                document.getElementById('approvalList').innerHTML = html;
+                showModal('adminApprovalModal');
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        function showAdminCreatePanel() {
+            if (!appState.isAdmin) return;
+            showPostBuyerModal();
+        }
+
+        function setupSidebar() {
+            const open = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('active'); document.body.style.overflow = 'hidden'; };
+            const close = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('active'); document.body.style.overflow = ''; };
+            document.getElementById('menuBtn').onclick = open;
+            document.getElementById('closeSidebarBtn').onclick = close;
+            document.getElementById('sidebarOverlay').onclick = close;
+            document.getElementById('sidebarLogoutBtn').onclick = event => { event.preventDefault(); logout(); close(); };
+        }
+
+        function initDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+            document.getElementById('darkModeBtn').onclick = () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            };
+        }
+
+        function setupEvents() {
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.onclick = () => {
+                    currentTab = button.dataset.tab;
+                    syncTabs();
+                };
+            });
+            document.getElementById('gridViewBtn').onclick = () => {
+                viewMode = 'grid';
+                document.getElementById('gridViewBtn').classList.add('active');
+                document.getElementById('tableViewBtn').classList.remove('active');
+                render();
+            };
+            document.getElementById('tableViewBtn').onclick = () => {
+                viewMode = 'table';
+                document.getElementById('tableViewBtn').classList.add('active');
+                document.getElementById('gridViewBtn').classList.remove('active');
+                render();
+            };
+            document.getElementById('postBuyerBtn').onclick = showPostBuyerModal;
+            document.getElementById('postSellerBtn').onclick = showPostSellerModal;
+            document.getElementById('quickPostBtn').onclick = () => currentTab === 'buyers' ? showPostBuyerModal() : showPostSellerModal();
+            document.getElementById('refreshBtn').onclick = () => refreshAll(true);
+            document.getElementById('resetFiltersBtn').onclick = resetFilters;
+            document.getElementById('exportCsvBtn').onclick = exportCsv;
+            ['searchFilter', 'commodityFilter', 'locationFilter', 'sortFilter'].forEach(id => {
+                document.getElementById(id).addEventListener(id === 'searchFilter' ? 'input' : 'change', filterData);
+            });
+            document.getElementById('buyerForm').addEventListener('submit', handleBuyerSubmit);
+            document.getElementById('sellerForm').addEventListener('submit', handleSellerSubmit);
+            document.getElementById('contactForm').addEventListener('submit', handleContactSubmit);
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('adminCreateNewBtn').onclick = showAdminCreatePanel;
+            document.getElementById('adminApprovalBtn').onclick = showAdminApprovalPanel;
+        }
+
+        window.showLoginModal = showLoginModal;
+        window.closeModal = closeModal;
+        window.showContactModal = showContactModal;
+        window.openEditModal = openEditModal;
+        window.deleteEntry = deleteEntry;
+        window.adminVerifyListing = adminVerifyListing;
+        window.showAdminApprovalPanel = showAdminApprovalPanel;
+        window.showAdminCreatePanel = showAdminCreatePanel;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDarkMode();
+            setupSidebar();
+            checkAuth();
+            setupEvents();
+            await refreshAll(true);
+            setInterval(refreshAll, 60000);
+        });
+    </script>
+</body>
+</html>

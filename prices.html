@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmConnect - Prices & Forecast</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2E8B57">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2E8B57;
+            --primary-dark: #1f6b43;
+            --primary-light: #3CB371;
+            --secondary: #FFA500;
+            --danger: #dc3545;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --bg-primary: #f5f7fb;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        body.dark-mode {
+            --bg-primary: #0f0f1a;
+            --bg-card: #16213e;
+            --text-primary: #e9eef7;
+            --text-secondary: #aab3c5;
+            --border-color: #2a2a4a;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        .top-nav {
+            background: var(--bg-card);
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+        .nav-left, .nav-right { display: flex; align-items: center; gap: 16px; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+        .page-title { font-size: 1.15rem; font-weight: 700; }
+        .menu-btn, .icon-btn, .dark-mode-btn {
+            width: 42px;
+            height: 42px;
+            border: 0;
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+        .menu-btn { color: var(--primary); font-size: 1.35rem; }
+        .menu-btn:hover, .icon-btn:hover, .dark-mode-btn:hover { background: rgba(46,139,87,0.1); color: var(--primary); transform: translateY(-1px); }
+        .admin-badge { display: none; background: var(--danger); color: white; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; animation: pulse 2s infinite; }
+        .api-pill { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 999px; color: var(--text-secondary); font-size: 0.78rem; background: var(--bg-card); }
+        .api-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); }
+        .api-dot.online { background: var(--success); box-shadow: 0 0 0 4px rgba(40,167,69,0.12); }
+        .api-dot.offline { background: var(--danger); box-shadow: 0 0 0 4px rgba(220,53,69,0.12); }
+
+        .sidebar { position: fixed; inset: 0 auto 0 -280px; width: 280px; background: linear-gradient(180deg, #0a0a2a 0%, #0f3460 100%); z-index: 1000; transition: left 0.3s ease; overflow-y: auto; box-shadow: var(--shadow-lg); }
+        .sidebar.open { left: 0; }
+        .sidebar-header { padding: 22px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-logo { color: white; font-weight: 800; font-size: 1.15rem; display: flex; align-items: center; gap: 10px; }
+        .close-sidebar { background: transparent; border: 0; color: rgba(255,255,255,0.75); font-size: 1.2rem; cursor: pointer; }
+        .user-profile-card { padding: 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .user-avatar { width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; }
+        .user-info h4 { color: white; font-size: 0.95rem; margin-bottom: 4px; }
+        .user-info p { color: rgba(255,255,255,0.7); font-size: 0.72rem; }
+        .sidebar-nav { padding: 16px; }
+        .sidebar-nav-link { display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.86); text-decoration: none; border-radius: 12px; transition: all 0.2s ease; font-size: 0.9rem; }
+        .sidebar-nav-link:hover, .sidebar-nav-link.active { background: rgba(46,139,87,0.24); color: white; transform: translateX(5px); }
+        .sidebar-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 16px 0; }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.2s ease; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        .content { padding: 28px 32px; max-width: 1480px; margin: 0 auto; }
+        .hero {
+            background: linear-gradient(135deg, var(--primary), #287b9d);
+            color: white;
+            padding: 28px;
+            border-radius: 18px;
+            margin-bottom: 22px;
+            display: grid;
+            grid-template-columns: 1.3fr repeat(3, minmax(150px, 0.35fr));
+            gap: 18px;
+            box-shadow: var(--shadow-md);
+            animation: fadeInUp 0.45s ease both;
+        }
+        .hero h1 { font-size: 1.7rem; margin-bottom: 8px; }
+        .hero p { opacity: 0.9; line-height: 1.55; }
+        .hero-stat { background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+        .hero-stat span { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.8; font-weight: 800; }
+        .hero-stat strong { font-size: 1.25rem; }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+        .tab-btn { background: transparent; border: 0; padding: 10px 18px; font-size: 0.95rem; font-weight: 800; cursor: pointer; border-radius: 999px; transition: all 0.2s ease; color: var(--text-secondary); white-space: nowrap; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-btn:hover:not(.active) { background: rgba(46,139,87,0.1); color: var(--primary); }
+
+        .filters {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            background: var(--bg-card);
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            align-items: end;
+            box-shadow: var(--shadow-sm);
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; }
+        .filter-group label { font-size: 0.72rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
+        .form-select, .date-input, .search-input { padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); color: var(--text-primary); min-width: 170px; }
+        .search-input { min-width: 240px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 14px; background: var(--primary); color: white; border: 0; border-radius: 10px; cursor: pointer; font-size: 0.84rem; font-weight: 800; transition: all 0.2s ease; text-decoration: none; }
+        .btn:hover { transform: translateY(-2px); background: var(--primary-dark); }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: transparent; }
+
+        .panel, .chart-card, .table-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 22px;
+            animation: fadeInUp 0.45s ease both;
+        }
+        .panel-header, .chart-header, .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+        .panel-header h3, .chart-header h3, .table-header h3 { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .insight-grid { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 16px; padding: 18px; }
+        .insight-card { border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 14px; padding: 16px; }
+        .insight-card span { color: var(--text-secondary); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+        .insight-card strong { display: block; margin-top: 8px; font-size: 1.25rem; }
+        .insight-card small { color: var(--text-secondary); display: block; margin-top: 4px; }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 13px 16px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        .data-table th { background: rgba(0,0,0,0.025); font-size: 0.72rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
+        .data-table tr:hover td { background: rgba(46,139,87,0.06); }
+        .price-cell { color: var(--primary); font-weight: 800; }
+        .price-up { color: var(--success); font-weight: 800; }
+        .price-down { color: var(--danger); font-weight: 800; }
+        .price-stable { color: var(--text-secondary); font-weight: 800; }
+        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; background: rgba(46,139,87,0.1); color: var(--primary); }
+        .badge.warn { color: #7a5a00; background: rgba(255,193,7,0.18); }
+        .badge.info { color: #0f6370; background: rgba(23,162,184,0.15); }
+
+        .chart-wrapper { height: 390px; position: relative; padding: 0 18px 18px; }
+        .chart-type-buttons { display: flex; gap: 8px; }
+        .chart-type-btn { background: var(--bg-primary); border: 1px solid var(--border-color); padding: 7px 12px; border-radius: 999px; cursor: pointer; font-size: 0.74rem; transition: all 0.2s ease; color: var(--text-primary); font-weight: 800; }
+        .chart-type-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .forecast-layout { display: grid; grid-template-columns: 0.72fr 1.28fr; gap: 22px; }
+        .forecast-summary { padding: 18px; display: grid; gap: 12px; }
+        .forecast-big { border-radius: 16px; background: var(--bg-primary); border: 1px solid var(--border-color); padding: 18px; }
+        .forecast-big span { color: var(--text-secondary); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+        .forecast-big strong { display: block; margin-top: 8px; font-size: 2rem; color: var(--primary); }
+        .forecast-row { display: grid; grid-template-columns: 80px 1fr auto; gap: 10px; align-items: center; color: var(--text-secondary); font-size: 0.8rem; }
+        .forecast-bar { height: 8px; border-radius: 999px; background: rgba(46,139,87,0.12); overflow: hidden; }
+        .forecast-fill { height: 100%; background: linear-gradient(90deg, var(--primary-light), var(--primary)); width: 40%; }
+        .empty-state { padding: 28px; color: var(--text-secondary); text-align: center; }
+        .info-box { background: rgba(46,139,87,0.08); border-left: 4px solid var(--primary); padding: 12px 18px; margin: 14px 0 0; border-radius: 10px; font-size: 0.82rem; color: var(--text-secondary); }
+        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 16px; border-radius: 12px; z-index: 3000; animation: slideInRight 0.3s ease; color: white; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow-lg); max-width: min(360px, calc(100vw - 32px)); }
+        .toast.info { background: linear-gradient(135deg, var(--info), #138496); }
+        .toast.success { background: linear-gradient(135deg, var(--success), #1e7e34); }
+        .toast.error { background: linear-gradient(135deg, var(--danger), #c82333); }
+        .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(46,139,87,0.25); border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; }
+        footer { background: var(--bg-card); text-align: center; padding: 28px; margin-top: 34px; border-top: 1px solid var(--border-color); color: var(--text-secondary); }
+
+        @media (max-width: 1100px) {
+            .hero, .forecast-layout { grid-template-columns: 1fr; }
+            .insight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 760px) {
+            .top-nav { padding: 12px 16px; }
+            .content { padding: 18px; }
+            .page-title, .api-pill span { display: none; }
+            .hero { padding: 22px; }
+            .filters { flex-direction: column; align-items: stretch; }
+            .form-select, .date-input, .search-input { min-width: 100%; width: 100%; }
+            .insight-grid { grid-template-columns: 1fr; }
+            .chart-wrapper { height: 280px; padding: 0 10px 14px; }
+            .data-table { display: block; overflow-x: auto; white-space: nowrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuBtn" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+            <a href="index.html" class="logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></a>
+            <h1 class="page-title">Prices & Forecast</h1>
+            <span id="adminBadge" class="admin-badge">ADMIN</span>
+        </div>
+        <div class="nav-right">
+            <div class="api-pill"><span class="api-dot" id="apiDot"></span><span id="apiStatusText">Checking API</span></div>
+            <button class="dark-mode-btn" id="darkModeBtn" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+            <button class="icon-btn" id="refreshBtn" aria-label="Refresh data"><i class="fas fa-sync-alt"></i></button>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></div>
+            <button class="close-sidebar" id="closeSidebarBtn" aria-label="Close menu"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="user-profile-card">
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+            <div class="user-info">
+                <h4 id="sidebarUserName">Guest</h4>
+                <p id="sidebarUserRole">Not Logged In</p>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="sidebar-nav-link"><i class="fas fa-home"></i> Home</a>
+            <a href="dashboard.html" class="sidebar-nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="prices.html" class="sidebar-nav-link active"><i class="fas fa-chart-line"></i> Market Intelligence</a>
+            <a href="find-buyers.html" class="sidebar-nav-link"><i class="fas fa-users"></i> Find Buyers</a>
+            <a href="news.html" class="sidebar-nav-link"><i class="fas fa-newspaper"></i> News</a>
+            <a href="profile.html" class="sidebar-nav-link"><i class="fas fa-user"></i> Profile</a>
+            <div class="sidebar-divider"></div>
+            <a href="#" class="sidebar-nav-link" id="sidebarLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content">
+        <div class="content">
+            <section class="hero">
+                <div>
+                    <h1><i class="fas fa-chart-line"></i> Market Intelligence Hub</h1>
+                    <p>Live prices, verified history, and AI-powered forecasts connected directly to your FarmConnect database.</p>
+                </div>
+                <div class="hero-stat"><span>Live Records</span><strong id="heroLive">--</strong></div>
+                <div class="hero-stat"><span>Markets</span><strong id="heroMarkets">--</strong></div>
+                <div class="hero-stat"><span>Forecast Signal</span><strong id="heroSignal">--</strong></div>
+            </section>
+
+            <section class="tabs" aria-label="Price views">
+                <button class="tab-btn active" data-tab="live"><i class="fas fa-bolt"></i> Live Prices</button>
+                <button class="tab-btn" data-tab="historical"><i class="fas fa-clock-rotate-left"></i> Historical Prices</button>
+                <button class="tab-btn" data-tab="forecast"><i class="fas fa-chart-simple"></i> Forecast Prices</button>
+            </section>
+
+            <section id="liveTab" class="tab-content">
+                <div class="filters">
+                    <div class="filter-group"><label for="liveCommodity">Commodity</label><select id="liveCommodity" class="form-select"><option value="all">All Commodities</option></select></div>
+                    <div class="filter-group"><label for="liveMarket">Market</label><select id="liveMarket" class="form-select"><option value="all">All Markets</option></select></div>
+                    <div class="filter-group"><label for="liveSearch">Search</label><input id="liveSearch" class="search-input" placeholder="Search commodity or market"></div>
+                    <button class="btn" id="applyLiveFilters"><i class="fas fa-filter"></i> Apply</button>
+                    <button class="btn btn-outline" id="clearLiveFilters"><i class="fas fa-rotate-left"></i> Reset</button>
+                </div>
+                <div class="panel">
+                    <div class="panel-header"><h3><i class="fas fa-signal"></i> Live Market Snapshot</h3><span class="badge info" id="liveCountBadge">Loading</span></div>
+                    <div class="insight-grid">
+                        <div class="insight-card"><span>Highest Price</span><strong id="highestPrice">--</strong><small id="highestContext">--</small></div>
+                        <div class="insight-card"><span>Lowest Price</span><strong id="lowestPrice">--</strong><small id="lowestContext">--</small></div>
+                        <div class="insight-card"><span>Average Price</span><strong id="averagePrice">--</strong><small>Across filtered records</small></div>
+                        <div class="insight-card"><span>Top Market</span><strong id="topMarket">--</strong><small>By highest average price</small></div>
+                    </div>
+                </div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-table"></i> Real-Time Prices</h3>
+                        <button class="btn btn-outline" id="exportLiveBtn"><i class="fas fa-download"></i> Export CSV</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Commodity</th><th>Market</th><th>Province</th><th>Price</th><th>Trend</th><th>Recommendation</th><th>Updated</th></tr></thead>
+                            <tbody id="liveTableBody"><tr><td colspan="7" class="empty-state"><span class="loading-spinner"></span> Loading live prices...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="info-box"><i class="fas fa-info-circle"></i> Live prices come from /api/prices and are backed by live_prices in your PostgreSQL database.</div>
+            </section>
+
+            <section id="historicalTab" class="tab-content" style="display:none;">
+                <div class="filters">
+                    <div class="filter-group"><label for="histCommodity">Commodity</label><select id="histCommodity" class="form-select"><option value="Maize">Maize</option></select></div>
+                    <div class="filter-group"><label for="histMarket">Market</label><select id="histMarket" class="form-select"><option value="all">All Markets</option></select></div>
+                    <div class="filter-group"><label for="histDays">Range</label><select id="histDays" class="form-select"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option><option value="180">180 days</option></select></div>
+                    <button class="btn" id="applyHistFilters"><i class="fas fa-filter"></i> Load History</button>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header"><h3><i class="fas fa-clock-rotate-left"></i> Verified Historical Trend</h3><span class="badge" id="historyCountBadge">Waiting</span></div>
+                    <div class="chart-wrapper"><canvas id="historyChart"></canvas></div>
+                </div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-list"></i> Historical Verified Prices</h3>
+                        <button class="btn btn-outline" id="exportHistBtn"><i class="fas fa-download"></i> Export CSV</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Commodity</th><th>Market</th><th>Price</th><th>Date</th><th>Trend</th></tr></thead>
+                            <tbody id="histTableBody"><tr><td colspan="5" class="empty-state">Select a commodity to load verified history.</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="forecastTab" class="tab-content" style="display:none;">
+                <div class="filters">
+                    <div class="filter-group"><label for="forecastCommodity">Commodity</label><select id="forecastCommodity" class="form-select"><option value="Maize">Maize</option></select></div>
+                    <div class="filter-group"><label for="forecastMarket">Market</label><select id="forecastMarket" class="form-select"><option value="all">All Markets</option></select></div>
+                    <div class="filter-group"><label for="forecastDays">Forecast Days</label><select id="forecastDays" class="form-select"><option value="7">7 days</option><option value="14" selected>14 days</option><option value="30">30 days</option></select></div>
+                    <button class="btn" id="generateForecast"><i class="fas fa-chart-line"></i> Generate</button>
+                </div>
+                <div class="forecast-layout">
+                    <div class="panel">
+                        <div class="panel-header"><h3><i class="fas fa-wand-magic-sparkles"></i> Forecast Summary</h3><span class="badge" id="forecastBadge">Waiting</span></div>
+                        <div class="forecast-summary">
+                            <div class="forecast-big"><span>Current Price</span><strong id="forecastCurrent">--</strong><small id="forecastContext">Choose a commodity</small></div>
+                            <div class="forecast-big"><span>Recommendation</span><strong id="forecastRecommendation">--</strong><small id="forecastConfidence">Confidence --</small></div>
+                            <div id="forecastMiniList"></div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-area"></i> Price Forecast Chart</h3>
+                            <div class="chart-type-buttons">
+                                <button class="chart-type-btn active" data-type="line">Line</button>
+                                <button class="chart-type-btn" data-type="bar">Bar</button>
+                                <button class="chart-type-btn" data-type="area">Area</button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper"><canvas id="forecastChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-table"></i> Forecast Breakdown</h3>
+                        <button class="btn btn-outline" id="exportForecastBtn"><i class="fas fa-download"></i> Export CSV</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Commodity</th><th>Market</th><th>Date</th><th>Predicted Price</th><th>Change</th><th>Confidence</th></tr></thead>
+                            <tbody id="forecastTableBody"><tr><td colspan="6" class="empty-state">Select commodity and generate forecast.</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer><p>&copy; 2026 FarmConnect - Mulungushi University | Daka Felix (202206453) | Supervisor: Mr. E Nyirenda</p></footer>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        const state = {
+            tab: 'live',
+            status: null,
+            commodities: [],
+            markets: [],
+            livePrices: [],
+            filteredLive: [],
+            historical: [],
+            forecast: null
+        };
+        let historyChart = null;
+        let forecastChart = null;
+        let currentChartType = 'line';
+
+        function apiUrl(path) { return `${API_BASE}${path}`; }
+        function number(value, fallback = 0) {
+            const parsed = Number(value);
+            return Number.isFinite(parsed) ? parsed : fallback;
+        }
+        function money(value) { return `ZMW ${number(value).toFixed(2)}`; }
+        function safe(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        }
+        function formatDate(value) {
+            if (!value) return '--';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
+            return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        function formatDateTime(value) {
+            if (!value) return 'Just now';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return 'Just now';
+            return date.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+        function trendIcon(trend) {
+            if (trend === 'up') return 'fa-arrow-trend-up';
+            if (trend === 'down') return 'fa-arrow-trend-down';
+            return 'fa-minus';
+        }
+        function trendClass(trend) {
+            if (trend === 'up') return 'price-up';
+            if (trend === 'down') return 'price-down';
+            return 'price-stable';
+        }
+        function showToast(message, type = 'info') {
+            document.querySelector('.toast')?.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info'}"></i><span>${safe(message)}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+        async function apiGet(path) {
+            const res = await fetch(apiUrl(path));
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || `Request failed: ${path}`);
+            return data;
+        }
+        function setApiStatus(online) {
+            document.getElementById('apiDot').className = `api-dot ${online ? 'online' : 'offline'}`;
+            document.getElementById('apiStatusText').textContent = online ? 'API Online' : 'API Offline';
+        }
+
+        async function fetchMeta() {
+            try {
+                const [status, commodities, markets] = await Promise.all([
+                    apiGet('/status'),
+                    apiGet('/commodities'),
+                    apiGet('/markets')
+                ]);
+                state.status = status;
+                state.commodities = commodities.commodities || [];
+                state.markets = markets.markets || [];
+                setApiStatus(true);
+                populateSelects();
+                updateHero();
+            } catch (error) {
+                setApiStatus(false);
+                showToast(error.message || 'Could not connect to API.', 'error');
+            }
+        }
+
+        function populateSelects() {
+            const commodityNames = state.commodities.map(item => item.name).filter(Boolean);
+            const marketNames = state.markets.map(item => item.name).filter(Boolean);
+            fillSelect('liveCommodity', ['all', ...commodityNames], 'All Commodities');
+            fillSelect('histCommodity', commodityNames.length ? commodityNames : ['Maize'], null);
+            fillSelect('forecastCommodity', commodityNames.length ? commodityNames : ['Maize'], null);
+            fillSelect('liveMarket', ['all', ...marketNames], 'All Markets');
+            fillSelect('histMarket', ['all', ...marketNames], 'All Markets');
+            fillSelect('forecastMarket', ['all', ...marketNames], 'All Markets');
+            if (commodityNames.includes('Maize')) {
+                document.getElementById('histCommodity').value = 'Maize';
+                document.getElementById('forecastCommodity').value = 'Maize';
+            }
+        }
+
+        function fillSelect(id, values, allLabel) {
+            const select = document.getElementById(id);
+            const previous = select.value;
+            select.innerHTML = values.map(value => `<option value="${safe(value)}">${safe(value === 'all' ? allLabel : value)}</option>`).join('');
+            if (values.includes(previous)) select.value = previous;
+        }
+
+        function normalizePrice(item) {
+            return {
+                id: item.id,
+                commodity: item.commodity || item.commodity_name || 'Unknown',
+                market: item.market || item.market_name || 'Unknown',
+                province: item.province || '',
+                price: number(item.price || item.current_price),
+                trend: item.trend || 'stable',
+                recommendation: item.recommendation || 'Monitor',
+                confidence: number(item.confidence, 60),
+                updated: item.last_updated || item.updated_at
+            };
+        }
+
+        async function loadLivePrices() {
+            const commodity = document.getElementById('liveCommodity').value;
+            const market = document.getElementById('liveMarket').value;
+            const search = document.getElementById('liveSearch').value.trim().toLowerCase();
+            let path = '/prices?limit=500';
+            if (commodity !== 'all') path += `&commodity=${encodeURIComponent(commodity)}`;
+            if (market !== 'all') path += `&market=${encodeURIComponent(market)}`;
+            try {
+                const data = await apiGet(path);
+                state.livePrices = (data.prices || []).map(normalizePrice);
+                state.filteredLive = state.livePrices.filter(item => {
+                    if (!search) return true;
+                    return item.commodity.toLowerCase().includes(search) || item.market.toLowerCase().includes(search) || item.province.toLowerCase().includes(search);
+                });
+                renderLiveTable();
+                renderLiveInsights();
+                updateHero();
+            } catch (error) {
+                showToast(error.message || 'Failed to load live prices.', 'error');
+            }
+        }
+
+        function renderLiveInsights() {
+            const rows = state.filteredLive;
+            document.getElementById('liveCountBadge').textContent = `${rows.length} records`;
+            if (!rows.length) {
+                ['highestPrice', 'lowestPrice', 'averagePrice', 'topMarket'].forEach(id => document.getElementById(id).textContent = '--');
+                document.getElementById('highestContext').textContent = '--';
+                document.getElementById('lowestContext').textContent = '--';
+                return;
+            }
+            const sorted = [...rows].sort((a, b) => b.price - a.price);
+            const highest = sorted[0];
+            const lowest = sorted[sorted.length - 1];
+            const average = rows.reduce((sum, item) => sum + item.price, 0) / rows.length;
+            const marketAverages = new Map();
+            for (const item of rows) {
+                const values = marketAverages.get(item.market) || [];
+                values.push(item.price);
+                marketAverages.set(item.market, values);
+            }
+            const topMarket = [...marketAverages.entries()]
+                .map(([marketName, values]) => ({ marketName, average: values.reduce((a, b) => a + b, 0) / values.length }))
+                .sort((a, b) => b.average - a.average)[0];
+            document.getElementById('highestPrice').textContent = money(highest.price);
+            document.getElementById('highestContext').textContent = `${highest.commodity} in ${highest.market}`;
+            document.getElementById('lowestPrice').textContent = money(lowest.price);
+            document.getElementById('lowestContext').textContent = `${lowest.commodity} in ${lowest.market}`;
+            document.getElementById('averagePrice').textContent = money(average);
+            document.getElementById('topMarket').textContent = topMarket ? topMarket.marketName : '--';
+        }
+
+        function renderLiveTable() {
+            const tbody = document.getElementById('liveTableBody');
+            const rows = state.filteredLive;
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No live prices match your filters.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = rows.map(item => `
+                <tr>
+                    <td><strong>${safe(item.commodity)}</strong></td>
+                    <td>${safe(item.market)}</td>
+                    <td>${safe(item.province)}</td>
+                    <td class="price-cell">${money(item.price)}</td>
+                    <td class="${trendClass(item.trend)}"><i class="fas ${trendIcon(item.trend)}"></i> ${safe(item.trend)}</td>
+                    <td><span class="badge">${safe(item.recommendation)}</span></td>
+                    <td><small>${formatDateTime(item.updated)}</small></td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadHistoricalPrices() {
+            const commodity = document.getElementById('histCommodity').value;
+            const market = document.getElementById('histMarket').value;
+            const days = document.getElementById('histDays').value;
+            if (!commodity || commodity === 'all') {
+                showToast('Select a specific commodity for verified history.', 'info');
+                return;
+            }
+            let path = `/prices/history?commodity=${encodeURIComponent(commodity)}&days=${encodeURIComponent(days)}`;
+            if (market !== 'all') path += `&market=${encodeURIComponent(market)}`;
+            try {
+                const data = await apiGet(path);
+                state.historical = (data.history || []).map(item => ({
+                    commodity,
+                    market: item.market || item.market_name || 'Unknown',
+                    price: number(item.price),
+                    date: item.price_date,
+                    trend: item.trend || 'stable'
+                })).sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderHistoricalTable();
+                renderHistoryChart();
+            } catch (error) {
+                showToast(error.message || 'Failed to load historical prices.', 'error');
+            }
+        }
+
+        function renderHistoricalTable() {
+            const tbody = document.getElementById('histTableBody');
+            document.getElementById('historyCountBadge').textContent = `${state.historical.length} records`;
+            if (!state.historical.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No verified historical prices found for this selection.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = state.historical.slice(0, 120).map(item => `
+                <tr>
+                    <td><strong>${safe(item.commodity)}</strong></td>
+                    <td>${safe(item.market)}</td>
+                    <td class="price-cell">${money(item.price)}</td>
+                    <td>${formatDate(item.date)}</td>
+                    <td class="${trendClass(item.trend)}"><i class="fas ${trendIcon(item.trend)}"></i> ${safe(item.trend)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderHistoryChart() {
+            const canvas = document.getElementById('historyChart');
+            const grouped = new Map();
+            for (const item of state.historical) {
+                const key = String(item.date || '').slice(0, 10);
+                if (!key) continue;
+                const values = grouped.get(key) || [];
+                values.push(item.price);
+                grouped.set(key, values);
+            }
+            const points = [...grouped.entries()]
+                .map(([label, values]) => ({ label, value: values.reduce((a, b) => a + b, 0) / values.length }))
+                .sort((a, b) => new Date(a.label) - new Date(b.label));
+            if (historyChart) historyChart.destroy();
+            historyChart = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: points.map(point => formatDate(point.label)),
+                    datasets: [{
+                        label: `${document.getElementById('histCommodity').value} verified average`,
+                        data: points.map(point => point.value),
+                        borderColor: '#2E8B57',
+                        backgroundColor: 'rgba(46,139,87,0.1)',
+                        borderWidth: 3,
+                        tension: 0.35,
+                        fill: true,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: { y: { ticks: { callback: value => `ZMW ${value}` } } }
+                }
+            });
+        }
+
+        async function generateForecast() {
+            const commodity = document.getElementById('forecastCommodity').value;
+            const market = document.getElementById('forecastMarket').value;
+            const days = document.getElementById('forecastDays').value;
+            if (!commodity || commodity === 'all') {
+                showToast('Select a specific commodity for forecast.', 'info');
+                return;
+            }
+            let path = `/forecast?commodity=${encodeURIComponent(commodity)}&days=${encodeURIComponent(days)}`;
+            if (market !== 'all') path += `&market=${encodeURIComponent(market)}`;
+            try {
+                const data = await apiGet(path);
+                state.forecast = {
+                    commodity: data.commodity || commodity,
+                    market: data.market || market,
+                    current: number(data.current_price),
+                    trend: data.trend || 'stable',
+                    recommendation: data.recommendation || 'Monitor',
+                    confidence: data.confidence || '--',
+                    rows: data.forecast || []
+                };
+                renderForecastSummary();
+                renderForecastTable();
+                renderForecastChart();
+                updateHero();
+            } catch (error) {
+                showToast(error.message || 'Failed to generate forecast.', 'error');
+            }
+        }
+
+        function renderForecastSummary() {
+            const forecast = state.forecast;
+            if (!forecast) return;
+            document.getElementById('forecastBadge').textContent = `${forecast.rows.length} days`;
+            document.getElementById('forecastCurrent').textContent = money(forecast.current);
+            document.getElementById('forecastContext').textContent = `${forecast.commodity} in ${forecast.market || 'selected market'}`;
+            document.getElementById('forecastRecommendation').textContent = forecast.recommendation;
+            document.getElementById('forecastConfidence').textContent = `Confidence ${forecast.confidence}`;
+            document.getElementById('forecastMiniList').innerHTML = forecast.rows.slice(0, 5).map(row => {
+                const width = Math.min(100, Math.max(18, 40 + number(row.change_percent) * 8));
+                return `
+                    <div class="forecast-row">
+                        <strong>Day ${row.day}</strong>
+                        <div class="forecast-bar"><div class="forecast-fill" style="width:${width}%"></div></div>
+                        <span>${money(row.predicted_price)}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderForecastTable() {
+            const tbody = document.getElementById('forecastTableBody');
+            const forecast = state.forecast;
+            if (!forecast || !forecast.rows.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No forecast data available.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = forecast.rows.map(row => `
+                <tr>
+                    <td><strong>${safe(forecast.commodity)}</strong></td>
+                    <td>${safe(forecast.market || 'All markets')}</td>
+                    <td>${formatDate(row.date)}</td>
+                    <td class="price-cell">${money(row.predicted_price)}</td>
+                    <td class="${number(row.change_percent) >= 0 ? 'price-up' : 'price-down'}">${number(row.change_percent) >= 0 ? '+' : ''}${number(row.change_percent).toFixed(2)}%</td>
+                    <td><span class="badge ${row.confidence === 'Medium' ? 'warn' : ''}">${safe(row.confidence)}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderForecastChart() {
+            const forecast = state.forecast;
+            if (!forecast) return;
+            const labels = ['Current', ...forecast.rows.map(row => formatDate(row.date))];
+            const values = [forecast.current, ...forecast.rows.map(row => number(row.predicted_price))];
+            if (forecastChart) forecastChart.destroy();
+            forecastChart = new Chart(document.getElementById('forecastChart'), {
+                type: currentChartType === 'bar' ? 'bar' : 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: `${forecast.commodity} forecast`,
+                        data: values,
+                        borderColor: '#2E8B57',
+                        backgroundColor: currentChartType === 'area' ? 'rgba(46,139,87,0.16)' : '#2E8B57',
+                        borderWidth: 3,
+                        borderDash: ctx => ctx.dataIndex > 0 ? [5, 5] : [],
+                        fill: currentChartType === 'area',
+                        tension: 0.34,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${money(ctx.parsed.y)}` } }
+                    },
+                    scales: { y: { ticks: { callback: value => `ZMW ${value}` } } }
+                }
+            });
+        }
+
+        function updateHero() {
+            const stats = state.status?.stats || {};
+            document.getElementById('heroLive').textContent = stats.live_prices || state.livePrices.length || '--';
+            document.getElementById('heroMarkets').textContent = stats.markets || state.markets.length || '--';
+            document.getElementById('heroSignal').textContent = state.forecast ? `${state.forecast.commodity}: ${state.forecast.recommendation}` : 'Monitor';
+        }
+
+        function switchTab(tab) {
+            state.tab = tab;
+            document.querySelectorAll('.tab-content').forEach(node => node.style.display = 'none');
+            document.getElementById(`${tab}Tab`).style.display = 'block';
+            document.querySelectorAll('.tab-btn').forEach(button => button.classList.toggle('active', button.dataset.tab === tab));
+            if (tab === 'live') loadLivePrices();
+            if (tab === 'historical') loadHistoricalPrices();
+            if (tab === 'forecast') generateForecast();
+        }
+
+        function exportRows(headers, rows, filename) {
+            const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = filename;
+            anchor.click();
+            URL.revokeObjectURL(url);
+            showToast('CSV exported.', 'success');
+        }
+        function exportLive() {
+            exportRows(
+                ['Commodity', 'Market', 'Province', 'Price', 'Trend', 'Recommendation', 'Updated'],
+                state.filteredLive.map(item => [item.commodity, item.market, item.province, item.price, item.trend, item.recommendation, formatDateTime(item.updated)]),
+                'farmconnect_live_prices.csv'
+            );
+        }
+        function exportHistorical() {
+            exportRows(
+                ['Commodity', 'Market', 'Price', 'Date', 'Trend'],
+                state.historical.map(item => [item.commodity, item.market, item.price, formatDate(item.date), item.trend]),
+                'farmconnect_historical_prices.csv'
+            );
+        }
+        function exportForecast() {
+            const forecast = state.forecast;
+            exportRows(
+                ['Commodity', 'Market', 'Date', 'Predicted Price', 'Change %', 'Confidence'],
+                forecast ? forecast.rows.map(row => [forecast.commodity, forecast.market, formatDate(row.date), row.predicted_price, row.change_percent, row.confidence]) : [],
+                'farmconnect_forecast.csv'
+            );
+        }
+
+        function resetLiveFilters() {
+            document.getElementById('liveCommodity').value = 'all';
+            document.getElementById('liveMarket').value = 'all';
+            document.getElementById('liveSearch').value = '';
+            loadLivePrices();
+        }
+
+        function initDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+            document.getElementById('darkModeBtn').onclick = () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                historyChart?.update();
+                forecastChart?.update();
+            };
+        }
+        function setupSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            function close() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            document.getElementById('menuBtn').onclick = () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            };
+            document.getElementById('closeSidebarBtn').onclick = close;
+            overlay.onclick = close;
+            document.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+            document.getElementById('sidebarLogoutBtn').onclick = event => {
+                event.preventDefault();
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+                showToast('Logged out.', 'success');
+                setTimeout(() => location.href = 'index.html', 900);
+            };
+        }
+        function checkAuth() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) return;
+            try {
+                const user = JSON.parse(userData);
+                document.getElementById('sidebarUserName').textContent = user.name || user.username || 'User';
+                document.getElementById('sidebarUserRole').textContent = user.role || 'User';
+                if (user.role === 'admin') document.getElementById('adminBadge').style.display = 'inline-block';
+            } catch {}
+        }
+        function wireEvents() {
+            document.getElementById('applyLiveFilters').onclick = loadLivePrices;
+            document.getElementById('clearLiveFilters').onclick = resetLiveFilters;
+            document.getElementById('liveSearch').oninput = () => {
+                const search = document.getElementById('liveSearch').value.trim().toLowerCase();
+                state.filteredLive = state.livePrices.filter(item => !search || item.commodity.toLowerCase().includes(search) || item.market.toLowerCase().includes(search) || item.province.toLowerCase().includes(search));
+                renderLiveTable();
+                renderLiveInsights();
+            };
+            document.getElementById('applyHistFilters').onclick = loadHistoricalPrices;
+            document.getElementById('generateForecast').onclick = generateForecast;
+            document.getElementById('exportLiveBtn').onclick = exportLive;
+            document.getElementById('exportHistBtn').onclick = exportHistorical;
+            document.getElementById('exportForecastBtn').onclick = exportForecast;
+            document.querySelectorAll('.tab-btn').forEach(button => button.onclick = () => switchTab(button.dataset.tab));
+            document.querySelectorAll('.chart-type-btn').forEach(button => {
+                button.onclick = () => {
+                    document.querySelectorAll('.chart-type-btn').forEach(item => item.classList.remove('active'));
+                    button.classList.add('active');
+                    currentChartType = button.dataset.type;
+                    renderForecastChart();
+                };
+            });
+            document.getElementById('refreshBtn').onclick = () => {
+                if (state.tab === 'live') loadLivePrices();
+                if (state.tab === 'historical') loadHistoricalPrices();
+                if (state.tab === 'forecast') generateForecast();
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDarkMode();
+            setupSidebar();
+            checkAuth();
+            wireEvents();
+            await fetchMeta();
+            await loadLivePrices();
+            setInterval(() => { if (state.tab === 'live') loadLivePrices(); }, 60000);
+        });
+    </script>
+</body>
+</html>

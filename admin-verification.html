@@ -1,0 +1,536 @@
+<!-- admin-verification.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Verification - FarmConnect Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Add mobile responsive styles from above */
+    </style>
+</head>
+/* mobile-optimized.css - Add to all pages */
+@media (max-width: 768px) {
+    /* Touch-friendly buttons */
+    .btn, button, input[type="submit"], input[type="button"] {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        padding: 12px 20px !important;
+        font-size: 16px !important; /* Prevents iOS zoom */
+    }
+    
+    /* Better tap targets */
+    a, .clickable {
+        padding: 8px 12px !important;
+        margin: 4px 0 !important;
+    }
+    
+    /* Larger form elements */
+    input, select, textarea {
+        font-size: 16px !important; /* Prevents iOS zoom */
+        height: 44px !important;
+        padding: 10px 15px !important;
+    }
+    
+    /* Improve readability */
+    body {
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Optimize tables for mobile */
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Stack grid items */
+    .stats-grid, .forecast-cards, .price-cards, .quick-actions {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    
+    /* Simplify navigation */
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    nav a {
+        display: block;
+        padding: 12px 15px !important;
+        text-align: center;
+        border-radius: var(--radius);
+        background: rgba(46, 139, 87, 0.1);
+    }
+    
+    /* Improve charts on mobile */
+    .chart-wrapper {
+        height: 300px !important;
+    }
+    
+    /* Adjust hero sections */
+    .hero h1 {
+        font-size: 2rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    .hero p {
+        font-size: 1.1rem !important;
+    }
+    
+    /* Stack filter controls */
+    .filters, .controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .form-select {
+        width: 100% !important;
+    }
+    
+    /* Adjust card layouts */
+    .price-card, .forecast-card, .stat-card {
+        padding: 20px !important;
+        margin-bottom: 15px;
+    }
+    
+    /* Improve action buttons */
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .header-actions .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    /* Better footer on mobile */
+    footer {
+        padding: 40px 0 20px !important;
+    }
+    
+    .footer-container {
+        grid-template-columns: 1fr !important;
+        gap: 30px !important;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px !important;
+    }
+    
+    h1 {
+        font-size: 1.8rem !important;
+    }
+    
+    h2 {
+        font-size: 1.6rem !important;
+    }
+    
+    .price-amount, .forecast-price, .stat-value {
+        font-size: 1.8rem !important;
+    }
+    
+    /* Hide non-essential elements */
+    .desktop-only {
+        display: none !important;
+    }
+    
+    /* Show mobile-specific elements */
+    .mobile-only {
+        display: block !important;
+    }
+}
+
+/* Touch feedback */
+.btn:active, button:active, .clickable:active {
+    transform: scale(0.98) !important;
+    transition: transform 0.1s ease !important;
+}
+
+/* Prevent text selection on interactive elements */
+.btn, button, .clickable {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Optimize images for mobile */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Improve form readability */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Mobile menu improvements */
+.mobile-menu-btn {
+    display: block !important;
+    z-index: 1001;
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    height: 100vh;
+    background: white;
+    padding: 80px 20px 20px;
+    transition: var(--transition);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+nav.active {
+    left: 0;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.15);
+}
+
+/* SMS/USSD specific styles for mobile */
+.sms-box, .ussd-box {
+    background: #f8f9fa;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 15px 0;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.ussd-code {
+    background: var(--primary);
+    color: white;
+    padding: 15px;
+    border-radius: var(--radius);
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+    letter-spacing: 1px;
+}
+
+/* Price alert form for mobile */
+.alert-form {
+    background: white;
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.alert-form input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--light-gray);
+    border-radius: var(--radius);
+    font-size: 18px;
+    text-align: center;
+}
+
+/* Marketplace messaging mobile styles */
+.message-bubble {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    margin: 8px 0;
+    word-wrap: break-word;
+}
+
+.message-sent {
+    background: var(--primary);
+    color: white;
+    margin-left: auto;
+}
+
+.message-received {
+    background: var(--light-gray);
+    color: var(--dark);
+    margin-right: auto;
+}
+
+/* Buyer verification badges */
+.verification-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-verified {
+    background: var(--success);
+    color: white;
+}
+
+.badge-pending {
+    background: var(--warning);
+    color: var(--dark);
+}
+
+.badge-rejected {
+    background: var(--danger);
+    color: white;
+}
+<body>
+    <header>
+        <div class="container header-container">
+            <a href="dashboard.html" class="logo">
+                <i class="fas fa-tractor"></i> FarmConnect Admin
+            </a>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 100px;">
+        <h2>Buyer Verification Panel</h2>
+        
+        <div id="alertContainer"></div>
+        
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <p>Loading pending buyers...</p>
+        </div>
+        
+        <div id="pendingBuyersContainer">
+            <!-- Pending buyers loaded here -->
+        </div>
+        
+        <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: var(--radius);">
+            <h3><i class="fas fa-chart-bar"></i> Verification Statistics</h3>
+            <div class="stats-grid" id="verificationStats">
+                <!-- Stats loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Buyer verification logic
+        async function loadPendingBuyers() {
+            showLoading(true);
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/admin/buyers/pending', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const buyers = await response.json();
+                    displayPendingBuyers(buyers);
+                    updateVerificationStats();
+                } else {
+                    showAlert('Failed to load pending buyers', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Network error', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function displayPendingBuyers(buyers) {
+            const container = document.getElementById('pendingBuyersContainer');
+            
+            if (!buyers || buyers.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 20px;"></i>
+                        <h3>No Pending Verifications</h3>
+                        <p>All buyers have been verified!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            buyers.forEach(buyer => {
+                const buyerCard = document.createElement('div');
+                buyerCard.className = 'price-card';
+                buyerCard.innerHTML = `
+                    <div class="price-header">
+                        <div class="price-commodity">${buyer.name}</div>
+                        <div class="price-market"><i class="fas fa-${buyer.verified ? 'check-circle' : 'clock'}"></i> ${buyer.verified ? 'Verified' : 'Pending'}</div>
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <p><strong>Commodity:</strong> ${buyer.commodity}</p>
+                        <p><strong>Phone:</strong> ${buyer.phone}</p>
+                        <p><strong>Location:</strong> ${buyer.location}</p>
+                        <p><strong>Added by:</strong> ${buyer.added_by_name || buyer.added_by}</p>
+                        <p><strong>Added on:</strong> ${new Date(buyer.created_at).toLocaleDateString()}</p>
+                        
+                        ${buyer.notes ? `<p><strong>Notes:</strong> ${buyer.notes}</p>` : ''}
+                        ${buyer.max_price ? `<p><strong>Max Price:</strong> ZMW ${buyer.max_price}</p>` : ''}
+                        ${buyer.min_volume ? `<p><strong>Min Volume:</strong> ${buyer.min_volume} kg</p>` : ''}
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button onclick="verifyBuyer(${buyer.id})" class="btn btn-success btn-small" style="flex: 1;">
+                            <i class="fas fa-check"></i> Verify
+                        </button>
+                        <button onclick="showRejectForm(${buyer.id})" class="btn btn-danger btn-small" style="flex: 1;">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                    
+                    <div id="rejectForm${buyer.id}" style="display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: var(--radius);">
+                        <textarea id="rejectReason${buyer.id}" placeholder="Reason for rejection..." style="width: 100%; padding: 10px; border-radius: var(--radius); border: 1px solid var(--light-gray); margin-bottom: 10px;"></textarea>
+                        <button onclick="rejectBuyer(${buyer.id})" class="btn btn-danger btn-small">
+                            <i class="fas fa-paper-plane"></i> Submit Rejection
+                        </button>
+                    </div>
+                `;
+                container.appendChild(buyerCard);
+            });
+        }
+        
+        async function verifyBuyer(buyerId) {
+            if (!confirm('Are you sure you want to verify this buyer?')) return;
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/admin/buyers/${buyerId}/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ rating: 4.0 })
+                });
+                
+                if (response.ok) {
+                    showAlert('Buyer verified successfully', 'success');
+                    loadPendingBuyers();
+                } else {
+                    showAlert('Failed to verify buyer', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Network error', 'error');
+            }
+        }
+        
+        function showRejectForm(buyerId) {
+            const form = document.getElementById(`rejectForm${buyerId}`);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        async function rejectBuyer(buyerId) {
+            const reason = document.getElementById(`rejectReason${buyerId}`).value;
+            if (!reason.trim()) {
+                alert('Please provide a reason for rejection');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to reject this buyer application?')) return;
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/admin/buyers/${buyerId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reason: reason })
+                });
+                
+                if (response.ok) {
+                    showAlert('Buyer application rejected', 'success');
+                    loadPendingBuyers();
+                } else {
+                    showAlert('Failed to reject buyer', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Network error', 'error');
+            }
+        }
+        
+        async function updateVerificationStats() {
+            // This would fetch actual stats from the API
+            const statsContainer = document.getElementById('verificationStats');
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value" id="totalBuyers">25</div>
+                    <div class="stat-label">Total Buyers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-value" id="verifiedBuyers">20</div>
+                    <div class="stat-label">Verified</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-value" id="pendingBuyers">5</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                    <div class="stat-value" id="rejectedBuyers">3</div>
+                    <div class="stat-label">Rejected</div>
+                </div>
+            `;
+        }
+        
+        // Helper functions
+        function showLoading(show) {
+            document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
+        }
+        
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+            `;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is admin
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+                const user = JSON.parse(userData);
+                if (user.role !== 'admin') {
+                    alert('Admin access required');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+                loadPendingBuyers();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>
