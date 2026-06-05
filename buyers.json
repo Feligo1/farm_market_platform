@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Lusaka Grain Company",
+    "contact": "+260971234567",
+    "commodity": "Maize",
+    "location": "Lusaka",
+    "verified": true
+  },
+  {
+    "id": 2,
+    "name": "Kabwe Produce Ltd",
+    "contact": "+260972345678",
+    "commodity": "Tomatoes",
+    "location": "Kabwe",
+    "verified": true
+  }
+]
