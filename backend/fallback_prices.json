@@ -1,0 +1,3502 @@
+[
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:15:26.413585"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:15:26.413585"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:16:03.401444"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:16:03.401444"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:16:19.399133"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:16:19.399133"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:16:28.059499"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:16:28.059499"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:17:04.012341"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:17:04.012341"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:17:19.970786"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:17:19.970786"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:17:28.451711"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:17:28.451711"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:18:04.429057"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:18:04.429057"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:18:20.459973"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:18:20.459973"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:18:28.828904"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:18:28.828904"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:19:04.819986"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:19:04.819986"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:19:20.919356"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:19:20.919356"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:19:29.216601"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:19:29.216601"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:20:05.215831"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:20:05.215831"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:20:21.336066"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:20:21.336066"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:20:29.620567"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:20:29.620567"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:21:12.911892"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:21:12.911892"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:21:30.522185"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:21:30.522185"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:22:11.524393"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:22:11.524393"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:22:13.947588"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:22:13.947588"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:22:31.007394"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:22:31.007394"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:23:14.650313"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:23:14.650313"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:23:14.937229"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:23:14.937229"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:23:31.470003"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:23:31.470003"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:24:15.233078"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:24:15.233078"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:24:16.504964"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:24:16.504964"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:24:31.871812"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:24:31.871812"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:24:37.011406"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:24:37.011406"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:24:47.212448"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:24:47.212448"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:25:15.633064"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:25:15.633064"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:25:16.883117"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:25:16.883117"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:25:32.337269"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:25:32.337269"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:25:41.256293"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:25:41.256293"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:25:52.264579"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:25:52.264579"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:26:16.017820"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:26:16.017820"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:26:17.233826"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:26:17.233826"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:26:32.734496"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:26:32.734496"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:26:41.675785"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:26:41.675785"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:26:52.659425"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:26:52.659425"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:27:16.433624"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:27:16.433624"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:27:17.595995"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:27:17.595995"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:27:33.236715"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:27:33.236715"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:27:42.085710"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:27:42.085710"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:27:53.081325"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:27:53.081325"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:28:16.797996"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:28:16.797996"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:28:18.001245"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:28:18.001245"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:28:33.635455"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:28:33.635455"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:28:42.534886"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:28:42.534886"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:28:53.501887"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:28:53.501887"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:29:17.173060"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:29:17.173060"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:29:18.379053"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:29:18.379053"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:29:34.049960"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:29:34.049960"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:29:42.976211"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:29:42.976211"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:29:53.846811"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:29:53.846811"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:30:17.564755"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:30:17.564755"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:30:18.790940"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:30:18.790940"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:30:34.468203"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:30:34.468203"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:30:43.359196"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:30:43.359196"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:30:55.415781"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:30:55.415781"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:31:18.054242"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:31:18.054242"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:31:19.183019"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:31:19.183019"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:31:34.990802"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:31:34.990802"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:31:43.749380"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:31:43.749380"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:31:55.951523"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:31:55.951523"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:32:18.450333"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:32:18.450333"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:32:19.663286"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:32:19.663286"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:32:35.376623"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:32:35.376623"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:32:44.164968"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:32:44.164968"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:32:56.348424"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:32:56.348424"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:33:18.856415"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:33:18.856415"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:33:20.069605"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:33:20.069605"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:33:35.793476"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:33:35.793476"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:33:44.541544"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:33:44.541544"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:33:56.731988"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:33:56.731988"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:34:19.246697"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:34:19.246697"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:34:20.432677"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:34:20.432677"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:34:36.210759"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:34:36.210759"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:34:44.925644"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:34:44.925644"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:34:57.100505"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:34:57.100505"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:35:20.837655"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:35:20.837655"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:35:22.078064"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:35:22.078064"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:35:36.740343"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:35:36.740855"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:35:45.310028"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:35:45.310028"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:35:57.484508"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:35:57.484508"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:36:21.222619"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:36:21.222619"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:36:22.457782"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:36:22.457782"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:36:37.150406"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:36:37.150406"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:37:21.613858"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:37:21.613858"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:38:22.225000"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:38:22.225000"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:39:22.608797"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:39:22.608797"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:40:23.003890"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:40:23.003890"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:41:23.702718"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:41:23.702718"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:42:24.125476"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:42:24.125476"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:43:26.139710"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:43:26.139710"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:44:26.825449"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:44:26.825449"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:45:27.232979"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:45:27.232979"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:46:27.649021"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:46:27.649021"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:47:28.033811"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:47:28.033811"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:48:28.456121"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:48:28.456121"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:49:28.855516"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:49:28.855516"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:49:50.343742"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:49:50.343742"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:50:01.343824"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:50:01.343824"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:50:29.240023"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:50:29.240023"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:50:54.725939"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:50:54.725939"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:51:05.632858"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:51:05.632858"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:51:29.881338"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:51:29.881338"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:51:55.156119"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:51:55.156119"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:52:07.336118"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:52:07.336118"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:52:30.309679"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:52:30.309679"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:52:55.681175"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:52:55.681175"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:53:07.718430"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:53:07.718430"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:53:30.694607"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:53:30.694607"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:53:56.093173"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:53:56.093173"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:54:08.243894"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:54:08.243894"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:54:31.104716"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:54:31.104716"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:54:56.448302"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:54:56.448302"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:55:08.648180"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:55:08.648180"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:55:31.599901"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:55:31.599901"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:55:56.830799"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:55:56.830799"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:56:09.093055"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:56:09.093055"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:56:31.979372"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:56:31.979372"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:56:57.242614"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:56:57.242614"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:57:11.197649"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:57:11.197649"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:57:33.319328"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:57:33.319328"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:57:57.723317"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:57:57.724303"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:58:11.597843"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:58:11.597843"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:58:33.800537"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:58:33.800537"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:58:58.155579"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:58:58.155579"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:59:12.008062"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:59:12.008062"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:59:34.204418"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:59:34.204418"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T16:59:58.505609"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T16:59:58.505609"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T17:23:22.634144"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T17:23:22.634144"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1500,
+    "recorded_at": "2025-12-24T17:23:33.114336"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 118,
+    "volume": 1200,
+    "recorded_at": "2025-12-24T17:23:33.114336"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 128,
+    "volume": 1500,
+    "recorded_at": "2025-12-28T22:23:08.664775"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 122,
+    "volume": 1200,
+    "recorded_at": "2025-12-28T22:23:08.664775"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 128,
+    "volume": 1500,
+    "recorded_at": "2025-12-28T22:23:57.318819"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 122,
+    "volume": 1200,
+    "recorded_at": "2025-12-28T22:23:57.318819"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 128,
+    "volume": 1500,
+    "recorded_at": "2025-12-28T22:24:54.336140"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 122,
+    "volume": 1200,
+    "recorded_at": "2025-12-28T22:24:54.336140"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 128,
+    "volume": 1500,
+    "recorded_at": "2025-12-28T22:25:48.913300"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 122,
+    "volume": 1200,
+    "recorded_at": "2025-12-28T22:25:48.913300"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:16:45.635355"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:16:45.635355"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:16:59.026916"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:16:59.026916"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:17:52.184809"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:17:52.184809"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:18:02.104014"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:18:02.104014"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:18:53.807879"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:18:53.807879"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:19:03.732566"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:19:03.732566"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:19:54.230977"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:19:54.230977"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:20:04.185976"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:20:04.185976"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:20:54.627206"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:20:54.627206"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:21:04.817040"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:21:04.817040"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:21:55.092683"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:21:55.092683"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:22:05.237691"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:22:05.237691"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:22:55.485813"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:22:55.485813"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:23:05.741393"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:23:05.741393"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:23:56.614155"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:23:56.614155"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:24:06.474029"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:24:06.474029"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:24:57.238095"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:24:57.238095"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:25:06.911151"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:25:06.911151"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:25:57.788399"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:25:57.788399"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:26:07.311268"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:26:07.311268"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:26:58.214218"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:26:58.214218"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:27:07.713335"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:27:07.713335"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:27:58.596728"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:27:58.596728"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:28:08.286212"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:28:08.286212"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:28:58.998935"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:28:58.998935"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:29:08.668325"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:29:08.668325"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:29:59.404359"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:29:59.404359"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:30:09.444475"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:30:09.444475"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:30:59.808847"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:30:59.808847"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1500,
+    "recorded_at": "2025-12-30T16:31:09.811532"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 124,
+    "volume": 1200,
+    "recorded_at": "2025-12-30T16:31:09.811532"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T11:24:11.182594"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T11:24:11.182594"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T11:24:24.596036"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T11:24:24.596036"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:44:44.107369"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:44:44.107369"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:44:57.516913"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:44:57.516913"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:46:44.212826"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:46:44.212826"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:46:57.564151"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:46:57.564151"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:48:44.256948"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:48:44.256948"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:48:57.614779"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:48:57.614779"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:50:44.307696"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:50:44.307696"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:50:57.649851"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:50:57.649851"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:52:44.336957"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:52:44.336957"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:52:57.702826"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:52:57.702826"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:54:44.390084"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:54:44.390084"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:54:57.753666"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:54:57.753666"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:56:44.442257"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:56:44.442257"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:56:57.800420"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:56:57.800420"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:58:44.471802"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:58:44.471802"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T12:58:57.858666"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T12:58:57.858666"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:00:45.028583"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:00:45.028583"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:00:58.340117"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:00:58.340117"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:02:45.054435"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:02:45.054435"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:02:58.391942"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:02:58.391942"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:04:45.098997"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:04:45.098997"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:04:58.449085"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:04:58.449085"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:06:45.136375"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:06:45.136375"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:06:58.494748"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:06:58.494748"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:08:45.181692"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:08:45.181692"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:08:58.533241"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:08:58.533241"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:10:45.221817"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:10:45.221817"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:10:58.575479"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:10:58.575479"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:12:45.267104"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:12:45.267104"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:12:58.636210"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:12:58.636210"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:14:45.300732"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:14:45.300732"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:14:58.671551"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:14:58.671551"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:16:45.352679"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:16:45.352679"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:16:58.710617"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:16:58.710617"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:18:45.397150"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:18:45.397150"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:18:58.760117"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:18:58.760117"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:20:45.432026"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:20:45.432026"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:20:58.796582"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:20:58.796582"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:22:45.525484"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:22:45.525484"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:22:58.884682"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:22:58.884682"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:24:45.634335"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:24:45.634335"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:24:59.013724"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:24:59.013724"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:26:45.670886"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:26:45.670886"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:26:59.055438"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:26:59.055438"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:28:45.702574"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:28:45.702574"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:28:59.096386"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:28:59.096386"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:30:45.749966"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:30:45.749966"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:30:59.142105"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:30:59.142105"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:32:45.791840"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:32:45.791840"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:32:59.179917"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:32:59.179917"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:34:45.839820"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:34:45.839820"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:34:59.229262"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:34:59.229262"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:36:45.874907"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:36:45.874907"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:36:59.261561"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:36:59.261561"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:38:45.921531"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:38:45.921531"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:38:59.288760"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:38:59.288760"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:40:45.969833"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:40:45.969833"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:40:59.325109"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:40:59.325109"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:42:46.015758"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:42:46.015758"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:42:59.367644"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:42:59.367644"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:44:46.051995"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:44:46.051995"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:44:59.427721"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:44:59.427721"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:46:46.109150"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:46:46.109150"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:46:59.468843"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:46:59.468843"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:48:46.141424"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:48:46.141424"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:48:59.512534"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:48:59.512534"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:50:46.192821"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:50:46.192821"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:50:59.543298"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:50:59.543298"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:52:46.227117"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:52:46.227117"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:52:59.587897"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:52:59.587897"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:54:46.284409"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:54:46.284409"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:54:59.635563"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:54:59.635563"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:56:46.320163"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:56:46.320163"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:56:59.671273"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:56:59.671273"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:58:46.359486"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:58:46.359486"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1500,
+    "recorded_at": "2026-01-01T14:58:59.712994"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 119,
+    "volume": 1200,
+    "recorded_at": "2026-01-01T14:58:59.712994"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 122,
+    "volume": 1500,
+    "recorded_at": "2026-01-02T00:20:16.345070"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 120,
+    "volume": 1200,
+    "recorded_at": "2026-01-02T00:20:16.345070"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 123,
+    "volume": 1500,
+    "recorded_at": "2026-01-03T14:58:28.843005"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1200,
+    "recorded_at": "2026-01-03T14:58:28.843005"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 123,
+    "volume": 1500,
+    "recorded_at": "2026-01-03T14:58:39.642021"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1200,
+    "recorded_at": "2026-01-03T14:58:39.642021"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 123,
+    "volume": 1500,
+    "recorded_at": "2026-01-03T14:59:32.473705"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1200,
+    "recorded_at": "2026-01-03T14:59:32.473705"
+  },
+  {
+    "market": "Lusaka Central",
+    "commodity": "Maize",
+    "price": 123,
+    "volume": 1500,
+    "recorded_at": "2026-01-03T14:59:43.003637"
+  },
+  {
+    "market": "Kabwe Main",
+    "commodity": "Maize",
+    "price": 121,
+    "volume": 1200,
+    "recorded_at": "2026-01-03T14:59:43.003637"
+  }
+]

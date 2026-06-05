@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - FarmConnect</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2E8B57, #1f6b43);
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .offline-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .offline-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        h1 { font-size: 2rem; margin-bottom: 15px; }
+        p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 30px; }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: white;
+            color: #2E8B57;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .btn:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        <h1>You're Offline</h1>
+        <p>Please check your internet connection and try again.</p>
+        <p>Cached market data is still available. <br>Your prices will sync when you're back online.</p>
+        <button class="btn" onclick="location.reload()">Try Again</button>
+    </div>
+</body>
+</html>
