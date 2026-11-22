@@ -349,7 +349,8 @@
                 <h2 style="font-size: 2.5rem; color: var(--primary);"><i class="fas fa-chart-line"></i> Live Market Prices</h2>
                 <p id="priceSectionSubtitle" style="color: var(--text-secondary);">Real-time commodity prices from Zambian markets - Updated from Database</p>
             </div>
-            <div id="livePricesContainer"><div class="price-loading" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div> Loading latest prices from database...</div></div>
+            <div id="livePricesContainer"><div class="price-loading" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div> Checking published market prices…</div></div>
+            <div style="text-align:center;margin-top:22px"><a href="prices.html" class="btn btn-primary"><i class="fas fa-chart-line"></i> View all market prices & history</a></div>
             </div>
     </section>
 
@@ -522,16 +523,8 @@
                         // Keep the best market price for each commodity.
                         let uniquePrices = bestPricesByCommodity(allPrices);
                         
-                        // Filter based on login status
-                        let displayPrices = uniquePrices;
-                        if (!state.isLoggedIn) {
-                            displayPrices = uniquePrices;
-                            if (loginPrompt) loginPrompt.style.display = 'block';
-                            if (viewAllContainer) viewAllContainer.style.display = 'block';
-                        } else { 
-                            if (loginPrompt) loginPrompt.style.display = 'none'; 
-                            if (viewAllContainer) viewAllContainer.style.display = 'none';
-                        }
+                        // Homepage is a concise preview; detailed comparisons live on Market Prices.
+                        const displayPrices = uniquePrices.slice(0, 6);
                         
                         // Build price cards with dramatic animations
                         const pricesHtml = displayPrices.map((price, idx) => {
@@ -657,7 +650,7 @@
             const btn=document.getElementById('sidebarLogoutBtn');
             if(btn)btn.onclick=e=>{e.preventDefault();localStorage.removeItem('authToken');localStorage.removeItem('userData');location.href='index.html'};
             const subtitle=document.getElementById('priceSectionSubtitle');
-            if(subtitle)subtitle.textContent='Browse available verified market prices without creating an account.';
+            if(subtitle)subtitle.textContent='Verified Zambian commodity prices from published market observations.';
             await fetchLivePrices();
             await fetchAllCommodities();
         }
@@ -744,7 +737,6 @@
             await fetchBackendStatus();
             await loadHomeDashboard();
             await fetchMarketsStats();
-            await fetchUserStats();
             
             startAutoRefresh();
             
