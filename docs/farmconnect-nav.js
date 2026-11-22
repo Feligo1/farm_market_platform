@@ -38,31 +38,8 @@
       links.appendChild(a);
     }
 
-    let user = null;
-    try { user = JSON.parse(localStorage.getItem("userData") || "null"); } catch (_) {}
-    const isAdmin = !!localStorage.getItem("authToken") && user?.role === "admin";
-    // Administrator tools are not advertised to public visitors.
-    // The backend continues to enforce authorization for privileged operations.
-    if (isAdmin) {
-      const admin = document.createElement("a");
-      admin.href = "admin.html";
-      admin.textContent = "Admin Panel";
-      if (page === "admin.html") {
-        admin.classList.add("fc-current");
-        admin.setAttribute("aria-current", "page");
-      }
-      links.appendChild(admin);
-      const logout = document.createElement("a");
-      logout.href = "login.html";
-      logout.textContent = "Log out";
-      logout.addEventListener("click", function (event) {
-        event.preventDefault();
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("userData");
-        location.href = "index.html";
-      });
-      links.appendChild(logout);
-    }
+    // The public navigation intentionally contains no administrator link.
+    // Administrators continue to access the protected control center via its URL.
 
     inner.append(brand,links);
     nav.appendChild(inner);
