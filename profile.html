@@ -13,7 +13,7 @@ button:disabled{opacity:.55}button.secondary{background:#e3efe7;color:#20593d}.n
 #notice{min-height:1.4em;margin:12px 0}.error{color:#a3212e}.ok{color:#146a40}#profileArea{display:none}
 @media(max-width:740px){.cards,.grid{grid-template-columns:1fr}header{display:block}header nav{margin-top:13px}header a{margin:0 15px 0 0}}
 </style><link rel="stylesheet" href="farmconnect-theme.css?v=20261122-1"><script src="farmconnect-nav.js?v=20261122-1" defer></script></head>
-<body><header><strong>🌽 FarmConnect Zambia</strong><nav><a href="index.html">Home</a><a href="dashboard.html">Dashboard</a><a href="prices.html">Market Prices</a><a href="admin.html" id="adminLink" hidden>Admin</a><a href="#" id="logout">Logout</a></nav></header>
+<body><header><strong>🌽 FarmConnect Zambia</strong><nav><a href="index.html">Home</a><a href="prices.html">Market Prices</a><a href="admin.html" id="adminLink" hidden>Admin</a><a href="#" id="logout">Logout</a></nav></header>
 <main><div class="intro"><h1>My Profile</h1><p class="muted">Create your account in seconds, then add farming or trading information here whenever you're ready.</p><p id="notice" role="status" aria-live="polite">Loading your profile…</p></div>
 <div id="profileArea">
 <div class="cards">
@@ -65,7 +65,7 @@ function notice(msg,error=false){$('notice').textContent=msg;$('notice').classNa
 function logout(){localStorage.removeItem('authToken');localStorage.removeItem('userData');location.replace('login.html')}
 $('logout').onclick=e=>{e.preventDefault();logout()};
 async function request(path,method='GET',body){
- if(!token()){location.replace('dashboard.html');throw Error('No account required for public browsing')}
+ if(!token()){location.replace('index.html#market-overview');throw Error('No account required for public browsing')}
  const response=await fetch(BASE+path,{method,headers:{Authorization:'Bearer '+token(),'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});
  const data=await response.json().catch(()=>({}));
  if(response.status===401){logout();throw Error('Your session expired')}
@@ -119,7 +119,7 @@ async function subscriptions(){
  }catch(err){$('subscriptionList').textContent='Could not load subscriptions: '+err.message}
 }
 async function init(){
- if(!token()){location.replace('dashboard.html');return}
+ if(!token()){location.replace('index.html#market-overview');return}
  try{
  const data=await request('/profile');profile=data.profile||data.user||{};
  fill(profile);$('profileArea').style.display='block';notice('Profile ready. Choose your account type and add details whenever you want.');

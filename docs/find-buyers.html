@@ -437,7 +437,7 @@
         </div>
         <nav class="sidebar-nav">
             <a href="index.html" class="sidebar-nav-link"><i class="fas fa-home"></i> Home</a>
-            <a href="dashboard.html" class="sidebar-nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="index.html#market-overview" class="sidebar-nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <a href="prices.html" class="sidebar-nav-link"><i class="fas fa-chart-line"></i> Prices & Forecast</a>
             <a href="find-buyers.html" class="sidebar-nav-link active"><i class="fas fa-users"></i> Buy or Sell</a>
             <a href="news.html" class="sidebar-nav-link"><i class="fas fa-newspaper"></i> News</a>
@@ -453,8 +453,8 @@
         <div class="content">
             <section class="market-panel">
                 <div>
-                    <h2><i class="fas fa-handshake"></i> Buyer & Seller Exchange</h2>
-                    <p id="marketSummary">Browse real buying requests and produce offers from the FarmConnect database. Farmers can post what they want to sell, while buyers and traders can post exactly what they want to buy.</p>
+                    <h2><i class="fas fa-handshake"></i> Find Buyers & Sellers</h2>
+                    <p id="marketSummary">Explore verified buying requests and produce offers across Zambia. Listings are reviewed by the FarmConnect administrator.</p>
                 </div>
                 <div class="market-actions">
                     <button class="action-tile" id="postBuyerBtn">
@@ -470,16 +470,7 @@
                 </div>
             </section>
 
-            <section id="loginPrompt" class="login-prompt">
-                <div>
-                    <strong>Login required for posting and direct messages.</strong>
-                    <p>You can still browse public listings. Sign in to post buyer requests, seller offers, or message a contact.</p>
-                </div>
-                <div class="contact-buttons">
-                    <button class="btn btn-small" onclick="showLoginModal()"><i class="fas fa-right-to-bracket"></i> Login</button>
-                    <a class="btn btn-small btn-outline" href="register.html"><i class="fas fa-user-plus"></i> Register</a>
-                </div>
-            </section>
+            <section id="loginPrompt" class="login-prompt" hidden aria-hidden="true" style="display:none!important"></section>
 
             <section id="adminPanel" class="toolbar" style="display:none;background:rgba(220,53,69,0.08);border-color:rgba(220,53,69,0.25);margin-bottom:24px;">
                 <div class="toolbar-top">
@@ -960,7 +951,7 @@
         function requireAuth() {
             if (appState.isAuthenticated) return true;
             showLoginModal();
-            showToast('Please login to post or send messages', 'info');
+            showToast('Listing management is reserved for administrators.', 'info');
             return false;
         }
 

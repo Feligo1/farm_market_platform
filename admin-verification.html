@@ -295,7 +295,7 @@ nav.active {
 <body>
     <header>
         <div class="container header-container">
-            <a href="dashboard.html" class="logo">
+            <a href="admin.html" class="logo">
                 <i class="fas fa-tractor"></i> FarmConnect Admin
             </a>
         </div>
@@ -525,7 +525,7 @@ nav.active {
                 const user = JSON.parse(userData);
                 if (user.role !== 'admin') {
                     alert('Admin access required');
-                    window.location.href = 'dashboard.html';
+                    window.location.href = 'index.html#market-overview';
                     return;
                 }
                 loadPendingBuyers();

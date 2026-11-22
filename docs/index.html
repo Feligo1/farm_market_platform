@@ -339,15 +339,15 @@
         <div class="container hero-content">
             <h1>Market prices across Zambia</h1>
             <p>Browse verified commodity prices and market information from Zambian markets.</p>
-            <div class="hero-buttons"><a href="#live-prices" class="btn btn-primary"><i class="fas fa-chart-line"></i> View market prices</a><a href="#market-dashboard" class="btn btn-outline"><i class="fas fa-chart-simple"></i> Market overview</a></div>
+            <div class="hero-buttons"><a href="#live-prices" class="btn btn-primary"><i class="fas fa-chart-line"></i> View market prices</a><a href="#market-overview" class="btn btn-outline"><i class="fas fa-chart-simple"></i> Market overview</a></div>
         </div>
     </section>
 
     <section id="live-prices" style="padding: 80px 0;">
         <div class="container">
             <div class="section-header" style="text-align: center; margin-bottom: 50px;">
-                <h2 style="font-size: 2.5rem; color: var(--primary);"><i class="fas fa-chart-line"></i> Live Market Prices</h2>
-                <p id="priceSectionSubtitle" style="color: var(--text-secondary);">Real-time commodity prices from Zambian markets - Updated from Database</p>
+                <h2 style="font-size: 2.5rem; color: var(--primary);"><i class="fas fa-chart-line"></i> Verified Market Prices</h2>
+                <p id="priceSectionSubtitle" style="color: var(--text-secondary);">Verified Zambian commodity prices, published after source review.</p>
             </div>
             <div id="livePricesContainer"><div class="price-loading" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div> Checking published market prices…</div></div>
             <div style="text-align:center;margin-top:22px"><a href="prices.html" class="btn btn-primary"><i class="fas fa-chart-line"></i> View all market prices & history</a></div>
@@ -356,11 +356,11 @@
 
 
     <!-- Simple market overview merged into the homepage. Figures come from public APIs. -->
-    <section id="market-dashboard" class="fc-overview" aria-labelledby="fc-overview-heading">
+    <section id="market-overview" class="fc-overview" aria-labelledby="fc-overview-heading">
       <div class="container">
         <div class="fc-overview-heading">
-          <div><p class="fc-eyebrow">MARKET OVERVIEW</p><h2 id="fc-overview-heading">Zambia market dashboard</h2>
-            <p class="fc-overview-subtitle">Coverage and published prices from FarmConnect's market database.</p></div>
+          <div><p class="fc-eyebrow">MARKET OVERVIEW</p><h2 id="fc-overview-heading">Markets and commodities</h2>
+            <p class="fc-overview-subtitle">Understand which Zambian markets and crops the platform currently covers.</p></div>
           <button type="button" class="fc-refresh" id="fcRefreshDashboard" aria-label="Refresh market overview"><i class="fas fa-rotate-right"></i> Refresh</button>
         </div>
         <div class="fc-overview-metrics" role="group" aria-label="Market coverage">
@@ -378,13 +378,7 @@
           </article>
         </div>
         <div id="fcMarketNotice" class="fc-market-notice" role="status" aria-live="polite">Checking verified price availability…</div>
-        <div class="fc-overview-actions">
-          <a href="prices.html" class="btn btn-primary"><i class="fas fa-chart-line"></i> Price history & forecasts</a>
-          <a href="find-buyers.html" class="btn btn-outline"><i class="fas fa-handshake"></i> Buyers & sellers</a>
-          <a href="news.html" class="btn btn-outline"><i class="fas fa-newspaper"></i> Agricultural news</a>
-        </div>
-      </div>
-    </section>
+        <div class="fc-overview-actions"><a href="find-buyers.html" class="btn btn-outline"><i class="fas fa-handshake"></i> Find buyers & sellers</a><a href="news.html" class="btn btn-outline"><i class="fas fa-newspaper"></i> Agricultural news</a></div></div></section>
 
     <footer class="footer">
         <div class="container"><div class="footer-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px;">
@@ -558,7 +552,7 @@
                         /* Verified records displayed; no distracting toast on initial load. */
                         return true;
                     } else {
-                        container.innerHTML = '<div class="price-loading"><i class="fas fa-inbox"></i> No verified market prices have been published yet. Check the market overview below for available commodities and locations.</div>';
+                        container.innerHTML = '<div class="price-loading"><i class="fas fa-inbox"></i> No verified market prices have been published yet. Explore the markets and commodities below while observations are reviewed.</div>';
                         return false;
                     }
                 } else {
