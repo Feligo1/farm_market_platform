@@ -30,7 +30,13 @@ Deno.serve(async (req: Request) => {
        username=prefix+"_"+crypto.randomUUID().slice(0,8);
      }
      const {data:registered,error:registerError}=await authClient.auth.signUp({email,password});
-     if(registerError)return respond({success:false,error:registerError.message||"Account registration failed."},400);
+     if(registerError){
+       if(registerError.code==="over_email_send_rate_limit"||registerError.status===429||/email rate limit exceeded/i.test(registerError.message||""))
+         return respond({success:false,code:"EMAIL_RATE_LIMIT",error:"Registration emails are temporarily unavailable because the Supabase email limit was reached. Please try again after the email allowance resets. The administrator needs to configure custom SMTP for reliable public registration."},429);
+       if(registerError.code==="email_address_not_authorized")
+         return respond({success:false,code:"EMAIL_PROVIDER_RESTRICTED",error:"This email provider currently accepts only approved project addresses. The FarmConnect administrator must configure custom SMTP before public signup."},503);
+       return respond({success:false,error:registerError.message||"Account registration failed."},400);
+     }
      if(!registered.user||!registered.user.identities?.length)
        return respond({success:true,requires_email_confirmation:true,message:"If this address can be registered, check its inbox for confirmation."});
      const user=registered.user;
