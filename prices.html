@@ -572,7 +572,7 @@
                     <td><strong>${safe(item.commodity)}</strong></td>
                     <td>${safe(item.market)}</td>
                     <td>${safe(item.province)}</td>
-                    <td class="price-cell">${money(item.price)}</td>
+                    <td class="price-cell">${money(item.price)} ${item.data_kind === 'demo' ? '<span style="display:inline-block;background:#fff0bb;color:#684600;font-size:11px;padding:3px 6px;border-radius:5px">DEMO — NOT REAL</span>' : (item.is_verified ? '<span style="font-size:11px;color:#167442">Verified</span>' : '<span style="font-size:11px;color:#945400">Unverified</span>')}</td>
                     <td class="${trendClass(item.trend)}"><i class="fas ${trendIcon(item.trend)}"></i> ${safe(item.trend)}</td>
                     <td><span class="badge">${safe(item.recommendation)}</span></td>
                     <td><small>${formatDateTime(item.updated)}</small></td>
@@ -585,7 +585,7 @@
             const market = document.getElementById('histMarket').value;
             const days = document.getElementById('histDays').value;
             if (!commodity || commodity === 'all') {
-                showToast('Select a specific commodity for verified history.', 'info');
+                showToast('Select a commodity to view historical records, including clearly labelled demo data.', 'info');
                 return;
             }
             let path = `/prices/history?commodity=${encodeURIComponent(commodity)}&days=${encodeURIComponent(days)}`;
@@ -597,7 +597,11 @@
                     market: item.market || item.market_name || 'Unknown',
                     price: number(item.price),
                     date: item.price_date,
-                    trend: item.trend || 'stable'
+                    trend: item.trend || 'stable',
+                    data_kind: item.data_kind || 'observed',
+                    is_verified: item.is_verified === true,
+                    source_name: item.source_name || 'Not specified',
+                    source_url: item.source_url || ''
                 })).sort((a, b) => new Date(b.date) - new Date(a.date));
                 renderHistoricalTable();
                 renderHistoryChart();
@@ -608,9 +612,9 @@
 
         function renderHistoricalTable() {
             const tbody = document.getElementById('histTableBody');
-            document.getElementById('historyCountBadge').textContent = `${state.historical.length} records`;
+            document.getElementById('historyCountBadge').textContent = `${state.historical.length} records · ${state.historical.filter(x=>x.data_kind==='demo').length} DEMO (not real)`;
             if (!state.historical.length) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No verified historical prices found for this selection.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No historical observations found for this selection.</td></tr>';
                 return;
             }
             tbody.innerHTML = state.historical.slice(0, 120).map(item => `
