@@ -1,0 +1,51 @@
+/* FarmConnect shared design system — all public pages */
+:root{
+ --fc-forest:#153f2c;--fc-green:#2e8b57;--fc-green-dark:#206b43;
+ --fc-accent:#e5a32a;--fc-canvas:#f3f7f4;--fc-surface:#fff;
+ --fc-ink:#213b30;--fc-muted:#647b6d;--fc-border:#dce9df;
+ --fc-radius:14px;--fc-shadow:0 8px 25px rgba(16,54,34,.075);
+ --primary:#2e8b57;--primary-dark:#206b43;--primary-light:#3cb371;
+ --secondary:#e5a32a;--bg-primary:#f3f7f4;--bg-secondary:#fff;
+ --bg-card:#fff;--text-primary:#213b30;--text-secondary:#647b6d;
+ --border-color:#dce9df;
+}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+body:not(.dark-mode){background-color:var(--fc-canvas)}
+.fc-global-nav,.fc-global-nav *{box-sizing:border-box}
+.fc-global-nav{position:relative;z-index:1100;width:100%;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;background:#153f2c;color:#fff;padding:12px clamp(15px,4vw,56px);min-height:68px;box-shadow:0 3px 16px rgba(7,35,20,.14);font-family:Inter,system-ui,sans-serif}
+.fc-brand{display:inline-flex;align-items:center;gap:10px;font-size:1.12rem;font-weight:800;letter-spacing:-.025em;text-decoration:none!important;color:white!important;white-space:nowrap}
+.fc-brand-mark{width:39px;height:39px;background:rgba(255,255,255,.13);display:inline-grid;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:12px}
+.fc-nav-links{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.fc-global-nav .fc-nav-links a{padding:9px 11px;color:#e9f8ef!important;text-decoration:none!important;border-radius:9px;white-space:nowrap;font-size:.88rem;font-weight:600;line-height:1.3;margin:0}
+.fc-global-nav .fc-nav-links a:hover,.fc-global-nav .fc-nav-links a:focus-visible{background:rgba(255,255,255,.13)}
+.fc-global-nav .fc-nav-links a.fc-current{background:rgba(255,255,255,.18);color:#fff!important}
+.fc-global-nav .fc-nav-links a.fc-join{background:var(--fc-accent);color:#203023!important;margin-left:4px}
+.fc-global-nav .fc-nav-links a.fc-join:hover{background:#f4b943}
+.fc-global-nav .fc-nav-links a[hidden]{display:none!important}
+.fc-global-nav button.fc-nav-toggle{display:none;margin:0;min-width:44px;min-height:44px;padding:7px 11px;border-radius:9px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
+body.fc-simple-page>header,body.fc-simple-page>header.header{display:none!important}
+body:not(.dark-mode) .card,body:not(.dark-mode) .panel,body:not(.dark-mode) .metric,body:not(.dark-mode) .box,body:not(.dark-mode) .chart-card{border-radius:var(--fc-radius);border-color:var(--fc-border)}
+body:not(.dark-mode) .box,body:not(.dark-mode) .card,body:not(.dark-mode) .metric{box-shadow:var(--fc-shadow)}
+button,select,input,textarea{font-family:inherit}
+button,.btn,[type="submit"]{transition:background-color .18s,box-shadow .18s,transform .15s}
+button:focus-visible,.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--fc-green);outline-offset:3px}
+input:not([type="checkbox"]):not([type="radio"]),select,textarea{border-radius:9px}
+body.fc-simple-page button:not(.fc-nav-toggle):not(.danger){background:var(--fc-green)}
+body.fc-simple-page button.secondary{background:#e3efe7;color:#20593d}
+body.fc-simple-page button.danger{background:#aa3838;color:white}
+body.fc-simple-page main{width:100%;box-sizing:border-box}
+body.fc-simple-page main h1,body.fc-simple-page main h2{letter-spacing:-.035em}
+body.fc-simple-page p{line-height:1.6}
+body.fc-simple-page .box,body.fc-simple-page .card{background:#fff}
+@media(max-width:900px){
+ .fc-global-nav{gap:10px}.fc-nav-links{gap:0}.fc-global-nav .fc-nav-links a{font-size:.81rem;padding:9px 7px}
+}
+@media(max-width:690px){
+ .fc-global-nav{min-height:60px}
+ .fc-global-nav button.fc-nav-toggle{display:inline-flex;align-items:center;justify-content:center}
+ .fc-nav-links{display:none;width:100%;flex-direction:column;align-items:stretch;gap:3px;padding:8px 0 2px}
+ .fc-global-nav.fc-expanded .fc-nav-links{display:flex}
+ .fc-global-nav .fc-nav-links a{display:block;padding:12px 13px!important;font-size:.95rem!important}
+ .fc-global-nav .fc-nav-links a.fc-join{margin:4px 0 0}
+}
