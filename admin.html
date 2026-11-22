@@ -36,7 +36,15 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 </section>
 <section class="card"><h3>Historical data sources</h3><p class="muted">Import real observations only when date, named commodity, market, unit, currency and source are confirmed. FEWS NET publishes historical market-price data; not every product, market or unit is directly compatible with FarmConnect.</p>
 <a href="https://fdw.fews.net/api/marketpricefacts/" target="_blank" rel="noopener noreferrer">FEWS NET price API</a> · <a href="https://fews.net/data/markets-and-trade" target="_blank" rel="noopener noreferrer">FEWS NET market data</a>
-<p class="muted">To add a sourced observation, choose <b>Price history → Add record</b>, select commodity and market, enter the original date, record the original source, then verify the evidence before publishing.</p></section>
+<p class="muted">To add a sourced observation, choose <b>Price history → Add record</b>, select commodity and market, enter the original date, record the original source, then verify the evidence before publishing.</p>
+<div class="controls"><button id="fewsImport" class="secondary" type="button">Import FEWS NET Zambia (100 records/page)</button><span id="fewsInfo" class="muted">Source connector: administrator initiated</span></div>
+<h4>Import CSV from other sources</h4>
+<p class="muted">CSV columns: <code>commodity,market,price,date,unit,currency,source_name,source_url,external_id</code>. Use exact FarmConnect commodity and market names. Only ZMW per kg records are accepted; unmatched records are rejected, never guessed.</p>
+<div class="controls"><input type="file" accept=".csv,text/csv" id="csvFile" aria-label="Historical price CSV">
+<input id="sourceName" placeholder="Original source organization" aria-label="Source organization">
+<input id="sourceUrl" placeholder="https://source.example/record" aria-label="Source URL">
+<button id="csvImport" type="button">Import CSV</button></div><p id="importInfo" class="muted" role="status"></p>
+</section>
 </main><footer>FarmConnect Zambia · Administrator actions are audited</footer>
 <div id="editorBackdrop"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
 <div class="controls" style="justify-content:space-between"><h2 id="editorTitle">Record</h2><button id="closeEditor" class="secondary">Close</button></div>
@@ -141,5 +149,47 @@ $('resource').onchange=()=>{offset=0;lookups={};load()};$('kind').onchange=()=>{
 $('refresh').onclick=load;$('add').onclick=()=>openEditor();$('previous').onclick=()=>{offset=Math.max(0,offset-100);load()};$('next').onclick=()=>{offset+=100;load()};
 $('closeEditor').onclick=$('cancel').onclick=()=>$('editorBackdrop').classList.remove('open');
 $('logout').onclick=e=>{e.preventDefault();localStorage.removeItem('authToken');localStorage.removeItem('userData');location.href='login.html'};
+
+let fewsOffset=0;
+$('fewsImport').onclick=async()=>{
+ const button=$('fewsImport');button.disabled=true;$('fewsInfo').textContent='Connecting to FEWS NET…';
+ try{
+   const result=await api('POST','import_fews',{offset:fewsOffset});
+   fewsOffset=result.next_offset||fewsOffset;
+   $('fewsInfo').textContent='Fetched '+result.fetched+' rows; imported '+result.imported+' matching records; '+result.unmatched+' unmatched. Next offset '+fewsOffset+'. Pending source verification.';
+   if(resource.value==='price_history')await load();
+ }catch(e){$('fewsInfo').textContent=e.message}finally{button.disabled=false}
+};
+function parseCsv(text){
+ const records=[];let row=[],field='',quoted=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i];
+  if(c==='"'){if(quoted&&text[i+1]==='"'){field+='"';i++}else quoted=!quoted}
+  else if(c===','&&!quoted){row.push(field);field=''}
+  else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(field);if(row.some(v=>v.trim()))records.push(row);row=[];field=''}
+  else field+=c;
+ }
+ row.push(field);if(row.some(v=>v.trim()))records.push(row);
+ if(!records.length)return [];
+ const head=records.shift().map(s=>s.replace(/^\uFEFF/,'').trim().toLowerCase());
+ return records.map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]||'').trim()])));
+}
+$('csvImport').onclick=async()=>{
+ const file=$('csvFile').files?.[0];const name=$('sourceName').value.trim(),link=$('sourceUrl').value.trim(),status=$('importInfo');
+ if(!file||!name||!link.startsWith('https://')){status.textContent='Choose a CSV file, provide its actual source organization and HTTPS source URL.';return}
+ const button=$('csvImport');button.disabled=true;
+ try{
+  const items=parseCsv(await file.text()).map(x=>({...x,commodity:x.commodity||x.product,market:x.market||x.market_name,date:x.date||x.period_date||x.price_date,source_name:x.source_name||name,source_url:x.source_url||link}));
+  if(!items.length)throw Error('No CSV records found');
+  let imported=0,skipped=0;
+  for(let i=0;i<items.length;i+=200){
+   const result=await api('POST','bulk_history',{records:items.slice(i,i+200)});
+   imported+=result.imported||0;skipped+=result.skipped||0;
+   status.textContent='Processed '+Math.min(i+200,items.length)+' of '+items.length+' rows. Imported '+imported+', skipped '+skipped+'.';
+  }
+  status.textContent='Import finished. '+imported+' observations added; '+skipped+' rejected. New records are UNVERIFIED until reviewed.';
+  if(resource.value==='price_history')await load();
+ }catch(e){status.textContent='Import error: '+e.message}finally{button.disabled=false}
+};
 setup();
 </script></body></html>
