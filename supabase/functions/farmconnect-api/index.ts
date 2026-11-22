@@ -48,8 +48,8 @@ Deno.serve(async (req: Request) => {
    }
    const {data:session,error:signInError}=await authClient.auth.signInWithPassword({email,password});
    if(signInError||!session.session||!session.user) return respond({success:false,error:"Invalid credentials or unconfirmed email"},401);
-   const {data:profile,error:profileError}=await db.from("users").select("id,username,first_name,last_name,role,email,location").eq("id",session.user.id).maybeSingle();
-   if(profileError||!profile)return respond({success:false,error:"Account profile is unavailable"},403);
+   const {data:profile,error:profileError}=await db.from("users").select("id,username,first_name,last_name,role,email,location,is_active").eq("id",session.user.id).maybeSingle();
+   if(profileError||!profile||profile.is_active===false)return respond({success:false,error:"Account is inactive or unavailable"},403);
    return respond({success:true,token:session.session.access_token,user:{user_id:profile.id,id:profile.id,username:profile.username,name:[profile.first_name,profile.last_name].filter(Boolean).join(" "),email:profile.email,role:profile.role,location:profile.location}});
  }
  if(req.method==="GET" && endpoint==="profile"){
