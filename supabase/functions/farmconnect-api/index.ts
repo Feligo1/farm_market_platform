@@ -116,6 +116,18 @@ Deno.serve(async (req: Request) => {
    const {data,error}=await query;if(error)throw error;
    return respond({success:true,[endpoint]:data,count:data?.length||0});
   }
+  if(endpoint==="history" && u.pathname.endsWith("/prices/history")){
+   const commodity=String(u.searchParams.get("commodity")||"").trim(),market=String(u.searchParams.get("market")||"").trim();
+   const days=Math.max(7,Math.min(Number(u.searchParams.get("days"))||365,3650));
+   const since=new Date(Date.now()-days*86400000).toISOString().slice(0,10);
+   let query=db.from("price_history").select("id,commodity_id,market_id,price,unit,trend,price_date,is_verified,source_name,source_url,data_kind,notes,commodities!inner(name),markets!inner(name,province)").gte("price_date",since).order("price_date",{ascending:false}).limit(1000);
+   if(commodity&&commodity!=="all")query=query.eq("commodities.name",commodity);
+   if(market&&market!=="all")query=query.eq("markets.name",market);
+   const {data,error}=await query;if(error)throw error;
+   const history=(data||[]).map((r:any)=>({id:r.id,commodity:r.commodities?.name,market:r.markets?.name,price:r.price,unit:r.unit,trend:r.trend,price_date:r.price_date,is_verified:r.is_verified===true,data_kind:r.data_kind||"observed",source_name:r.source_name,source_url:r.source_url}));
+   const verified=history.filter((r:any)=>r.is_verified&&r.data_kind!=="demo").length;
+   return respond({success:true,history,count:history.length,verified_count:verified,demo_count:history.filter((r:any)=>r.data_kind==="demo").length,notice:"DEMO rows are synthetic, not observed prices. Only verified sourced prices are real market evidence."});
+  }
   if(endpoint==="prices" || (endpoint==="real" && u.pathname.endsWith("/prices/real"))){
    // Only real verified observations, no simulated market prices.
    let query=db.from("price_history").select("id,price,unit,trend,price_date,recorded_at,commodities!inner(name,icon_emoji),markets!inner(name,province)").eq("is_verified",true).order("price_date",{ascending:false}).limit(limit);
