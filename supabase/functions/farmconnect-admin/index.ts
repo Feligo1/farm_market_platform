@@ -62,6 +62,67 @@ Deno.serve(async(req:Request)=>{
    const {data,error}=await db.from("admin_audit_log").select("id,actor_id,action,resource,record_id,occurred_at").order("occurred_at",{ascending:false}).range(offset,offset+limit-1);
    if(error)throw error;return reply({success:true,records:data});
   }
+
+  if(resource==="bulk_history" && req.method==="POST"){
+    const body=await req.json().catch(()=>null);
+    if(!body||!Array.isArray(body.records)||body.records.length<1||body.records.length>200)
+      return reply({success:false,error:"Supply between 1 and 200 records"},400);
+    const commodities=(await db.from("commodities").select("id,name").limit(500)).data||[];
+    const markets=(await db.from("markets").select("id,name").limit(500)).data||[];
+    const norm=(v:unknown)=>String(v||"").trim().toLowerCase().replace(/[^a-z0-9]/g,"");
+    const batch:any[]=[],skipped:any[]=[];
+    for(const [i,r] of body.records.entries()){
+      const c=commodities.find((x:any)=>norm(x.name)===norm(r.commodity));
+      const m=markets.find((x:any)=>norm(x.name)===norm(r.market));
+      const price=Number(r.price),date=String(r.date||r.price_date||"");
+      const currency=String(r.currency||"ZMW").toUpperCase(),unit=String(r.unit||"kg").toLowerCase();
+      const source=String(r.source_name||"").trim(),srcUrl=String(r.source_url||"").trim();
+      if(!c||!m||!Number.isFinite(price)||price<=0||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date)||currency!=="ZMW"||!["kg","kilogram","kilograms"].includes(unit)||!source||source.length>100||!srcUrl.startsWith("https://")||!Number.isFinite(new Date(date).getTime())||date>new Date().toISOString().slice(0,10)){
+        skipped.push({row:i+1,reason:"Market, commodity, ZMW/kg price, valid date or source could not be validated"});continue;
+      }
+      const sourceId=String(r.external_id||[norm(r.commodity),norm(r.market),date,price].join("-")).slice(0,240);
+      batch.push({commodity_id:c.id,market_id:m.id,price:Math.round(price*100)/100,price_date:date,unit:"kg",currency:"ZMW",source_type:"ADMIN_IMPORTED",source_name:source,source_url:srcUrl,external_id:sourceId,is_verified:false,data_kind:"observed",notes:"Sourced historical observation imported by administrator; pending verification"});
+    }
+    if(!batch.length)return reply({success:false,error:"No valid rows. Use exact FarmConnect market and commodity names; ZMW per kg only.",skipped:skipped.slice(0,20)},422);
+    const {data,error}=await db.from("price_history").upsert(batch,{onConflict:"source_name,external_id",ignoreDuplicates:true}).select("id");
+    if(error)throw error;
+    await audit(actor,"import","price_history",data?.length||0);
+    return reply({success:true,imported:data?.length||0,skipped:skipped.length,errors:skipped.slice(0,20),verified:false,notice:"Imported observations require administrator source verification before public use"});
+  }
+  if(resource==="import_fews" && req.method==="POST"){
+    const input=await req.json().catch(()=>({}));
+    const offset=Math.max(0,Math.min(Number(input.offset)||0,20000));
+    const sourceUrl=new URL("https://fdw.fews.net/api/marketpricefacts.json");
+    sourceUrl.searchParams.set("country_code","ZM");sourceUrl.searchParams.set("page_size","100");sourceUrl.searchParams.set("offset",String(offset));
+    sourceUrl.searchParams.set("start_date","2024-01-01");
+    let resp:Response;
+    try{resp=await fetch(sourceUrl,{headers:{"Accept":"application/json"},signal:AbortSignal.timeout(12000)})}
+    catch{return reply({success:false,error:"FEWS NET source could not be reached. Import a CSV file instead."},502)}
+    if(!resp.ok)return reply({success:false,error:"FEWS NET request returned HTTP "+resp.status},502);
+    const raw:any=await resp.json().catch(()=>null);
+    const rows=Array.isArray(raw)?raw:Array.isArray(raw?.results)?raw.results:[];
+    const commodities=(await db.from("commodities").select("id,name")).data||[];
+    const markets=(await db.from("markets").select("id,name")).data||[];
+    const norm=(v:any)=>String(typeof v==="object"?(v?.name||v?.label||""):v||"").toLowerCase().trim().replace(/[^a-z0-9]/g,"");
+    const mapped:any[]=[];let unmatched=0;
+    for(const x of rows){
+      const product=norm(x.product||x.product_name),market=norm(x.market||x.market_name);
+      const commodity=commodities.find((c:any)=>norm(c.name)===product||norm(c.name)==="maize"&&["maizegrain","maizewhite","whitemaize","maize"].includes(product));
+      const target=markets.find((m:any)=>norm(m.name)===market||norm(m.name)+"market"===market);
+      const price=Number(x.value??x.price),date=String(x.period_date||x.price_date||x.date||"").slice(0,10);
+      const cur=norm(x.currency||x.currency_code||"zmw"),unit=norm(x.unit||x.unit_name||"kg");
+      if(!commodity||!target||!Number.isFinite(price)||price<=0||cur!=="zmw"||!["kg","kilogram","kilograms"].includes(unit)||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date)){unmatched++;continue;}
+      const sourceId=String(x.id||x.dataseries||"series")+":"+product+":"+market+":"+date+":"+price;
+      mapped.push({commodity_id:commodity.id,market_id:target.id,price:Math.round(price*100)/100,unit:"kg",currency:"ZMW",price_date:date,source_type:"FEWS_NET",source_name:"FEWS NET FDW",source_url:sourceUrl.toString(),external_id:sourceId.slice(0,240),is_verified:false,data_kind:"observed",notes:"FEWS NET Zambia API record — administrator verification required; verify price type and source before approval"});
+    }
+    let imported=0;
+    if(mapped.length){
+      const {data,error}=await db.from("price_history").upsert(mapped,{onConflict:"source_name,external_id",ignoreDuplicates:true}).select("id");
+      if(error)throw error;imported=data?.length||0;
+    }
+    await audit(actor,"import-fews","price_history",imported);
+    return reply({success:true,fetched:rows.length,imported,unmatched,offset,next_offset:offset+rows.length,has_more:!!raw?.next,notice:"Imported FEWS records remain unverified until matched against original metadata and reviewed by an administrator."});
+  }
   if(!schema[resource])return reply({success:false,error:"Unsupported resource"},400);
   if(req.method==="GET"){
    let query=db.from(resource).select("*",{count:"exact"}).order(resource==="price_history"?"price_date":resource==="users"?"created_at":"id",{ascending:false}).range(offset,offset+limit-1);
