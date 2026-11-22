@@ -62,12 +62,19 @@ jobs:
               print(f"PASS: {name}")
 
           code,homepage=get(site+"/")
-          assert code==200 and 'id="market-dashboard"' in homepage,"Merged market overview missing"
+          assert code==200 and 'id="market-overview"' in homepage,"Merged market overview missing"
           assert 'id="fcMarketList"' in homepage and 'id="livePricesContainer"' in homepage,"Live prices / market dashboard missing"
           assert all(text not in homepage for text in ["Why Choose FarmConnect?","Multiple Ways to Access","Ready to Get Started?","Create Free Account",">Register</a>",">Login</a>"]),"Legacy account/promotional text remains"
           code,old_dashboard=get(site+"/dashboard.html")
-          assert code==200 and "index.html#market-dashboard" in old_dashboard,"Old dashboard should redirect to homepage"
+          assert code==200 and "index.html#market-overview" in old_dashboard,"Old dashboard should redirect to homepage"
           print("PASS: consolidated homepage and retired dashboard")
+          nav=get(site+"/farmconnect-nav.js")[1]
+          assert '["dashboard.html"' not in nav,"Dashboard link remains in global navigation"
+          for path in ["/","/prices.html","/find-buyers.html","/news.html","/admin.html","/profile.html","/login.html","/register.html"]:
+              _,document=get(site+path)
+              assert 'href="dashboard.html"' not in document, f"Dashboard link remains on {path}"
+          print("PASS: no links to retired Dashboard")
+
           assert "await fetchUserStats()" not in homepage,"Legacy homepage initialization bug still present"
           assert 'const displayPrices = uniquePrices.slice(0, 6)' in homepage,"Homepage preview must be compact"
           assert 'View all market prices & history' in homepage,"Missing link to detailed market prices"

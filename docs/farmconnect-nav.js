@@ -17,7 +17,7 @@
     const brand = document.createElement("a");
     brand.className = "fc-brand";
     brand.href = "index.html";
-    brand.innerHTML = '<span class="fc-brand-mark" aria-hidden="true">▣</span><span>FarmConnect <span class="fc-brand-accent">Zambia</span></span>';
+    brand.innerHTML = '<span class="fc-brand-mark" aria-hidden="true">FC</span><span>FarmConnect <span class="fc-brand-accent">Zambia</span></span>';
 
     const links = document.createElement("div");
     links.className = "fc-nav-links";
