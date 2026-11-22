@@ -12,6 +12,12 @@ on:
       - 'dashboard.html'
       - 'docs/dashboard.html'
       - 'supabase/functions/**'
+      - 'login.html'
+      - 'register.html'
+      - 'profile.html'
+      - 'docs/login.html'
+      - 'docs/register.html'
+      - 'docs/profile.html'
 jobs:
   smoke:
     runs-on: ubuntu-latest
@@ -40,7 +46,7 @@ jobs:
                       if attempt==3: raise
                       time.sleep(5)
           site=os.environ["SITE"]; api=os.environ["API"]; admin=os.environ["ADMIN"]
-          for name,path,expected in [("homepage","/", "FarmConnect"),("admin page","/admin.html","Admin Control Center"),("history page","/prices.html","History")]:
+          for name,path,expected in [("homepage","/", "FarmConnect"),("admin page","/admin.html","Admin Control Center"),("history page","/prices.html","History"),("login","/login.html","Email address or username"),("registration","/register.html","Email address"),("profile","/profile.html","Farming details")]:
               code,html=get(site+path)
               assert code==200 and expected.lower() in html.lower(),f"{name} failed HTTP {code}"
               print(f"PASS: {name}")
@@ -59,4 +65,18 @@ jobs:
           code,body=get(admin+"?resource=users")
           assert code==401,f"Admin endpoint should reject anonymous requests; got {code}"
           print("PASS: unauthorized admin access denied")
+          code,body=get(api+"/profile")
+          assert code==401,f"Profile must reject anonymous access, got {code}: {body[:100]}"
+          print("PASS: profile access protected")
+          def post(path,payload):
+              request=Request(api+path,data=json.dumps(payload).encode(),headers={"Content-Type":"application/json","User-Agent":"FarmConnectSmoke/1.0"},method="POST")
+              try:
+                  with urlopen(request,timeout=25) as resp:return resp.status,json.loads(resp.read().decode())
+              except HTTPError as e:return e.code,json.loads(e.read().decode())
+          code,data=post("/register",{"email":"invalid","password":"short"})
+          assert code==400,f"Registration validation failed HTTP {code}: {data}"
+          print("PASS: registration validates credentials")
+          code,data=post("/login",{"username":"not-a-real-user-for-smoketest","password":"invalid-password"})
+          assert code==401,f"Bad login must return 401, got {code}: {data}"
+          print("PASS: incorrect credentials rejected")
           PY
