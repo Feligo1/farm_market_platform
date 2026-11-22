@@ -23,7 +23,6 @@
     links.className = "fc-nav-links";
     const items = [
       ["index.html","Home"],
-      ["dashboard.html","Dashboard"],
       ["prices.html","Market Prices"],
       ["find-buyers.html","Buyers & Sellers"],
       ["news.html","News"]
