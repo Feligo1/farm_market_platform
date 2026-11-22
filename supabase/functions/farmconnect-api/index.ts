@@ -13,6 +13,7 @@ Deno.serve(async (req: Request) => {
  const limit=Math.max(1,Math.min(Number(u.searchParams.get("limit"))||100,1000));
 
  const authClient = createClient(url!, Deno.env.get("SUPABASE_ANON_KEY") || key!, {auth:{persistSession:false,autoRefreshToken:false}});
+ if(req.method==="POST" && endpoint==="register") return respond({success:false,error:"Public registration is disabled. FarmConnect is free to use without an account."},410);
  if(req.method==="POST" && (endpoint==="register" || endpoint==="login")){
    let body:any;try{body=await req.json()}catch{return respond({success:false,error:"Invalid JSON"},400)}
    if(endpoint==="register"){
