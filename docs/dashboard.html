@@ -675,8 +675,13 @@
 
         async function fetchForecast(commodity) {
             const selected = commodity || document.getElementById('forecastCommodity').value || 'Maize';
-            const data = await apiGet(`/forecast?commodity=${encodeURIComponent(selected)}&days=14`);
-            state.forecast = data;
+            try {
+                const data = await apiGet(`/forecast?commodity=${encodeURIComponent(selected)}&days=14`);
+                state.forecast = data;
+            } catch (error) {
+                state.forecast = null; // No validated forecast until real price history exists
+                console.info('No verified forecast available:', error.message);
+            }
             renderForecast();
             updateNarrative();
         }
@@ -806,7 +811,7 @@
 
         async function fetchHistory(commodity) {
             try {
-                const data = await apiGet(`/prices/history?commodity=${encodeURIComponent(commodity)}&days=7`);
+                const data = await apiGet(`/prices/history?commodity=${encodeURIComponent(commodity)}&days=540`);
                 const grouped = new Map();
                 for (const row of data.history || []) {
                     const key = String(row.price_date || '').slice(0, 10);
@@ -814,7 +819,7 @@
                     const existing = grouped.get(key);
                     grouped.set(key, existing ? Math.max(existing, number(row.price)) : number(row.price));
                 }
-                return { labels: [...grouped.keys()].sort(), values: [...grouped.entries()].sort().map(([, value]) => value) };
+                return { labels: [...grouped.keys()].sort(), values: [...grouped.entries()].sort().map(([, value]) => value), demo: (data.history || []).some(row => row.data_kind === "demo") };
             } catch {
                 return { labels: [], values: [] };
             }
@@ -834,17 +839,17 @@
         async function updateTrendChart() {
             const selected = document.getElementById('trendCommodity').value;
             const commodities = selected === 'all'
-                ? [...new Set(state.prices.map(p => p.commodity))].slice(0, 5)
+                ? [...new Set(state.commodities.map(p => p.name))].slice(0, 5)
                 : [selected];
             let labels = [];
             const datasets = [];
             for (let i = 0; i < commodities.length; i++) {
                 const commodity = commodities[i];
                 let series = await fetchHistory(commodity);
-                if (!series.values.length) series = syntheticSeries(commodity);
+                if (!series.values.length) continue;
                 if (!labels.length) labels = series.labels;
                 datasets.push({
-                    label: commodity,
+                    label: commodity + (series.demo ? " (DEMO — NOT REAL)" : ""),
                     data: series.values,
                     borderColor: ['#2E8B57', '#FFA500', '#17a2b8', '#dc3545', '#6f42c1'][i % 5],
                     backgroundColor: 'rgba(46,139,87,0.09)',
