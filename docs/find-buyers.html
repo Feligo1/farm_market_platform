@@ -1222,7 +1222,7 @@
 
         function showModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function showLoginModal() { showModal('loginModal'); }
+        function showLoginModal() { window.location.href = 'login.html'; }
 
         function checkAuth() {
             const token = localStorage.getItem('authToken');
@@ -1242,8 +1242,8 @@
                 }
             }
             document.getElementById('sidebarUserName').textContent = appState.user?.name || appState.user?.username || 'Guest';
-            document.getElementById('sidebarUserRole').textContent = appState.user?.role || 'Not Logged In';
-            document.getElementById('loginPrompt').style.display = appState.isAuthenticated ? 'none' : 'flex';
+            document.getElementById('sidebarUserRole').textContent = appState.user?.role || 'Public visitor';
+            document.getElementById('loginPrompt').style.display = 'none';
             document.getElementById('adminPanel').style.display = appState.isAdmin ? 'block' : 'none';
             document.getElementById('adminBadge').style.display = appState.isAdmin ? 'inline-flex' : 'none';
             document.getElementById('adminPanelLink').style.display = appState.isAdmin ? 'flex' : 'none';
@@ -1413,9 +1413,11 @@
                 document.getElementById('gridViewBtn').classList.remove('active');
                 render();
             };
+            document.getElementById('postBuyerBtn').style.display = 'none';
             document.getElementById('postBuyerBtn').onclick = showPostBuyerModal;
+            document.getElementById('postSellerBtn').style.display = 'none';
             document.getElementById('postSellerBtn').onclick = showPostSellerModal;
-            document.getElementById('quickPostBtn').onclick = () => currentTab === 'buyers' ? showPostBuyerModal() : showPostSellerModal();
+            document.getElementById('quickPostBtn').style.display = 'none';
             document.getElementById('refreshBtn').onclick = () => refreshAll(true);
             document.getElementById('resetFiltersBtn').onclick = resetFilters;
             document.getElementById('exportCsvBtn').onclick = exportCsv;
