@@ -50,7 +50,7 @@ body.fc-simple-page .box,body.fc-simple-page .card{background:#fff}
  .fc-global-nav .fc-nav-links a.fc-join{margin:4px 0 0}
 }
 
-/* FarmConnect consistent navigation, matching supplied dark portfolio reference. */
+/* FarmConnect navigation: original green brand, turquoise bottom border, horizontal links. */
 :root { --fc-accent:#f4bd3e; }
 .fc-global-nav,
 .fc-global-nav * { box-sizing:border-box; }
@@ -59,7 +59,7 @@ body.fc-simple-page .box,body.fc-simple-page .card{background:#fff}
   z-index:1100;
   width:100%;
   min-height:68px;
-  background:#101b2e !important;
+  background:#2E8B57 !important;
   border-bottom:3px solid #3cc5bd;
   padding:0 24px !important;
   font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
