@@ -1,0 +1,10 @@
+{
+  "name": "FarmConnect Zambia",
+  "short_name": "FarmConnect",
+  "description": "Market information for Zambian farmers",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#2E8B57",
+  "background_color": "#ffffff"
+}
