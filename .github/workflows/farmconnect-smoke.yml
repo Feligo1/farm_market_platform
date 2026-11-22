@@ -12,6 +12,13 @@ on:
       - 'dashboard.html'
       - 'docs/dashboard.html'
       - 'supabase/functions/**'
+      - 'farmconnect-theme.css'
+      - 'farmconnect-nav.js'
+      - 'docs/farmconnect-theme.css'
+      - 'docs/farmconnect-nav.js'
+      - 'find-buyers.html'
+      - 'news.html'
+      - 'settings.html'
       - 'login.html'
       - 'register.html'
       - 'profile.html'
@@ -46,7 +53,7 @@ jobs:
                       if attempt==3: raise
                       time.sleep(5)
           site=os.environ["SITE"]; api=os.environ["API"]; admin=os.environ["ADMIN"]
-          for name,path,expected in [("homepage","/", "FarmConnect"),("admin page","/admin.html","Admin Control Center"),("history page","/prices.html","History"),("login","/login.html","Email address or username"),("registration","/register.html","Email address"),("profile","/profile.html","Farming details")]:
+          for name,path,expected in [("homepage","/", "FarmConnect"),("admin page","/admin.html","Admin Control Center"),("history page","/prices.html","History"),("login","/login.html","Email address or username"),("registration","/register.html","Email address"),("profile","/profile.html","Farming details"),("news page","/news.html","FarmConnect"),("buyers page","/find-buyers.html","FarmConnect"),("settings","/settings.html","Settings"),("theme","/farmconnect-theme.css","fc-global-nav"),("navigation","/farmconnect-nav.js","fc-nav-links")]:
               code,html=get(site+path)
               assert code==200 and expected.lower() in html.lower(),f"{name} failed HTTP {code}"
               print(f"PASS: {name}")
