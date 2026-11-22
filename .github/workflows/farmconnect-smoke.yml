@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/farmconnect-smoke.yml'
+      - 'index.html'
+      - 'docs/index.html'
       - 'admin.html'
       - 'docs/admin.html'
       - 'prices.html'
@@ -57,6 +59,14 @@ jobs:
               code,html=get(site+path)
               assert code==200 and expected.lower() in html.lower(),f"{name} failed HTTP {code}"
               print(f"PASS: {name}")
+
+          code,homepage=get(site+"/")
+          assert code==200 and 'id="market-dashboard"' in homepage,"Merged market overview missing"
+          assert 'id="fcMarketList"' in homepage and 'id="livePricesContainer"' in homepage,"Live prices / market dashboard missing"
+          assert all(text not in homepage for text in ["Why Choose FarmConnect?","Multiple Ways to Access","Ready to Get Started?","Create Free Account",">Register</a>",">Login</a>"]),"Legacy account/promotional text remains"
+          code,old_dashboard=get(site+"/dashboard.html")
+          assert code==200 and "index.html#market-dashboard" in old_dashboard,"Old dashboard should redirect to homepage"
+          print("PASS: consolidated homepage and retired dashboard")
           for name,path,field in [("status","/status","status"),("commodities","/commodities","commodities"),("markets","/markets","markets"),("history","/prices/history?commodity=Maize&days=540","history")]:
               code,body=get(api+path)
               assert code==200,f"{name} returned HTTP {code}: {body[:300]}"

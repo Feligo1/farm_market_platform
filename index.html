@@ -304,10 +304,7 @@
             <a href="index.html" class="logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></a>
             <ul class="nav-links">
                 <li><a href="index.html" class="active"><i class="fas fa-home"></i> Home</a></li>
-                <li id="dashboardNavItem" style="display: none;"><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li id="adminNavItem" style="display: none;"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin <span class="admin-badge">ADMIN</span></a></li>
-                <li id="loginNavItem"><a href="dashboard.html" id="loginNavLink"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-                <li id="registerNavItem"><a href="dashboard.html"><i class="fas fa-user-plus"></i> Register</a></li>
             </ul>
             <div class="header-actions">
                 <button class="dark-mode-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></button>
@@ -328,13 +325,10 @@
         </div>
         <div class="sidebar-nav" style="padding: 16px;">
             <div class="sidebar-nav-item"><a href="index.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-home"></i> Home</a></div>
-            <div class="sidebar-nav-item" id="sidebarDashboardItem" style="display: none;"><a href="dashboard.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-tachometer-alt"></i> Dashboard</a></div>
             <div class="sidebar-nav-item"><a href="prices.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-chart-line"></i> Market Intelligence</a></div>
             <div class="sidebar-nav-item"><a href="find-buyers.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-users"></i> Buy or Sell</a></div>
             <div class="sidebar-nav-item"><a href="profile.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-user"></i> Profile</a></div>
             <div class="sidebar-divider" style="height: 1px; background: rgba(255,255,255,0.1); margin: 16px 0;"></div>
-            <div class="sidebar-nav-item" id="sidebarLoginItem"><a href="dashboard.html" class="sidebar-nav-link" id="sidebarLoginLink" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-sign-in-alt"></i> Login</a></div>
-            <div class="sidebar-nav-item" id="sidebarRegisterItem"><a href="dashboard.html" class="sidebar-nav-link" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-user-plus"></i> Register</a></div>
             <div class="sidebar-nav-item" id="sidebarLogoutItem" style="display: none;"><a href="#" class="sidebar-nav-link" id="sidebarLogoutBtn" style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: rgba(255,255,255,0.9); text-decoration: none; border-radius: 12px;"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
         </div>
     </aside>
@@ -656,8 +650,8 @@
             state.currentUser=adminSession?userData:{};
             const hideIds=['loginNavItem','registerNavItem','sidebarLoginItem','sidebarRegisterItem','sidebarProfile','heroLoginBtn','ctaLoginBtn','footerLoginLink','loginPrompt'];
             hideIds.forEach(id=>{const element=document.getElementById(id);if(element)element.style.display='none'});
-            const dashboard=document.getElementById('dashboardNavItem');if(dashboard)dashboard.style.display='block';
-            const sidebarDashboard=document.getElementById('sidebarDashboardItem');if(sidebarDashboard)sidebarDashboard.style.display='block';
+            
+            
             const admin=document.getElementById('adminNavItem');if(admin)admin.style.display=adminSession?'block':'none';
             const logout=document.getElementById('sidebarLogoutItem');if(logout)logout.style.display=adminSession?'block':'none';
             const btn=document.getElementById('sidebarLogoutBtn');
