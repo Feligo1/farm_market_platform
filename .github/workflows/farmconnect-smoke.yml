@@ -1,0 +1,62 @@
+name: FarmConnect smoke tests
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/farmconnect-smoke.yml'
+      - 'admin.html'
+      - 'docs/admin.html'
+      - 'prices.html'
+      - 'docs/prices.html'
+      - 'dashboard.html'
+      - 'docs/dashboard.html'
+      - 'supabase/functions/**'
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - name: Check live GitHub Pages and Supabase API
+        env:
+          SITE: https://feligo1.github.io/farm_market_platform
+          API: https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api
+          ADMIN: https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-admin
+        run: |
+          python3 - <<'PY'
+          import os, json, time
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError
+          def get(url):
+              for attempt in range(4):
+                  try:
+                      with urlopen(Request(url,headers={"User-Agent":"FarmConnectSmoke/1.0"}),timeout=20) as r:
+                          return r.status,r.read(400000).decode("utf-8")
+                  except HTTPError as e:
+                      return e.code,e.read(10000).decode("utf-8")
+                  except Exception:
+                      if attempt==3: raise
+                      time.sleep(5)
+          site=os.environ["SITE"]; api=os.environ["API"]; admin=os.environ["ADMIN"]
+          for name,path,expected in [("homepage","/", "FarmConnect"),("admin page","/admin.html","Admin Control Center"),("history page","/prices.html","History")]:
+              code,html=get(site+path)
+              assert code==200 and expected.lower() in html.lower(),f"{name} failed HTTP {code}"
+              print(f"PASS: {name}")
+          for name,path,field in [("status","/status","status"),("commodities","/commodities","commodities"),("markets","/markets","markets"),("history","/prices/history?commodity=Maize&days=540","history")]:
+              code,body=get(api+path)
+              assert code==200,f"{name} returned HTTP {code}: {body[:300]}"
+              data=json.loads(body)
+              assert data.get("success") is True,f"{name} API failure: {data}"
+              assert field in data,f"{name} missing field {field}"
+              if name=="commodities":assert len(data["commodities"])>=10
+              if name=="markets":assert len(data["markets"])>=8
+              if name=="history":
+                  assert len(data["history"])>=1,"No historical records"
+                  assert all(x.get("data_kind")!="demo" or not x.get("is_verified") for x in data["history"]),"Synthetic records incorrectly verified"
+              print(f"PASS: {name}")
+          code,body=get(admin+"?resource=users")
+          assert code==401,f"Admin endpoint should reject anonymous requests; got {code}"
+          print("PASS: unauthorized admin access denied")
+          PY
