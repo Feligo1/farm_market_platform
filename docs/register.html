@@ -9,36 +9,8 @@ button{border:0;border-radius:9px;background:#137744;color:white;font:inherit;fo
 a{color:#126e43}footer{text-align:center;padding:28px;color:#728679;font-size:.85rem}
 @media(max-width:560px){main{margin:24px auto}.box{padding:22px}}
 </style><link rel="stylesheet" href="farmconnect-theme.css?v=20261122-1"><script src="farmconnect-nav.js?v=20261122-1" defer></script></head>
-<body><header><strong>🌽 FarmConnect Zambia</strong><nav><a href="index.html">Home</a><a href="prices.html">Market prices</a></nav></header><main><section class="box"><h1>Create an account</h1><p>Only an email address and password are required. You can set your username and add farmer or trader information later in your profile.</p>
-<form id="registerForm"><label for="email">Email address</label><input id="email" type="email" placeholder="you@example.com" autocomplete="email" required maxlength="254">
-<label for="password">Password</label><input id="password" type="password" placeholder="At least 8 characters" minlength="8" autocomplete="new-password" required>
-
-<button type="submit" class="full" id="submit">Create account</button></form><p id="feedback" role="status" aria-live="polite"></p>
-<p class="small">Already registered? <a href="login.html">Sign in</a></p></section></main><footer>You can choose Farmer, Trader or Buyer from your profile after registration.</footer>
-<script>
-const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api',el=id=>document.getElementById(id);
-const feedback=(text,good=false)=>{el('feedback').textContent=text;el('feedback').className=good?'ok':'error'};
-el('registerForm').addEventListener('submit',async e=>{
-e.preventDefault();const email=el('email').value.trim(),password=el('password').value;
-if(password.length<8){feedback('Use a password of at least 8 characters.');return}
-el('submit').disabled=true;feedback('Creating your account…',true);
-try{
-const res=await fetch(API+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
-const data=await res.json().catch(()=>({}));
-if(!res.ok||!data.success){
- if(data.code==='EMAIL_RATE_LIMIT'||data.code==='EMAIL_PROVIDER_RESTRICTED'){
-   feedback(data.error||'Email confirmation is currently unavailable. Please try later.',false);
-   return;
- }
- throw Error(data.error||'Registration failed.');
-}
-if(data.token){
-localStorage.setItem('authToken',data.token);localStorage.setItem('userData',JSON.stringify(data.user||{}));
-feedback('Account created! Opening your profile…',true);window.location.assign('profile.html');
-}else{
-feedback(data.message||'Account created. Check your inbox to verify the email address, then sign in.',true);
-el('registerForm').reset();el('submit').textContent='Resend? Use login or register after confirming';
-}
-}catch(error){feedback(error.message||'Could not register.');}finally{el('submit').disabled=false}
-});
-</script></body></html>
+<body><header><strong>🌽 FarmConnect Zambia</strong><nav><a href="index.html">Home</a><a href="prices.html">Market prices</a></nav></header><main><section class="box"><h1>No account required</h1><p>FarmConnect market prices, dashboards, agricultural news and buyer listings are freely accessible. You don't need to register or sign in.</p>
+<p><a href="dashboard.html" style="display:inline-block;background:#167c49;color:white;padding:13px 20px;text-decoration:none;border-radius:10px;font-weight:700">Explore the free dashboard</a></p>
+<p id="feedback" role="status" aria-live="polite"></p>
+<p class="small">Administrator? <a href="login.html">Admin sign in</a></p></section></main><footer>FarmConnect Zambia — public market information, no login required.</footer>
+</body></html>
