@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-const headers = { "Access-Control-Allow-Origin":"*", "Access-Control-Allow-Methods":"GET, POST, OPTIONS", "Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type", "Content-Type":"application/json; charset=utf-8" };
+const headers = { "Access-Control-Allow-Origin":"*", "Access-Control-Allow-Methods":"GET, POST, PUT, PATCH, OPTIONS", "Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type", "Content-Type":"application/json; charset=utf-8" };
 const respond = (body: unknown, status=200) => new Response(JSON.stringify(body),{status,headers});
 const url = Deno.env.get("SUPABASE_URL");
 const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -16,27 +16,31 @@ Deno.serve(async (req: Request) => {
  if(req.method==="POST" && (endpoint==="register" || endpoint==="login")){
    let body:any;try{body=await req.json()}catch{return respond({success:false,error:"Invalid JSON"},400)}
    if(endpoint==="register"){
-     const username=String(body.username||"").trim(), email=String(body.email||"").trim().toLowerCase(), password=String(body.password||"");
-     const name=String(body.name||"").trim(), role=["farmer","buyer","trader"].includes(body.role)?body.role:"farmer";
-     if(!/^[a-zA-Z0-9_.-]{3,50}$/.test(username)||!/^\S+@\S+\.\S+$/.test(email)||password.length<10||password.length>128||!name) return respond({success:false,error:"Provide a valid username, email, name and password of at least 10 characters"},400);
-     const {data:existing}=await db.from("users").select("id").eq("username",username).maybeSingle();
-     if(existing) return respond({success:false,error:"Username already registered"},409);
-     const {data:registered,error:registerError}=await authClient.auth.signUp({email,password,options:{data:{display_name:name}}});
-     if(registerError||!registered.user) return respond({success:false,error:"Could not register account. Check email or try another address."},400);
+     const email=String(body.email||"").trim().toLowerCase(), password=String(body.password||"");
+     let username=String(body.username||"").trim();
+     if(!/^\S+@\S+\.\S+$/.test(email)||password.length<8||password.length>128)
+       return respond({success:false,error:"Enter a valid email address and a password of at least 8 characters."},400);
+     if(username&&!/^[a-zA-Z0-9_.-]{3,50}$/.test(username))
+       return respond({success:false,error:"Username must have 3–50 letters, numbers, dots, underscores or hyphens."},400);
+     if(username){
+       const existing=await db.from("users").select("id").ilike("username",username).maybeSingle();
+       if(existing.data)return respond({success:false,error:"Username is already taken."},409);
+     }else{
+       const prefix=email.split("@")[0].replace(/[^a-zA-Z0-9_.-]/g,"").slice(0,22)||"member";
+       username=prefix+"_"+crypto.randomUUID().slice(0,8);
+     }
+     const {data:registered,error:registerError}=await authClient.auth.signUp({email,password});
+     if(registerError)return respond({success:false,error:registerError.message||"Account registration failed."},400);
+     if(!registered.user||!registered.user.identities?.length)
+       return respond({success:true,requires_email_confirmation:true,message:"If this address can be registered, check its inbox for confirmation."});
      const user=registered.user;
-     const names=name.split(/\s+/);
-     const {error:profileError}=await db.from("users").upsert({
-       id:user.id,username,email,password_hash:"managed-by-supabase-auth",
-       first_name:names[0]||name,last_name:names.slice(1).join(" "),
-       role,phone:body.phone?String(body.phone).slice(0,20):null,
-       location:body.location?String(body.location).slice(0,200):null,
-       business_name:body.business_name?String(body.business_name).slice(0,200):null,
-       farm_size_hectares:Number(body.farm_size_hectares)||null,
-       main_crops:body.main_crops?String(body.main_crops).split(",").map((x:string)=>x.trim()).filter(Boolean):null
-     },{onConflict:"id"});
-     if(profileError){console.error("Profile creation failed",profileError);return respond({success:false,error:"Account created but profile setup requires support; do not register again."},500)}
-     const view={user_id:user.id,id:user.id,username,name,email,role};
-     return respond({success:true,requires_email_confirmation:!registered.session,token:registered.session?.access_token||null,user:view});
+     const {error:profileError}=await db.from("users").insert({
+       id:user.id,username,email,password_hash:"managed-by-supabase-auth",role:"farmer",
+       first_name:null,last_name:null,is_active:true,is_email_verified:!!user.email_confirmed_at
+     });
+     if(profileError){console.error("Registration profile error",profileError);return respond({success:false,error:"Account created but profile setup needs support. Do not register again."},500)}
+     const view={user_id:user.id,id:user.id,username,name:username,email,role:"farmer"};
+     return respond({success:true,requires_email_confirmation:!registered.session,token:registered.session?.access_token||null,user:view,message:registered.session?"Account created. Complete your profile when ready.":"Check your email to confirm your account before logging in."});
    }
    const identifier=String(body.username||body.email||"").trim(), password=String(body.password||"");
    if(!identifier||!password) return respond({success:false,error:"Invalid credentials"},401);
@@ -52,14 +56,82 @@ Deno.serve(async (req: Request) => {
    if(profileError||!profile||profile.is_active===false)return respond({success:false,error:"Account is inactive or unavailable"},403);
    return respond({success:true,token:session.session.access_token,user:{user_id:profile.id,id:profile.id,username:profile.username,name:[profile.first_name,profile.last_name].filter(Boolean).join(" "),email:profile.email,role:profile.role,location:profile.location}});
  }
- if(req.method==="GET" && endpoint==="profile"){
-   const token=(req.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
-   if(!token) return respond({success:false,error:"Authentication required"},401);
-   const {data:userRecord,error:tokenError}=await db.auth.getUser(token);
-   if(tokenError||!userRecord.user) return respond({success:false,error:"Invalid session"},401);
-   const {data:profile,error:profileError}=await db.from("users").select("id,username,first_name,last_name,role,email,location,province,district,farm_size_hectares,main_crops,business_name").eq("id",userRecord.user.id).maybeSingle();
-   if(profileError||!profile)return respond({success:false,error:"Profile not found"},404);
-   return respond({success:true,user:profile,profile});
+ if(endpoint==="profile" && ["GET","PUT","PATCH"].includes(req.method)){
+   const token=(req.headers.get("authorization")||"").replace(/^Bearer\\s+/i,"");
+   if(!token)return respond({success:false,error:"Please log in."},401);
+   const {data:identity,error:identityError}=await db.auth.getUser(token);
+   if(identityError||!identity.user)return respond({success:false,error:"Session expired. Please log in again."},401);
+   const userId=identity.user.id;
+   const {data:account,error:readError}=await db.from("users").select("*").eq("id",userId).maybeSingle();
+   if(readError||!account||account.is_active===false)return respond({success:false,error:"Account is unavailable."},403);
+   const userView=(x:any)=>{const {password_hash,ussd_pin_hash,...safe}=x;return {...safe,name:[x.first_name,x.last_name].filter(Boolean).join(" ")||x.username,sms_alerts:x.sms_alerts_enabled};};
+   if(req.method==="GET")return respond({success:true,profile:userView(account),user:userView(account)});
+   const body:any=await req.json().catch(()=>null);
+   if(!body||typeof body!=="object"||Array.isArray(body))return respond({success:false,error:"Invalid profile details."},400);
+   const allowed=["first_name","last_name","phone","location","province","district","farm_size_hectares","main_crops","business_name","business_registration_number","preferred_language","sms_alerts_enabled","email_alerts_enabled","notification_frequency"];
+   const data:Record<string,unknown>={};
+   for(const field of allowed)if(Object.prototype.hasOwnProperty.call(body,field)){
+     let value=body[field];
+     if(typeof value==="string"){value=value.trim().slice(0,250);if(!value)value=null}
+     if(field==="main_crops")value=(Array.isArray(value)?value:String(value||"").split(",")).map((v:any)=>String(v).trim()).filter(Boolean).slice(0,30);
+     if(field==="farm_size_hectares")value=value===null||value===""?null:Number(value);
+     if(field==="farm_size_hectares" && value!==null && (!Number.isFinite(value)||Number(value)<0))return respond({success:false,error:"Invalid farm size."},400);
+     if(["sms_alerts_enabled","email_alerts_enabled"].includes(field)){if(typeof value!=="boolean")return respond({success:false,error:field+" must be true or false."},400)}
+     data[field]=value;
+   }
+   if("name" in body&&!("first_name" in body)){
+      const names=String(body.name||"").trim().slice(0,200).split(/\\s+/).filter(Boolean);
+      data.first_name=names[0]||null;data.last_name=names.slice(1).join(" ")||null;
+   }
+   if("role" in body && account.role!=="admin"){
+     const newRole=String(body.role);
+     if(!["farmer","buyer","trader"].includes(newRole))return respond({success:false,error:"Invalid account type."},400);
+     data.role=newRole;
+   }
+   if(!Object.keys(data).length)return respond({success:false,error:"No profile fields provided."},400);
+   const {data:saved,error:saveError}=await db.from("users").update(data).eq("id",userId).select("*").single();
+   if(saveError){console.error("Profile update failed",saveError);return respond({success:false,error:"Could not save profile details."},500)}
+   return respond({success:true,profile:userView(saved),user:userView(saved)});
+ }
+ if(endpoint==="password" && req.method==="PUT" && u.pathname.includes("/profile/")){
+   const token=(req.headers.get("authorization")||"").replace(/^Bearer\\s+/i,"");
+   const {data:identity,error:identityError}=await db.auth.getUser(token);
+   if(identityError||!identity.user)return respond({success:false,error:"Please log in again."},401);
+   const body:any=await req.json().catch(()=>null);
+   const current=String(body?.current_password||""),replacement=String(body?.new_password||"");
+   if(!current||replacement.length<8||replacement.length>128)return respond({success:false,error:"Current password and new password (8+ characters) are required."},400);
+   const {error:verifyError}=await authClient.auth.signInWithPassword({email:identity.user.email!,password:current});
+   if(verifyError)return respond({success:false,error:"Current password is incorrect."},401);
+   const {error:changeError}=await db.auth.admin.updateUserById(identity.user.id,{password:replacement});
+   if(changeError){console.error("Password update failed",changeError);return respond({success:false,error:"Could not change password."},500)}
+   return respond({success:true,message:"Password changed. Sign in again using your new password."});
+ }
+ if(endpoint==="subscriptions" && req.method==="GET" && u.pathname.includes("/sms/")){
+   const token=(req.headers.get("authorization")||"").replace(/^Bearer\\s+/i,"");
+   const {data:identity,error}=await db.auth.getUser(token);
+   if(error||!identity.user)return respond({success:false,error:"Log in to view subscriptions."},401);
+   const {data,error:readError}=await db.from("sms_subscriptions").select("id,commodity,market,alert_type,threshold,active").eq("user_id",identity.user.id).order("created_at",{ascending:false});
+   if(readError)throw readError;
+   return respond({success:true,subscriptions:data});
+ }
+ if(["subscribe","unsubscribe"].includes(endpoint) && req.method==="POST" && u.pathname.includes("/sms/")){
+   const token=(req.headers.get("authorization")||"").replace(/^Bearer\\s+/i,"");
+   const {data:identity,error}=await db.auth.getUser(token);
+   if(error||!identity.user)return respond({success:false,error:"Please log in."},401);
+   const body:any=await req.json().catch(()=>({}));
+   if(endpoint==="subscribe"){
+     const commodity=String(body.commodity||"").trim();
+     if(!commodity||commodity.length>90)return respond({success:false,error:"Choose a commodity."},400);
+     const {data:exists}=await db.from("commodities").select("name").eq("name",commodity).maybeSingle();
+     if(!exists)return respond({success:false,error:"Unknown commodity."},400);
+     const {data:created,error:insertError}=await db.from("sms_subscriptions").insert({user_id:identity.user.id,commodity,alert_type:"price_change",threshold:Number(body.threshold)||5,active:true}).select("id").single();
+     if(insertError)throw insertError;
+     return respond({success:true,id:created.id,notice:"Alert preferences saved; SMS delivery is not yet enabled."});
+   }
+   let query=db.from("sms_subscriptions").update({active:false}).eq("user_id",identity.user.id);
+   if(body.id)query=query.eq("id",body.id);else if(body.commodity)query=query.eq("commodity",String(body.commodity));else return respond({success:false,error:"Select subscription."},400);
+   const {error:updateError}=await query;if(updateError)throw updateError;
+   return respond({success:true});
  }
  if(req.method==="GET" && endpoint==="stats" && u.pathname.includes("/admin/")){
    const token=(req.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
