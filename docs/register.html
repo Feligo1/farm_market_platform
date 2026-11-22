@@ -25,7 +25,13 @@ el('submit').disabled=true;feedback('Creating your account…',true);
 try{
 const res=await fetch(API+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
 const data=await res.json().catch(()=>({}));
-if(!res.ok||!data.success)throw Error(data.error||'Registration failed.');
+if(!res.ok||!data.success){
+ if(data.code==='EMAIL_RATE_LIMIT'||data.code==='EMAIL_PROVIDER_RESTRICTED'){
+   feedback(data.error||'Email confirmation is currently unavailable. Please try later.',false);
+   return;
+ }
+ throw Error(data.error||'Registration failed.');
+}
 if(data.token){
 localStorage.setItem('authToken',data.token);localStorage.setItem('userData',JSON.stringify(data.user||{}));
 feedback('Account created! Opening your profile…',true);window.location.assign('profile.html');
