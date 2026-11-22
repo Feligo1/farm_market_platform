@@ -1,0 +1,138 @@
+<!-- test_sms.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test SMS Sending</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        input, textarea { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        .result { margin: 20px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .demo { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Test SMS Sending</h1>
+        <p>FarmConnect Africa's Talking Integration</p>
+        
+        <div>
+            <label>Phone Number:</label>
+            <input type="text" id="phone" value="+260971234567" placeholder="+260XXXXXXXXX">
+        </div>
+        
+        <div>
+            <label>Message:</label>
+            <textarea id="message" rows="4">Hello from FarmConnect! Current maize price: ZMW 120/50kg bag.</textarea>
+        </div>
+        
+        <button onclick="sendSMS()">Send Test SMS</button>
+        
+        <div id="result" class="result"></div>
+        
+        <div style="margin-top: 30px;">
+            <h3>Quick Links:</h3>
+            <p><a href="http://127.0.0.1:5001/africastalking-dashboard" target="_blank">Main Dashboard</a></p>
+            <p><a href="http://127.0.0.1:5001/africastalking/test" target="_blank">API Status</a></p>
+            <p><a href="http://127.0.0.1:5001/" target="_blank">FarmConnect Main App</a></p>
+        </div>
+    </div>
+
+    <script>
+    function sendSMS() {
+        const phone = document.getElementById('phone').value;
+        const message = document.getElementById('message').value;
+        const resultDiv = document.getElementById('result');
+        
+        if (!phone || !message) {
+            resultDiv.innerHTML = '<div class="error">Phone and message are required</div>';
+            return;
+        }
+        
+        resultDiv.innerHTML = '<div>Sending...</div>';
+        
+        fetch('http://127.0.0.1:5001/africastalking/send-sms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ phone: phone, message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'demo') {
+                resultDiv.innerHTML = `
+                    <div class="demo">
+                        <h4>⚠️ Demo Mode Active</h4>
+                        <p>No actual SMS was sent (running in demo/sandbox mode).</p>
+                        <p>To send real SMS:</p>
+                        <ol>
+                            <li>Get Africa's Talking API credentials</li>
+                            <li>Update your .env file</li>
+                            <li>Restart the server</li>
+                        </ol>
+                        <p><strong>What would have been sent:</strong></p>
+                        <p>To: ${phone}</p>
+                        <p>Message: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}</p>
+                    </div>`;
+            } else if (data.status === 'success') {
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ SMS Sent Successfully!</h4>
+                        <p>Message ID: ${data.message_id || 'N/A'}</p>
+                        <p>Cost: ${data.cost || 'N/A'}</p>
+                        <p>Provider: ${data.provider || 'N/A'}</p>
+                    </div>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Error</h4>
+                        <p>${data.error || 'Unknown error occurred'}</p>
+                    </div>`;
+            }
+        })
+        .catch(error => {
+            resultDiv.innerHTML = `
+                <div class="error">
+                    <h4>❌ Network Error</h4>
+                    <p>${error}</p>
+                </div>`;
+        });
+    }
+    
+    // Pre-fill with test templates
+    document.addEventListener('DOMContentLoaded', function() {
+        const templates = [
+            "🌾 FarmConnect: Maize price alert! Current price in Lusaka: ZMW 125/50kg bag. Up 3% from yesterday.",
+            "🌧️ Weather alert: Heavy rains expected tomorrow afternoon. Harvest crops today if ready.",
+            "💰 Buyer found! Agro Trading Ltd is buying maize at ZMW 130/50kg bag. Call +260971234567",
+            "📈 Market tip: Sell tomatoes now before prices drop next week. Current price: ZMW 85/kg",
+            "🌱 Farming tip: Plant maize 2 weeks before rains for best yield. Use organic fertilizer."
+        ];
+        
+        // Add template buttons
+        const container = document.querySelector('.container');
+        const templateSection = document.createElement('div');
+        templateSection.innerHTML = `
+            <h3>Quick Templates:</h3>
+            <div id="templates" style="margin: 10px 0;"></div>
+        `;
+        container.insertBefore(templateSection, document.querySelector('div:last-child'));
+        
+        const templatesDiv = document.getElementById('templates');
+        templates.forEach((template, index) => {
+            const button = document.createElement('button');
+            button.textContent = `Template ${index + 1}`;
+            button.style.cssText = 'background: #2196F3; margin: 5px; padding: 5px 10px; font-size: 12px;';
+            button.onclick = () => {
+                document.getElementById('message').value = template;
+            };
+            templatesDiv.appendChild(button);
+        });
+    });
+    </script>
+</body>
+</html>uuuu
