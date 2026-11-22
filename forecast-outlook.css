@@ -1,0 +1,37 @@
+/* FarmConnect price outlook: restrained, accessible, mobile-first */
+.fc-forecast{padding:64px 0 82px;background:var(--bg-primary,#f5f7fb);color:var(--text-primary,#1a1a2e)}
+.fc-forecast .container{max-width:1180px}
+.fc-forecast h2{font-size:clamp(1.7rem,3vw,2.3rem);letter-spacing:-.035em;line-height:1.2;margin:0 0 12px}
+.fc-forecast .fc-forecast-intro{max-width:730px;color:var(--text-secondary,#4a5568);line-height:1.7;margin:0 0 26px}
+.fc-forecast-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:14px;align-items:end}
+.fc-forecast-field{display:grid;gap:7px;min-width:0}
+.fc-forecast-field label{font-size:.9rem;font-weight:650;color:var(--text-primary)}
+.fc-forecast-field select{width:100%;min-height:45px;padding:10px 12px;border:1px solid var(--border-color,#d9e2ea);border-radius:7px;background:var(--bg-card,#fff);color:var(--text-primary);font:inherit}
+.fc-forecast-submit{min-height:45px;padding:10px 22px;background:#25784c;color:#fff;border:0;border-radius:7px;font:600 .95rem Inter,system-ui,sans-serif;cursor:pointer}
+.fc-forecast-submit:hover{background:#1d633d}
+.fc-forecast-submit:disabled{opacity:.65;cursor:wait}
+.fc-forecast-mode{display:flex;align-items:flex-start;gap:11px;margin:22px 0 17px;line-height:1.5;color:var(--text-secondary);font-size:.92rem}
+.fc-forecast-mode input{width:19px;height:19px;accent-color:#267e51;flex:none;margin-top:2px}
+.fc-forecast-mode strong{color:var(--text-primary);display:block;font-weight:650}
+.fc-forecast-status{padding:18px 20px;background:var(--bg-card,#fff);border:1px solid var(--border-color,#dbe4ea);border-radius:8px;color:var(--text-secondary);line-height:1.65}
+.fc-forecast-status[data-kind="demo"]{border-left:4px solid #bf8a33}
+.fc-forecast-status[data-kind="error"]{border-left:4px solid #b24c4c}
+.fc-forecast-status[data-kind="verified"]{border-left:4px solid #267e51}
+.fc-forecast-results[hidden]{display:none!important}
+.fc-forecast-results{margin-top:22px}
+.fc-forecast-meta{display:flex;gap:12px 26px;flex-wrap:wrap;color:var(--text-secondary);font-size:.89rem;margin-bottom:20px}
+.fc-forecast-meta strong{color:var(--text-primary)}
+.fc-forecast-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.fc-forecast-stat{padding:20px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px}
+.fc-forecast-stat small{display:block;color:var(--text-secondary);font-size:.82rem;margin-bottom:7px}
+.fc-forecast-stat strong{display:block;font-size:clamp(1.25rem,2vw,1.7rem);letter-spacing:-.03em}
+.fc-forecast-chart{background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:20px}
+.fc-forecast-chart h3{margin:0 0 6px;font-size:1.1rem}
+.fc-forecast-chart p{margin:0 0 12px;color:var(--text-secondary);font-size:.85rem}
+.fc-forecast-chart svg{display:block;width:100%;height:auto;max-height:310px}
+.fc-forecast-table{width:100%;border-collapse:collapse;margin-top:18px;text-align:left;font-variant-numeric:tabular-nums}
+.fc-forecast-table th,.fc-forecast-table td{padding:12px 9px;border-bottom:1px solid var(--border-color);font-size:.91rem}
+.fc-forecast-table th{font-weight:650;color:var(--text-secondary)}
+.fc-forecast-footnote{font-size:.82rem;line-height:1.7;margin-top:15px;color:var(--text-secondary)}
+@media(max-width:780px){.fc-forecast-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.fc-forecast-submit{width:100%}.fc-forecast-summary{grid-template-columns:1fr}}
+@media(max-width:520px){.fc-forecast{padding:48px 0 60px}.fc-forecast-controls{grid-template-columns:1fr}.fc-forecast-chart{padding:14px}.fc-forecast-table th,.fc-forecast-table td{padding:10px 5px;font-size:.78rem}}
