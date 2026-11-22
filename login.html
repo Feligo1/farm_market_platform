@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login | FarmConnect Zambia</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administrator Sign In | FarmConnect Zambia</title><style>
 :root{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:#f3f7f4;color:#18352a}
 *{box-sizing:border-box}body{margin:0}header{background:#153e2d;color:white;padding:18px clamp(16px,5vw,80px);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}header a{color:white;text-decoration:none;margin-left:15px}header strong{font-size:1.2rem}
 main{max-width:540px;margin:6vh auto;padding:0 16px}.box{background:white;padding:32px;border:1px solid #dae9df;border-radius:16px;box-shadow:0 12px 35px #183e2912}
@@ -9,12 +9,12 @@ button{border:0;border-radius:9px;background:#137744;color:white;font:inherit;fo
 a{color:#126e43}footer{text-align:center;padding:28px;color:#728679;font-size:.85rem}
 @media(max-width:560px){main{margin:24px auto}.box{padding:22px}}
 </style><link rel="stylesheet" href="farmconnect-theme.css?v=20261122-1"><script src="farmconnect-nav.js?v=20261122-1" defer></script></head>
-<body><header><strong>🌽 FarmConnect Zambia</strong><nav><a href="index.html">Home</a><a href="prices.html">Market prices</a></nav></header><main><section class="box"><h1>Welcome back</h1><p>Sign in using your email address <strong>or username</strong> and password.</p>
+<body><header><strong>🌽 FarmConnect Zambia</strong><nav><a href="index.html">Home</a><a href="prices.html">Market prices</a></nav></header><main><section class="box"><h1>Administrator sign in</h1><p>FarmConnect is free to explore without an account. Only administrators need to sign in to manage content.</p>
 <form id="loginForm"><label for="identifier">Email address or username</label><input id="identifier" type="text" placeholder="Email or username" autocomplete="username" required maxlength="254">
 <label for="password">Password</label><input id="password" type="password" placeholder="Your password" autocomplete="current-password" required>
 <label class="small" style="font-weight:400"><input id="remember" type="checkbox" style="width:auto;display:inline;margin-right:6px">Remember my username</label>
 <button type="submit" class="full" id="submit">Sign in</button></form><p id="feedback" role="status" aria-live="polite"></p>
-<p class="small">New to FarmConnect? <a href="register.html">Create an account</a></p></section></main>
+<p class="small">Just browsing? <a href="dashboard.html">Open the free market dashboard</a></p></section></main>
 <footer>FarmConnect Zambia — Market information for farmers and traders</footer>
 <script>
 const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api';
@@ -29,11 +29,12 @@ try{
 const res=await fetch(API+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
 const data=await res.json().catch(()=>({}));
 if(!res.ok||!data.success||!data.token)throw Error(data.error||'Unable to sign in. Check your credentials.');
+if(data.user?.role!=='admin')throw Error('This login is for administrators only. Public access does not require an account.');
 localStorage.setItem('authToken',data.token);localStorage.setItem('userData',JSON.stringify(data.user));
 if(el('remember').checked)localStorage.setItem('farmconnectRememberedUsername',username);
 else localStorage.removeItem('farmconnectRememberedUsername');
 feedback('Signed in successfully. Opening your profile…',true);
-window.location.assign(data.user?.role==='admin'?'admin.html':'profile.html');
+window.location.assign('admin.html');
 }catch(error){feedback(error.message||'Login failed.');}finally{el('submit').disabled=false}
 });
 </script></body></html>
