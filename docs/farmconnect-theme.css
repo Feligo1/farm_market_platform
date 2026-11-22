@@ -167,3 +167,67 @@ body > header:not(.fc-global-nav) { display:none !important; }
   .fc-global-nav .fc-nav-links { flex-direction:row !important; display:flex !important; align-items:stretch !important; width:auto !important; }
   .fc-global-nav .fc-nav-links a { display:inline-flex !important; padding:0 1px !important; font-size:13px !important; }
 }
+
+
+/* 2026-11-22: readability and single-navigation cleanup.
+   Keep FarmConnect's original green/turquoise branding and mobile horizontal scrolling. */
+html { font-size:16px; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+body { font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important; font-size:16px; line-height:1.62; }
+body:not(.dark-mode) { --text-primary:#172b25; --text-secondary:#40554e; --text-muted:#52685d; }
+body.dark-mode { --text-primary:#f4f7f6; --text-secondary:#d2e2d8; --text-muted:#b7d0c2; }
+body:not(.dark-mode) main,body:not(.dark-mode) .main-content,body:not(.dark-mode) .content { color:var(--text-primary,#172b25); }
+body.dark-mode main,body.dark-mode .main-content,body.dark-mode .content { color:var(--text-primary,#f4f7f6); }
+main p,main li,.main-content p,.main-content li,.content p,.content li { line-height:1.65; }
+main h1,main h2,main h3,.main-content h1,.main-content h2,.main-content h3 { line-height:1.25; letter-spacing:-.02em; }
+main h1,.main-content h1 { font-size:clamp(1.8rem,3.5vw,2.5rem); }
+main h2,.main-content h2 { font-size:clamp(1.4rem,2.8vw,2rem); }
+main h3,.main-content h3 { font-size:clamp(1.1rem,2vw,1.35rem); }
+small,.muted,.subtext,.subtitle,.card-subtitle,.fc-panel-caption { opacity:1; }
+body:not(.dark-mode) main .muted,body:not(.dark-mode) main .subtitle,body:not(.dark-mode) main .card-subtitle,
+body:not(.dark-mode) main .fc-panel-caption { color:#40554e; }
+body.dark-mode main .muted,body.dark-mode main .subtitle,body.dark-mode main .card-subtitle,
+body.dark-mode main .fc-panel-caption { color:#d2e2d8; }
+input:not([type=checkbox]):not([type=radio]),select,textarea {
+  font-size:16px!important; line-height:1.45!important;
+  min-height:42px;
+  color:var(--text-primary,#172b25);
+  background:var(--bg-card,#fff);
+}
+body:not(.dark-mode) input::placeholder,body:not(.dark-mode) textarea::placeholder { color:#5c6b65;opacity:1; }
+body.dark-mode input::placeholder,body.dark-mode textarea::placeholder { color:#b4c7bc;opacity:1; }
+button,.btn,.tab-btn,.action-tile { font-size:max(14px,0.925rem); line-height:1.45; }
+table,.data-table { font-size:0.9rem; line-height:1.5; }
+table th,table td,.data-table th,.data-table td { padding-top:11px;padding-bottom:11px; }
+body:not(.dark-mode) .card,body:not(.dark-mode) .panel,body:not(.dark-mode) .market-panel,
+body:not(.dark-mode) .chart-card,body:not(.dark-mode) .fc-overview-panel,body:not(.dark-mode) .fc-overview-metric {
+ color:var(--text-primary,#172b25);
+}
+body.dark-mode .card,body.dark-mode .panel,body.dark-mode .market-panel,
+body.dark-mode .chart-card,body.dark-mode .fc-overview-panel,body.dark-mode .fc-overview-metric {
+ color:var(--text-primary,#f4f7f6);
+}
+/* Keep one visible navigation: legacy navbar/sidebar remains in DOM for existing handlers but never duplicates the shared menu. */
+body > .top-nav,body > .sidebar,body > .sidebar-overlay,
+body > .sidebar-overlay,body > .header,body > .mobile-nav,body > .mobile-menu,
+body > aside.sidebar,body > div.sidebar-overlay { display:none!important; }
+#mobileMenuBtn,#menuBtn,.menu-btn,.mobile-menu-btn,.hamburger,.hamburger-menu { display:none!important; }
+main.main-content,.main-content { margin-left:0!important;width:100%;max-width:none; }
+/* Preserve hero-image readability, including browsers that do not render background-clipped text. */
+.hero h1,.home-hero h1 { -webkit-text-fill-color:currentColor; }
+body:not(.dark-mode) .hero:not(.fc-overview) > h1,
+body:not(.dark-mode) .hero h1 { text-shadow:0 1px 4px rgba(0,0,0,.22); }
+body:not(.dark-mode) .hero-content h1 { color:#fff!important;-webkit-text-fill-color:#fff!important; }
+body:not(.dark-mode) .hero-content p { color:#fff!important;opacity:1; }
+body.dark-mode .hero-content h1 { color:#fff!important;-webkit-text-fill-color:#fff!important; }
+/* Do not change existing navbar green, accent, turquoise separator or horizontal scroll. */
+.fc-global-nav { background:#2E8B57!important;border-bottom:3px solid #3cc5bd!important; }
+.fc-global-nav .fc-nav-links a { color:#f1fff7!important; }
+.fc-global-nav .fc-nav-links a:hover,.fc-global-nav .fc-nav-links a.fc-current { color:#fff5b9!important; }
+.fc-global-nav .fc-brand { color:#fff!important; }
+@media(max-width:740px) {
+  .fc-global-nav { overflow-x:auto!important; }
+  .fc-nav-inner { min-width:100%;width:max-content; }
+  .fc-global-nav .fc-nav-links { display:flex!important;flex-wrap:nowrap!important;flex-direction:row!important; }
+  .fc-global-nav .fc-nav-links a { display:inline-flex!important;white-space:nowrap!important; }
+  main,.content,.main-content { min-width:0; }
+}
