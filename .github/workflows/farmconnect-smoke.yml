@@ -71,6 +71,11 @@ jobs:
               print(f"PASS: {name}")
           code,body=get(admin+"?resource=users")
           assert code==401,f"Admin endpoint should reject anonymous requests; got {code}"
+          nav_code=get(site+"/farmconnect-nav.js")[1]
+          css_code=get(site+"/farmconnect-theme.css")[1]
+          assert "fc-nav-inner" in nav_code and "fc-nav-toggle" not in nav_code,"Navbar script still includes hamburger"
+          assert "border-bottom:3px solid #3cc5bd" in css_code,"Shared dark navbar theme not deployed"
+          print("PASS: reference-style horizontal navbar without hamburger")
           print("PASS: unauthorized admin access denied")
           code,body=get(api+"/profile")
           assert code==401,f"Profile must reject anonymous access, got {code}: {body[:100]}"
