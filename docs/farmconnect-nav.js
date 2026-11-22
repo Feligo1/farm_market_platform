@@ -14,19 +14,16 @@ function run(){
  var title=document.createElement('span');title.textContent='FarmConnect Zambia';brand.append(mark,title);
  var toggle=document.createElement('button');toggle.type='button';toggle.className='fc-nav-toggle';toggle.setAttribute('aria-label','Open navigation');toggle.setAttribute('aria-expanded','false');toggle.textContent='☰';
  var links=document.createElement('div');links.className='fc-nav-links';
- var items=[['index.html','Home'],['dashboard.html','Dashboard'],['prices.html','Market Prices'],['find-buyers.html','Buyers & Sellers'],['news.html','News'],['profile.html','My Profile'],['admin.html','Admin'],['login.html','Sign In'],['register.html','Register']];
+ var items=[['index.html','Home'],['dashboard.html','Dashboard'],['prices.html','Market Prices'],['find-buyers.html','Buyers & Sellers'],['news.html','News'],['admin.html','Admin']];
  var currentUser=null;try{currentUser=JSON.parse(localStorage.getItem('userData')||'null')}catch(_){}
  var signedIn=!!localStorage.getItem('authToken'),isAdmin=signedIn&&currentUser?.role==='admin';
  for(var item of items){
   var a=document.createElement('a');a.href=item[0];a.textContent=item[1];
   if(page===item[0]){a.classList.add('fc-current');a.setAttribute('aria-current','page')}
-  if(item[0]==='admin.html'&&!isAdmin)a.hidden=true;
-  if(item[0]==='profile.html'&&!signedIn)a.hidden=true;
-  if((item[0]==='register.html'||item[0]==='login.html')&&signedIn)a.hidden=true;
-  if(item[0]==='register.html')a.classList.add('fc-join');
+  if(item[0]==='admin.html'&&!isAdmin){a.textContent='Admin Login';a.href='login.html';}
   links.append(a);
  }
- if(signedIn){
+ if(isAdmin){
   var out=document.createElement('a');out.href='login.html';out.textContent='Log out';
   out.addEventListener('click',function(e){e.preventDefault();localStorage.removeItem('authToken');localStorage.removeItem('userData');location.href='login.html'});
   links.append(out);
