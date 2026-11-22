@@ -57,7 +57,7 @@ Deno.serve(async (req: Request) => {
    return respond({success:true,token:session.session.access_token,user:{user_id:profile.id,id:profile.id,username:profile.username,name:[profile.first_name,profile.last_name].filter(Boolean).join(" "),email:profile.email,role:profile.role,location:profile.location}});
  }
  if(endpoint==="profile" && ["GET","PUT","PATCH"].includes(req.method)){
-   const token=(req.headers.get("authorization")||"").replace(/^Bearer\\s+/i,"");
+   const token=(req.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
    if(!token)return respond({success:false,error:"Please log in."},401);
    const {data:identity,error:identityError}=await db.auth.getUser(token);
    if(identityError||!identity.user)return respond({success:false,error:"Session expired. Please log in again."},401);
@@ -90,7 +90,7 @@ Deno.serve(async (req: Request) => {
      }
    }
    if("name" in body&&!("first_name" in body)){
-      const names=String(body.name||"").trim().slice(0,200).split(/\\s+/).filter(Boolean);
+      const names=String(body.name||"").trim().slice(0,200).split(/\s+/).filter(Boolean);
       data.first_name=names[0]||null;data.last_name=names.slice(1).join(" ")||null;
    }
    if("role" in body && account.role!=="admin"){
@@ -104,7 +104,7 @@ Deno.serve(async (req: Request) => {
    return respond({success:true,profile:userView(saved),user:userView(saved)});
  }
  if(endpoint==="password" && req.method==="PUT" && u.pathname.includes("/profile/")){
-   const token=(req.headers.get("authorization")||"").replace(/^Bearer\\s+/i,"");
+   const token=(req.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
    const {data:identity,error:identityError}=await db.auth.getUser(token);
    if(identityError||!identity.user)return respond({success:false,error:"Please log in again."},401);
    const body:any=await req.json().catch(()=>null);
@@ -117,7 +117,7 @@ Deno.serve(async (req: Request) => {
    return respond({success:true,message:"Password changed. Sign in again using your new password."});
  }
  if(endpoint==="subscriptions" && req.method==="GET" && u.pathname.includes("/sms/")){
-   const token=(req.headers.get("authorization")||"").replace(/^Bearer\\s+/i,"");
+   const token=(req.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
    const {data:identity,error}=await db.auth.getUser(token);
    if(error||!identity.user)return respond({success:false,error:"Log in to view subscriptions."},401);
    const {data,error:readError}=await db.from("sms_subscriptions").select("id,commodity,market,alert_type,threshold,active").eq("user_id",identity.user.id).order("created_at",{ascending:false});
@@ -125,7 +125,7 @@ Deno.serve(async (req: Request) => {
    return respond({success:true,subscriptions:data});
  }
  if(["subscribe","unsubscribe"].includes(endpoint) && req.method==="POST" && u.pathname.includes("/sms/")){
-   const token=(req.headers.get("authorization")||"").replace(/^Bearer\\s+/i,"");
+   const token=(req.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
    const {data:identity,error}=await db.auth.getUser(token);
    if(error||!identity.user)return respond({success:false,error:"Please log in."},401);
    const body:any=await req.json().catch(()=>({}));
