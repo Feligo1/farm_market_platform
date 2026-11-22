@@ -46,7 +46,7 @@ Deno.serve(async (req: Request) => {
    if(!identifier||!password) return respond({success:false,error:"Invalid credentials"},401);
    let email=identifier;
    if(!identifier.includes("@")){
-     const lookup=await db.from("users").select("email").eq("username",identifier).maybeSingle();
+     const lookup=await db.from("users").select("email").ilike("username",identifier).maybeSingle();
      if(lookup.error||!lookup.data?.email)return respond({success:false,error:"Invalid credentials"},401);
      email=lookup.data.email;
    }
