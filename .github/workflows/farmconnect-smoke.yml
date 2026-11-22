@@ -75,14 +75,17 @@ jobs:
           code,body=get(api+"/profile")
           assert code==401,f"Profile must reject anonymous access, got {code}: {body[:100]}"
           print("PASS: profile access protected")
+          code,login=get(site+"/login.html")
+          assert "Administrator sign in" in login,"Admin-only login page was not published"
+          print("PASS: administrator login remains available")
           def post(path,payload):
               request=Request(api+path,data=json.dumps(payload).encode(),headers={"Content-Type":"application/json","User-Agent":"FarmConnectSmoke/1.0"},method="POST")
               try:
                   with urlopen(request,timeout=25) as resp:return resp.status,json.loads(resp.read().decode())
               except HTTPError as e:return e.code,json.loads(e.read().decode())
           code,data=post("/register",{"email":"invalid","password":"short"})
-          assert code==400,f"Registration validation failed HTTP {code}: {data}"
-          print("PASS: registration validates credentials")
+          assert code==410,f"Public registration should be disabled HTTP {code}: {data}"
+          print("PASS: public registration disabled")
           code,data=post("/login",{"username":"not-a-real-user-for-smoketest","password":"invalid-password"})
           assert code==401,f"Bad login must return 401, got {code}: {data}"
           print("PASS: incorrect credentials rejected")
