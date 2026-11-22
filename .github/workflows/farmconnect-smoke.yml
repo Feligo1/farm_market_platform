@@ -13,6 +13,7 @@ on:
       - 'docs/prices.html'
       - 'dashboard.html'
       - 'docs/dashboard.html'
+      - 'docs/settings.html'
       - 'supabase/functions/**'
       - 'farmconnect-theme.css'
       - 'farmconnect-nav.js'
@@ -67,6 +68,16 @@ jobs:
           code,old_dashboard=get(site+"/dashboard.html")
           assert code==200 and "index.html#market-dashboard" in old_dashboard,"Old dashboard should redirect to homepage"
           print("PASS: consolidated homepage and retired dashboard")
+          assert "await fetchUserStats()" not in homepage,"Legacy homepage initialization bug still present"
+          assert 'const displayPrices = uniquePrices.slice(0, 6)' in homepage,"Homepage preview must be compact"
+          assert 'View all market prices & history' in homepage,"Missing link to detailed market prices"
+          code,settings_page=get(site+"/settings.html")
+          assert code==200 and "Settings moved" in settings_page,"Duplicate settings page was not consolidated"
+          css=get(site+"/farmconnect-theme.css")[1]
+          assert "body > .top-nav" in css and "--text-primary:#172b25" in css,"Single navbar or readable text rules missing"
+          assert "background:#2E8B57!important" in css,"Green site branding must remain unchanged"
+          print("PASS: readable font, green navbar, consolidated settings and price preview")
+
           for name,path,field in [("status","/status","status"),("commodities","/commodities","commodities"),("markets","/markets","markets"),("history","/prices/history?commodity=Maize&days=540","history")]:
               code,body=get(api+path)
               assert code==200,f"{name} returned HTTP {code}: {body[:300]}"
