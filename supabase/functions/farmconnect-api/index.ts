@@ -79,6 +79,16 @@ Deno.serve(async (req: Request) => {
      if(["sms_alerts_enabled","email_alerts_enabled"].includes(field)){if(typeof value!=="boolean")return respond({success:false,error:field+" must be true or false."},400)}
      data[field]=value;
    }
+   if("username" in body){
+     const candidate=String(body.username||"").trim();
+     if(!/^[a-zA-Z0-9_.-]{3,50}$/.test(candidate))return respond({success:false,error:"Username must have 3–50 letters, numbers, dots, underscores or hyphens."},400);
+     if(candidate.toLowerCase()!==String(account.username).toLowerCase()){
+       const {data:collision,error:collisionError}=await db.from("users").select("id").ilike("username",candidate).neq("id",userId).maybeSingle();
+       if(collisionError)return respond({success:false,error:"Could not check username availability."},500);
+       if(collision)return respond({success:false,error:"Username is already taken."},409);
+       data.username=candidate;
+     }
+   }
    if("name" in body&&!("first_name" in body)){
       const names=String(body.name||"").trim().slice(0,200).split(/\\s+/).filter(Boolean);
       data.first_name=names[0]||null;data.last_name=names.slice(1).join(" ")||null;
