@@ -41,15 +41,17 @@
     let user = null;
     try { user = JSON.parse(localStorage.getItem("userData") || "null"); } catch (_) {}
     const isAdmin = !!localStorage.getItem("authToken") && user?.role === "admin";
-    const admin = document.createElement("a");
-    admin.href = isAdmin ? "admin.html" : "login.html";
-    admin.textContent = isAdmin ? "Admin Panel" : "Admin";
-    if (page === "admin.html" || page === "login.html") {
-      admin.classList.add("fc-current");
-      admin.setAttribute("aria-current", "page");
-    }
-    links.appendChild(admin);
+    // Administrator tools are not advertised to public visitors.
+    // The backend continues to enforce authorization for privileged operations.
     if (isAdmin) {
+      const admin = document.createElement("a");
+      admin.href = "admin.html";
+      admin.textContent = "Admin Panel";
+      if (page === "admin.html") {
+        admin.classList.add("fc-current");
+        admin.setAttribute("aria-current", "page");
+      }
+      links.appendChild(admin);
       const logout = document.createElement("a");
       logout.href = "login.html";
       logout.textContent = "Log out";

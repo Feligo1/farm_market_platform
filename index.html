@@ -304,7 +304,6 @@
             <a href="index.html" class="logo"><i class="fas fa-tractor"></i><span>FarmConnect</span></a>
             <ul class="nav-links">
                 <li><a href="index.html" class="active"><i class="fas fa-home"></i> Home</a></li>
-                <li id="adminNavItem" style="display: none;"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin <span class="admin-badge">ADMIN</span></a></li>
             </ul>
             <div class="header-actions">
                 <button class="dark-mode-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></button>
@@ -639,7 +638,6 @@
             hideIds.forEach(id=>{const element=document.getElementById(id);if(element)element.style.display='none'});
             
             
-            const admin=document.getElementById('adminNavItem');if(admin)admin.style.display=adminSession?'block':'none';
             const logout=document.getElementById('sidebarLogoutItem');if(logout)logout.style.display=adminSession?'block':'none';
             const btn=document.getElementById('sidebarLogoutBtn');
             if(btn)btn.onclick=e=>{e.preventDefault();localStorage.removeItem('authToken');localStorage.removeItem('userData');location.href='index.html'};
