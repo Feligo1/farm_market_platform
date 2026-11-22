@@ -297,6 +297,7 @@
     .fc-refresh{padding:10px 15px;background:var(--primary,#2e8b57);color:#fff;border:0;border-radius:9px;font-weight:650;cursor:pointer}
     @media(max-width:760px){.fc-overview{padding:48px 0}.fc-overview-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.fc-overview-grid{grid-template-columns:1fr}.fc-overview-metric{padding:16px}}
     </style>
+    <link rel="stylesheet" href="forecast-outlook.css?v=1">
 </head>
 <body>
     <header class="header">
@@ -378,6 +379,40 @@
         </div>
         <div id="fcMarketNotice" class="fc-market-notice" role="status" aria-live="polite">Checking verified price availability…</div>
         <div class="fc-overview-actions"><a href="find-buyers.html" class="btn btn-outline"><i class="fas fa-handshake"></i> Find buyers & sellers</a><a href="news.html" class="btn btn-outline"><i class="fas fa-newspaper"></i> Agricultural news</a></div></div></section>
+
+
+    <section id="price-forecast" class="fc-forecast" aria-labelledby="fcForecastHeading">
+      <div class="container">
+        <h2 id="fcForecastHeading">Commodity price outlook</h2>
+        <p class="fc-forecast-intro">Explore potential price movements for a selected crop and Zambian market. Forecasts require enough verified historical observations. Demonstration results use synthetic sample prices and are not real market predictions.</p>
+        <form id="fcForecastForm" class="fc-forecast-controls">
+          <div class="fc-forecast-field"><label for="fcForecastCommodity">Commodity</label><select id="fcForecastCommodity" required><option value="">Loading commodities…</option></select></div>
+          <div class="fc-forecast-field"><label for="fcForecastMarket">Market</label><select id="fcForecastMarket" required><option value="">Loading markets…</option></select></div>
+          <div class="fc-forecast-field"><label for="fcForecastMonths">Forecast period</label><select id="fcForecastMonths"><option value="1">Next month</option><option value="2">Next 2 months</option><option value="3" selected>Next 3 months</option></select></div>
+          <button type="submit" id="fcForecastSubmit" class="fc-forecast-submit">View outlook</button>
+        </form>
+        <label class="fc-forecast-mode" for="fcForecastDemo"><input type="checkbox" id="fcForecastDemo">
+          <span><strong>Demonstration mode — simulated data</strong>Use sample price records to see how the forecast works. These are not actual market observations.</span>
+        </label>
+        <p id="fcForecastStatus" class="fc-forecast-status" role="status" aria-live="polite">Loading forecast options…</p>
+        <div id="fcForecastResults" class="fc-forecast-results" hidden>
+          <div class="fc-forecast-meta"><span><strong id="fcForecastDataLabel"></strong></span><span>Method: <strong id="fcForecastModel"></strong></span><span id="fcForecastObservations"></span></div>
+          <div class="fc-forecast-summary">
+            <div class="fc-forecast-stat"><small>Last recorded price</small><strong id="fcForecastCurrent">—</strong></div>
+            <div class="fc-forecast-stat"><small>Next month estimate</small><strong id="fcForecastFirst">—</strong></div>
+            <div class="fc-forecast-stat"><small>Final forecast month</small><strong id="fcForecastLast">—</strong></div>
+          </div>
+          <div class="fc-forecast-chart">
+            <h3 id="fcForecastChartTitle">Price outlook</h3>
+            <p id="fcForecastUnit"></p>
+            <svg id="fcForecastSVG" viewBox="0 0 900 265" aria-label="Historical and estimated price trend"></svg>
+            <table class="fc-forecast-table"><thead><tr><th scope="col">Month</th><th scope="col">Estimated price</th><th scope="col">Indicative range</th></tr></thead><tbody id="fcForecastRows"></tbody></table>
+            <p class="fc-forecast-footnote">The range is an indicative spread based on variation in historical prices; it is not a statistically calibrated confidence interval. This feature estimates commodity prices, not buyer demand.</p>
+          </div>
+          <p class="fc-forecast-footnote" id="fcForecastExplanation"></p>
+        </div>
+      </div>
+    </section>
 
     <footer class="footer">
         <div class="container"><div class="footer-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px;">
@@ -737,5 +772,6 @@
         
         window.refreshAllData = refreshAllData;
     </script>
+    <script src="forecast-outlook.js?v=1" defer></script>
 </body>
 </html>
