@@ -109,7 +109,7 @@ async function openEditor(item=null){
   const wrapper=document.createElement('div');wrapper.className='field';
   const label=document.createElement('label');label.textContent=pretty(col);label.htmlFor='field-'+col;wrapper.append(label);
   let node;
-  if(bools.has(col)||boolCols.has(col)){node=document.createElement('select');[['','— Keep default —'],['true','Yes'],['false','No']].forEach(([v,t])=>{const opt=new Option(t,v);node.add(opt)});if(item&&item[col]!==null)node.value=String(Boolean(item[col]))}
+  if(boolCols.has(col)){node=document.createElement('select');[['','— Keep default —'],['true','Yes'],['false','No']].forEach(([v,t])=>{const opt=new Option(t,v);node.add(opt)});if(item&&item[col]!==null)node.value=String(Boolean(item[col]))}
   else if(references[col]){node=document.createElement('select');node.add(new Option('— Select —',''));const values=await lookup(references[col]);for(const ref of values){let name=ref.name||ref.username||ref.title||ref.business_name||ref.id;node.add(new Option(String(name)+' (#'+String(ref.id).slice(0,8)+')',String(ref.id)))}if(item?.[col]!==null&&item?.[col]!==undefined)node.value=String(item[col])}
   else if(['content','notes','description','summary','message'].includes(col)){node=document.createElement('textarea');node.value=item?.[col]??''}
   else if(col==='role'){node=document.createElement('select');for(const role of ['farmer','buyer','trader','admin'])node.add(new Option(role,role));node.value=item?.[col]||'farmer'}
