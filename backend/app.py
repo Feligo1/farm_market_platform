@@ -136,10 +136,10 @@ def build_db_config():
         return None
 
     return {
-        "host": os.getenv("DB_HOST", "ep-bitter-cell-alftjnnc-pooler.c-3.eu-central-1.aws.neon.tech"),
+        "host": os.getenv("DB_HOST", "db.qlfsmwvehigoildkuevq.supabase.co"),
         "port": int(os.getenv("DB_PORT", "5432")),
-        "database": os.getenv("DB_NAME", "neondb"),
-        "user": os.getenv("DB_USER", "neondb_owner"),
+        "database": os.getenv("DB_NAME", "postgres"),
+        "user": os.getenv("DB_USER", "postgres"),
         "password": password,
         "sslmode": os.getenv("DB_SSLMODE", "require"),
         "connect_timeout": int(os.getenv("DB_CONNECT_TIMEOUT", "15")),
@@ -187,7 +187,7 @@ def init_db_pool():
         print(f"[WARNING] DB failed, running in safe mode: {exc}")
         if "password authentication failed" in str(exc).lower():
             print(
-                "[WARNING] Neon rejected the configured password. Update DATABASE_URL "
+                "[WARNING] Supabase rejected the configured database password. Update DATABASE_URL "
                 "or DB_PASSWORD in the same terminal/session that starts the app."
             )
         db_pool = None
