@@ -32,5 +32,9 @@
   document.addEventListener('keydown',event=>{if(event.key==='Escape'){nav.classList.remove('fc-mobile-expanded');menu.setAttribute('aria-expanded','false')}});
 
  }
+ // Cache only public pages on repeat visits. Admin screens and remote market APIs are never cached.
+ if('serviceWorker' in navigator && location.protocol==='https:'){
+   window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}),{once:true});
+ }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
