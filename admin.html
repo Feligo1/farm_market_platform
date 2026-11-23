@@ -50,6 +50,10 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 </style><style>
 /* Single-function navigation: only selected workspace panel can be shown. */
 #fcAdminContent>section[hidden],.fc-admin-content>[hidden]{display:none!important}
+.fc-admin-content{scroll-margin-top:88px}
+.fc-admin-section-button:focus-visible{outline:3px solid #69a37c;outline-offset:2px}
+@media(max-width:720px){.fc-admin-content{scroll-margin-top:74px}}
+
 .fc-admin-shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start;margin-top:22px}
 .fc-admin-sidebar{background:#fff;border:1px solid #d9e7de;border-radius:12px;padding:15px;position:sticky;top:86px}
 .fc-admin-nav-eyebrow{text-transform:uppercase;color:#648274;letter-spacing:.11em;font-size:.72rem;font-weight:800;padding:9px 10px;margin:0 0 5px}
@@ -74,7 +78,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 <nav><a href="#" id="logout">Sign out</a></nav></header>
 <main><div class="intro"><div><h2>Administrator workspace</h2><p class="muted">Publish agricultural news, manage partner advertising, and maintain verified market data in one secure workspace.</p></div><span id="who" class="pill">Checking admin access…</span></div>
 <div id="loginMessage"></div>
-<div hidden aria-hidden="true"><span id="pendingMetric"></span><span id="newsMetric"></span><span id="adMetric"></span><span id="historyMetric"></span><span id="commodityMetric"></span><span id="marketMetric"></span><span id="userMetric"></span></div>
+<div hidden aria-hidden="true"><span id="pendingMetric"></span></div>
 <div class="fc-admin-shell">
 <aside class="fc-admin-sidebar" aria-label="Admin sections">
 <p class="fc-admin-nav-eyebrow">Management</p>
@@ -194,11 +198,11 @@ function selectAdminSection(view,focus=true){
 async function setup(){
  if(!TOKEN()){$('loginMessage').className='error';$('loginMessage').textContent='Please log in as the administrator first.';return}
  try{
-  const d=await api('GET','users',null,{limit:1});
-  authorized=true;$('who').textContent='Admin access verified';selectAdminSection('pending',false);
+  await api('GET','users',null,{limit:1});
+  authorized=true;$('who').textContent='Admin access verified';
   $('loginMessage').className='ok';$('loginMessage').textContent='Connected securely to the FarmConnect admin API';
-  await Promise.all(['price_history','commodities','markets','users','news','advertisements'].map(async (r,i)=>{try{let data=await api('GET',r,null,{limit:1});$( ['historyMetric','commodityMetric','marketMetric','userMetric','newsMetric','adMetric'][i]).textContent=data.count??'0'}catch{}}));
-  await Promise.all([loadPending(),load()]);
+  const requested=location.hash.slice(1).toLowerCase();
+  selectAdminSection(adminViews.includes(requested)?requested:'pending',false);
  }catch(e){$('loginMessage').className='error';$('loginMessage').textContent=e.message+'. Sign in with your administrator account and refresh.';$('who').textContent='No admin access'}
 }
 async function lookup(resourceName){if(lookups[resourceName])return lookups[resourceName];try{lookups[resourceName]=(await api('GET',resourceName,null,{limit:500})).records||[]}catch{lookups[resourceName]=[]}return lookups[resourceName]}
