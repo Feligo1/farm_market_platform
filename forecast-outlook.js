@@ -3,7 +3,7 @@
   const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api';
   const el=(id)=>document.getElementById(id);
   const commodity=el('fcForecastCommodity'),market=el('fcForecastMarket'),months=el('fcForecastMonths');
-  const demo=el('fcForecastDemo'),form=el('fcForecastForm'),button=el('fcForecastSubmit');
+  const form=el('fcForecastForm'),button=el('fcForecastSubmit');
   const status=el('fcForecastStatus'),results=el('fcForecastResults');
   if(!form||!commodity||!market||!results)return;
   const money=(amount)=>'ZMW '+Number(amount).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -63,7 +63,7 @@
   }
   function render(data){
     results.hidden=false;
-    el('fcForecastDataLabel').textContent=data.mode==='demo'?'Simulated data only':'Verified market price data';
+    el('fcForecastDataLabel').textContent='Sourced historical market data';
     el('fcForecastModel').textContent=data.model_used;
     el('fcForecastObservations').textContent=String(data.observations)+' recorded dates';
     el('fcForecastCurrent').textContent=money(data.current_price);
@@ -81,26 +81,24 @@
       tbody.append(tr);
     }
     svgChart(data.historical,data.forecast);
-    say(data.notice,data.mode==='demo'?'demo':'verified');
+    say(data.notice,'verified');
   }
   async function requestForecast(){
     if(!commodity.value||!market.value)return;
     button.disabled=true;results.hidden=true;say('Checking historical prices and calculating outlook…');
-    const mode=demo.checked?'demo':'verified';
-    const params=new URLSearchParams({commodity:commodity.value,market:market.value,months:months.value,mode});
+    const params=new URLSearchParams({commodity:commodity.value,market:market.value,months:months.value});
     try{render(await get('/forecast?'+params.toString()))}
     catch(err){
       if(err.code==='INSUFFICIENT_HISTORY'){
-        say(mode==='verified'?'Forecast unavailable: verified historical prices for this commodity and market are insufficient. Select “Demonstration mode” to see how a forecast works using clearly labelled sample data.':err.message,'error');
+        say(err.message,'error');
       }else say(err.message||'Unable to load the forecast. Please try again.','error');
     }finally{button.disabled=false}
   }
   form.addEventListener('submit',event=>{event.preventDefault();requestForecast()});
-  demo.addEventListener('change',requestForecast);
   Promise.all([get('/commodities'),get('/markets')])
     .then(([commodities,markets])=>{
       fill(commodity,commodities.commodities||[],'Maize');
-      fill(market,markets.markets||[],'Kabwe');
+      fill(market,markets.markets||[],'National Average');
       requestForecast();
     })
     .catch(()=>say('Market and commodity options could not be loaded. Check your connection and refresh.','error'));
