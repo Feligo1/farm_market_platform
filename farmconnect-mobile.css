@@ -71,3 +71,19 @@
 /* Single-navigation mobile policy: no bottom bar or reserved gap. */
 .fc-mobile-bottom{display:none!important}
 @media(max-width:720px){body{padding-bottom:0!important}}
+
+/* Compact More tools menu for desktop and the one mobile navigation. */
+.fc-global-nav .fc-nav-more{position:relative;min-width:0}
+.fc-global-nav .fc-nav-more summary{cursor:pointer;display:block;list-style:none;padding:10px 15px;border-radius:8px;font-size:.91rem;font-weight:700;color:#45594c;white-space:nowrap}
+.fc-global-nav .fc-nav-more summary::-webkit-details-marker{display:none}
+.fc-global-nav .fc-nav-more summary::after{content:"⌄";margin-left:7px;font-weight:800}
+.fc-global-nav .fc-nav-more[open] summary,.fc-global-nav .fc-nav-more.fc-more-current summary{background:#e6f0e9;color:#235c40}
+.fc-global-nav .fc-nav-more-links{position:absolute;right:0;top:calc(100% + 9px);width:215px;z-index:1300;background:#fff;padding:9px;border:1px solid #d6e3d9;border-radius:10px;box-shadow:0 15px 35px #123c252b;display:flex;flex-direction:column;gap:2px}
+.fc-global-nav .fc-nav-more:not([open]) .fc-nav-more-links{display:none}
+.fc-global-nav .fc-nav-more-links a{display:block!important;width:100%;white-space:normal!important;padding:11px 12px!important}
+@media(max-width:720px){
+ .fc-global-nav .fc-nav-more{width:100%}
+ .fc-global-nav .fc-nav-more summary{font-size:.95rem;padding:12px 15px;min-height:47px}
+ .fc-global-nav .fc-nav-more-links{position:static;width:100%;box-shadow:none;border:0;border-left:2px solid #d4e5d8;border-radius:0;padding:0 0 0 9px;margin:0 0 5px 12px}
+ .fc-global-nav .fc-nav-more-links a{padding:11px 12px!important}
+}
