@@ -13,6 +13,30 @@ Deno.serve(async (req: Request) => {
  const limit=Math.max(1,Math.min(Number(u.searchParams.get("limit"))||100,1000));
 
  const authClient = createClient(url!, Deno.env.get("SUPABASE_ANON_KEY") || key!, {auth:{persistSession:false,autoRefreshToken:false}});
+ // Optional anonymous usability feedback for farm project validation.
+ if(req.method==="POST" && endpoint==="feedback"){
+  if(Number(req.headers.get("content-length")||0)>4000)return respond({success:false,error:"Feedback is too long"},413);
+  let b:Record<string,unknown>;
+  try{b=await req.json()}catch{return respond({success:false,error:"Invalid feedback"},400)}
+  if(!b||typeof b!=="object"||Array.isArray(b))return respond({success:false,error:"Invalid feedback"},400);
+  if(b.website)return respond({success:true,message:"Thank you for your feedback"},202); // bot trap
+  const role=String(b.role||""),feature=String(b.feature||"");
+  const helpfulness=Number(b.helpfulness),ease=Number(b.ease_of_use);
+  if(!["farmer","buyer","trader","cooperative","other"].includes(role)||
+    !["prices","marketplace","matching","calculator","news","general"].includes(feature)||
+    !Number.isInteger(helpfulness)||helpfulness<1||helpfulness>5||
+    !Number.isInteger(ease)||ease<1||ease>5)
+     return respond({success:false,error:"Complete the role, feature and two ratings"},400);
+  const comment=String(b.comment||"").trim().replace(/[<>]/g,"").slice(0,500);
+  if(comment.length>500)return respond({success:false,error:"Comment must be under 500 characters"},400);
+  const since=new Date(Date.now()-24*60*60*1000).toISOString();
+  const {count,error:rateError}=await db.from("farmer_feedback").select("id",{head:true,count:"exact"}).gte("created_at",since);
+  if(rateError)return respond({success:false,error:"Feedback temporarily unavailable"},503);
+  if((count||0)>=300)return respond({success:false,error:"Daily feedback limit reached. Please try another day."},429);
+  const {error:insertError}=await db.from("farmer_feedback").insert({role,feature,helpfulness,ease_of_use:ease,comment:comment||null});
+  if(insertError){console.error("feedback submission error",insertError);return respond({success:false,error:"Feedback temporarily unavailable"},503)}
+  return respond({success:true,message:"Thank you. Your anonymous feedback has been recorded."},201);
+ }
  // Public marketplace submissions never bypass review or create accounts.
  if(req.method==="POST" && endpoint==="listings"){
   const len=Number(req.headers.get("content-length")||0);
