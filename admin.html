@@ -126,7 +126,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 </div></section>
 <section class="card" id="workspace" hidden><h3 id="fcManageTitle">Manage content and data</h3><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
 <label for="resource" id="fcAdvancedPickerLabel" hidden>Advanced resource</label><select id="resource" class="grow" hidden>
-<option value="news">News articles</option><option value="advertisements">Advertisements</option><option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
+<option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
 </select><select id="kind"><option value="">All history</option><option value="observed">Sourced only</option></select><button id="refresh" class="secondary">Refresh</button><button id="add">+ Add record</button></div>
 <p id="tableMessage" class="muted" role="status"></p><div class="table-wrap"><table><thead id="head"></thead><tbody id="rows"></tbody></table></div>
 <div class="controls" style="margin-top:14px"><button class="secondary" id="previous">Previous</button><span id="pageInfo"></span><button class="secondary" id="next">Next</button></div>
@@ -163,11 +163,39 @@ async function api(method,r,body=null,params={}){
 }
 const pretty=k=>k.replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
 function brief(x){if(x===null||x===undefined)return '—';if(typeof x==='boolean')return x?'Yes':'No';if(typeof x==='object')return JSON.stringify(x);return String(x).length>85?String(x).slice(0,85)+'…':String(x)}
+const adminViews=['pending','news','ads','insights','feedback','appearance','advanced'];
+let currentAdminView='pending';
+function selectAdminSection(view,focus=true){
+ if(!authorized||!adminViews.includes(view))return;
+ currentAdminView=view;
+ const visiblePanel=view==='pending'?'fcPendingWorkspace':view==='insights'?'fcInsightsPanel':view==='feedback'?'fcFeedbackPanel':view==='appearance'?'fcAppearancePanel':'workspace';
+ for(const id of ['fcPendingWorkspace','fcInsightsPanel','fcFeedbackPanel','fcAppearancePanel','workspace','fcSourceTools'])
+   $(id).hidden=(id!==visiblePanel);
+ for(const button of document.querySelectorAll('.fc-admin-section-button')){
+   if(button.dataset.view===view)button.setAttribute('aria-current','page');
+   else button.removeAttribute('aria-current');
+ }
+ $('resource').hidden=view!=='advanced';
+ $('fcAdvancedPickerLabel').hidden=view!=='advanced';
+ if(view==='news'||view==='ads'){
+   resource.value=view==='news'?'news':'advertisements';
+   offset=0;
+   load();
+ }else if(view==='advanced'){
+   if(['news','advertisements'].includes(resource.value))resource.value='price_history';
+   offset=0;load();
+ }else if(view==='pending')loadPending();
+ else if(view==='insights')loadInsights();
+ else if(view==='feedback')loadFeedbackSummary();
+ else if(view==='appearance')loadAppearance();
+ try{history.replaceState(null,'','#'+view)}catch{}
+ if(focus){const panel=$(visiblePanel);panel.scrollIntoView({behavior:'smooth',block:'start'});}
+}
 async function setup(){
  if(!TOKEN()){$('loginMessage').className='error';$('loginMessage').textContent='Please log in as the administrator first.';return}
  try{
   const d=await api('GET','users',null,{limit:1});
-  authorized=true;$('workspace').hidden=true;$('fcPendingWorkspace').hidden=false;$('who').textContent='Admin access verified';
+  authorized=true;$('who').textContent='Admin access verified';selectAdminSection('pending',false);
   $('loginMessage').className='ok';$('loginMessage').textContent='Connected securely to the FarmConnect admin API';
   await Promise.all(['price_history','commodities','markets','users','news','advertisements'].map(async (r,i)=>{try{let data=await api('GET',r,null,{limit:1});$( ['historyMetric','commodityMetric','marketMetric','userMetric','newsMetric','adMetric'][i]).textContent=data.count??'0'}catch{}}));
   await Promise.all([loadPending(),load()]);
@@ -175,7 +203,7 @@ async function setup(){
 }
 async function lookup(resourceName){if(lookups[resourceName])return lookups[resourceName];try{lookups[resourceName]=(await api('GET',resourceName,null,{limit:500})).records||[]}catch{lookups[resourceName]=[]}return lookups[resourceName]}
 async function load(){
- if(!authorized)return;const r=resource.value;message('Loading '+pretty(r)+'…');$('kind').hidden=r!=='price_history';$('add').hidden=r==='audit';$('fcSourceTools').hidden=r!=='price_history';
+ if(!authorized)return;const r=resource.value;message('Loading '+pretty(r)+'…');$('kind').hidden=r!=='price_history';$('add').hidden=r==='audit';$('fcSourceTools').hidden=currentAdminView!=='advanced'||r!=='price_history';
  try{
   const d=await api('GET',r,null,{limit:100,offset,data_kind:r==='price_history'?$('kind').value:''});
   rows=d.records||[];fields=d.fields||[];count=d.count??rows.length;
@@ -285,8 +313,8 @@ async function remove(item){
  const r=resource.value;if(!confirm((r==='users'?'Deactivate':'Permanently delete')+' '+r+' #'+item.id+'?'))return;
  try{await api('DELETE',r,null,{id:item.id});message('Change saved','ok');await load()}catch(e){alert(e.message)}
 }
-$('fcQuickNews').onclick=()=>{if(!authorized)return;resource.value='news';offset=0;$('resource').hidden=true;$('fcAdvancedPickerLabel').hidden=true;$('workspace').hidden=false;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
-$('fcQuickAds').onclick=()=>{if(!authorized)return;resource.value='advertisements';offset=0;$('resource').hidden=true;$('fcAdvancedPickerLabel').hidden=true;$('workspace').hidden=false;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickNews').onclick=()=>selectAdminSection('news');
+$('fcQuickAds').onclick=()=>selectAdminSection('ads');
 
 const reviewed=(text)=>String(text??'');
 const listingCard=(entry)=>{
@@ -320,7 +348,7 @@ async function loadPending(){
  }catch(e){$('pendingMetric').textContent='—';$('fcPendingStatus').textContent=e.message}
 }
 $('fcPendingRefresh').onclick=loadPending;
-$('fcQuickPending').onclick=()=>{if(!authorized)return;$('fcPendingWorkspace').hidden=false;loadPending();$('fcPendingWorkspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickPending').onclick=()=>selectAdminSection('pending');
 
 async function loadInsights(){
  if(!authorized)return;
@@ -370,12 +398,12 @@ async function loadFeedbackSummary(){
   $('fcFeedbackSummaryStatus').textContent='Voluntary responses are not a representative population sample. Summaries use the most recent '+(data.sampled||0)+' responses.';
  }catch(error){$('fcFeedbackSummaryStatus').textContent='Feedback unavailable: '+error.message}
 }
-$('fcQuickFeedback').onclick=()=>{if(!authorized)return;$('fcFeedbackPanel').hidden=false;loadFeedbackSummary();$('fcFeedbackPanel').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickFeedback').onclick=()=>selectAdminSection('feedback');
 $('fcFeedbackRefresh').onclick=loadFeedbackSummary;
-$('fcQuickInsights').onclick=()=>{if(!authorized)return;$('fcInsightsPanel').hidden=false;loadInsights();$('fcInsightsPanel').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickInsights').onclick=()=>selectAdminSection('insights');
 $('fcInsightsRefresh').onclick=loadInsights;
 
-$('fcQuickAdvanced').onclick=()=>{if(!authorized)return;$('resource').hidden=false;$('fcAdvancedPickerLabel').hidden=false;$('workspace').hidden=false;$('fcSourceTools').hidden=resource.value!=='price_history';$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickAdvanced').onclick=()=>selectAdminSection('advanced');
 
 
 let savedAppearance=null;
@@ -413,12 +441,8 @@ async function loadAppearance(){
   $('fcAppearanceStatus').textContent='Current site settings loaded.';
  }catch(e){$('fcAppearanceStatus').textContent='Settings could not be loaded: '+e.message}
 }
-$('fcQuickAppearance').onclick=()=>{
- if(!authorized)return;
- $('fcAppearancePanel').hidden=false;loadAppearance();
- $('fcAppearancePanel').scrollIntoView({behavior:'smooth',block:'start'});
-};
-$('fcAppearanceClose').onclick=()=>{$('fcAppearancePanel').hidden=true};
+$('fcQuickAppearance').onclick=()=>selectAdminSection('appearance');
+$('fcAppearanceClose').onclick=()=>selectAdminSection('pending');
 $('fcHeroClear').onclick=()=>{$('fcHeroImage').value='';appearancePreview()};
 $('fcPageClear').onclick=()=>{$('fcPageImage').value='';appearancePreview()};
 $('fcResetAppearance').onclick=()=>{if(savedAppearance)appearanceFill(savedAppearance)};
