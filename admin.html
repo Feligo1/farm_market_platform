@@ -53,7 +53,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 <div class="controls"><button id="fcQuickPending" type="button">Review buyer & seller requests</button><button id="fcQuickNews" type="button" class="secondary">Edit news articles</button><button id="fcQuickAds" type="button" class="secondary">Manage adverts</button><button id="fcQuickAdvanced" type="button" class="secondary">Advanced data tools</button></div>
 </section><p class="warning"><b>Data-quality rule:</b> Synthetic/demo history is not a verified price quotation. News and published prices require reliable sources. Sponsored content must always be separate and labelled.</p>
 <section class="card" id="workspace" hidden><h3 id="fcManageTitle">Manage content and data</h3><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
-<label for="resource">Manage</label><select id="resource" class="grow">
+<label for="resource" id="fcAdvancedPickerLabel" hidden>Advanced resource</label><select id="resource" class="grow" hidden>
 <option value="news">News articles</option><option value="advertisements">Advertisements</option><option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
 </select><select id="kind"><option value="">All history</option><option value="observed">Observed only</option></select><button id="refresh" class="secondary">Refresh</button><button id="add">+ Add record</button></div>
 <p id="tableMessage" class="muted" role="status"></p><div class="table-wrap"><table><thead id="head"></thead><tbody id="rows"></tbody></table></div>
@@ -106,6 +106,8 @@ async function load(){
  try{
   const d=await api('GET',r,null,{limit:100,offset,data_kind:r==='price_history'?$('kind').value:''});
   rows=d.records||[];fields=d.fields||[];count=d.count??rows.length;
+  $('fcManageTitle').textContent=r==='news'?'Agricultural news':r==='advertisements'?'Sponsored advertising':'Advanced records · '+pretty(r);
+  $('add').textContent=r==='news'?'+ Write article':r==='advertisements'?'+ New advertisement':'+ Add record';
   const columnOrder=r==='news'?['id','title','category','status','published_at','image_url','source_url']:r==='advertisements'?['id','title','placement','status','starts_at','ends_at','target_url']:r==='price_history'?['id','price_date','commodity_id','market_id','price','unit','data_kind','is_verified','source_name','source_url']:r==='users'?['id','username','email','role','is_active','created_at']:['id',...fields.filter(k=>!['password_hash','ussd_pin_hash'].includes(k))].slice(0,9);
   let head=$('head');head.replaceChildren();let h=document.createElement('tr');for(const col of columnOrder){const th=document.createElement('th');th.textContent=pretty(col);h.append(th)}if(r!=='audit'){let th=document.createElement('th');th.textContent='Actions';h.append(th)}head.append(h);
   const body=$('rows');body.replaceChildren();
@@ -210,8 +212,8 @@ async function remove(item){
  const r=resource.value;if(!confirm((r==='users'?'Deactivate':'Permanently delete')+' '+r+' #'+item.id+'?'))return;
  try{await api('DELETE',r,null,{id:item.id});message('Change saved','ok');await load()}catch(e){alert(e.message)}
 }
-$('fcQuickNews').onclick=()=>{if(!authorized)return;resource.value='news';offset=0;$('workspace').hidden=false;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
-$('fcQuickAds').onclick=()=>{if(!authorized)return;resource.value='advertisements';offset=0;$('workspace').hidden=false;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickNews').onclick=()=>{if(!authorized)return;resource.value='news';offset=0;$('resource').hidden=true;$('fcAdvancedPickerLabel').hidden=true;$('workspace').hidden=false;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickAds').onclick=()=>{if(!authorized)return;resource.value='advertisements';offset=0;$('resource').hidden=true;$('fcAdvancedPickerLabel').hidden=true;$('workspace').hidden=false;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
 
 const reviewed=(text)=>String(text??'');
 const listingCard=(entry)=>{
@@ -246,7 +248,7 @@ async function loadPending(){
 }
 $('fcPendingRefresh').onclick=loadPending;
 $('fcQuickPending').onclick=()=>{if(!authorized)return;$('fcPendingWorkspace').hidden=false;loadPending();$('fcPendingWorkspace').scrollIntoView({behavior:'smooth',block:'start'})};
-$('fcQuickAdvanced').onclick=()=>{if(!authorized)return;$('workspace').hidden=false;$('fcSourceTools').hidden=resource.value!=='price_history';$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickAdvanced').onclick=()=>{if(!authorized)return;$('resource').hidden=false;$('fcAdvancedPickerLabel').hidden=false;$('workspace').hidden=false;$('fcSourceTools').hidden=resource.value!=='price_history';$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
 
 $('resource').onchange=()=>{offset=0;lookups={};load()};$('kind').onchange=()=>{offset=0;load()};
 $('refresh').onclick=load;$('add').onclick=()=>openEditor();$('previous').onclick=()=>{offset=Math.max(0,offset-100);load()};$('next').onclick=()=>{offset+=100;load()};
