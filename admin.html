@@ -199,6 +199,28 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 .fc-report-panel .fc-quality-item:last-child{border:0}
 .fc-report-panel button{margin-left:10px;font-size:.76rem}
 @media(max-width:550px){.fc-function-toolbar input[type=search]{flex:1 1 100%}}
+</style><style>
+.fc-composer{background:#fff;border:1px solid #dce8df;border-radius:12px;padding:22px;margin:18px 0}
+.fc-composer[hidden],.fc-composer-field[hidden]{display:none!important}
+.fc-composer-top{display:flex;justify-content:space-between;gap:14px;align-items:start;margin-bottom:22px}
+.fc-composer-top h4{font-size:1.3rem;margin:5px 0}.fc-composer-top p{font-size:.83rem;color:#6d8272;margin:4px 0}
+.fc-composer-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(240px,.85fr);gap:24px;align-items:start}
+.fc-composer-form{display:grid;gap:16px;min-width:0}
+.fc-composer-field{display:grid;gap:10px;min-width:0}
+.fc-composer-field label{font-size:.82rem;font-weight:750;color:#2b563a}
+.fc-composer-field input:not([type=file]),.fc-composer-field textarea,.fc-composer-field select{width:100%;border:1px solid #c9d8cf;background:white;border-radius:7px;padding:10px 12px;min-height:43px;font:inherit;color:#233f2c}
+.fc-composer-field textarea{min-height:80px;resize:vertical}
+.fc-composer-field small{font-size:.74rem;color:#68806f;line-height:1.55}
+.fc-composer-date-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fc-composer-date-grid>div{display:grid;gap:7px}
+.fc-composer-preview{background:#f7faf7;border:1px solid #e1e9e2;border-radius:10px;padding:20px;min-width:0;position:sticky;top:25px}
+.fc-composer-preview-image{height:190px;background:#e4ede6;display:grid;place-items:center;border-radius:7px;color:#587562;font-size:.83rem;overflow:hidden}
+.fc-composer-preview-image img{width:100%;height:100%;object-fit:cover}
+.fc-composer-preview h3{font-size:1.3rem;letter-spacing:-.035em;line-height:1.35;margin:8px 0}
+.fc-composer-preview p{font-size:.86rem;line-height:1.6;color:#526d5b}
+.fc-composer-preview>small{font-size:.75rem;color:#788b7d}
+@media(max-width:1000px){.fc-composer-layout{grid-template-columns:1fr}.fc-composer-preview{position:static}}
+@media(max-width:600px){.fc-composer{padding:14px}.fc-composer-date-grid{grid-template-columns:1fr}}
 </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>Administration</h1><small>FarmConnect Zambia · Secure workspace</small></div>
@@ -283,6 +305,33 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 <div class="fc-function-toolbar" id="fcAdvertisingTools" hidden><button type="button" class="secondary" id="fcAdDraft">Create campaign draft</button><select id="fcAdFilter" aria-label="Ad status filter"><option value="">All campaigns</option><option value="active">Active</option><option value="paused">Paused</option><option value="draft">Draft</option></select></div>
 <div class="fc-function-toolbar" id="fcDataQualityTools" hidden><button type="button" id="fcRunQualityCheck">Run data quality audit</button><button type="button" class="secondary" id="fcExportRecords">Export current records CSV</button><p id="fcQualityStatus" class="muted"></p></div>
 <div id="fcQualityResults" class="fc-report-panel" hidden></div>
+<section class="fc-composer" id="fcComposer" hidden>
+<div class="fc-composer-top"><div><span class="fc-admin-kicker">EDITORIAL STUDIO</span><h4 id="fcComposerHeading">Create content</h4><p>Draft, preview and publish using your existing secure content API.</p></div><button type="button" class="secondary" id="fcComposerClose">Back to records</button></div>
+<div class="fc-composer-layout"><form id="fcComposerForm" class="fc-composer-form">
+<div class="fc-composer-field"><label for="fcComposerTitle">Headline / campaign title *</label><input id="fcComposerTitle" maxlength="180" required placeholder="Enter a clear, specific title"></div>
+<div class="fc-composer-field" id="fcComposerNewsFields">
+<label for="fcComposerCategory">News category</label><select id="fcComposerCategory"><option>Livestock</option><option>Animal Health</option><option>Poultry</option><option>Fisheries</option><option>Weather &amp; Climate</option><option>Market Prices</option><option>Digital Agriculture</option><option>Agribusiness</option><option>Other</option></select>
+<label for="fcComposerSummary">Short summary *</label><textarea id="fcComposerSummary" rows="3" maxlength="420" placeholder="What farmers should know in two sentences"></textarea>
+<label for="fcComposerContent">Full article *</label><textarea id="fcComposerContent" rows="9" placeholder="Write a clear, sourced article. Add practical context without copying copyrighted reporting."></textarea>
+<label for="fcComposerAuthor">Original publisher / author</label><input id="fcComposerAuthor" maxlength="120" placeholder="FAO Zambia, Ministry of Fisheries and Livestock…">
+<label for="fcComposerSource">Original source link</label><input id="fcComposerSource" type="url" placeholder="https://...">
+<label for="fcComposerPublished">Publish from date and time (optional)</label><input id="fcComposerPublished" type="datetime-local"><small>For scheduled publishing, choose Published and a future time. Public news is hidden until the selected date.</small>
+</div>
+<div class="fc-composer-field" id="fcComposerAdFields" hidden>
+<label for="fcComposerDescription">Campaign description *</label><textarea id="fcComposerDescription" rows="5" maxlength="800" placeholder="Describe the advertiser and offer"></textarea>
+<label for="fcComposerTarget">Advertiser destination (HTTPS) *</label><input id="fcComposerTarget" type="url" placeholder="https://...">
+<label for="fcComposerPlacement">Placement</label><select id="fcComposerPlacement"><option value="home">Homepage</option><option value="news">News page</option><option value="both">Home and news</option></select>
+<div class="fc-composer-date-grid"><div><label for="fcComposerStarts">Campaign starts (optional)</label><input id="fcComposerStarts" type="datetime-local"></div><div><label for="fcComposerEnds">Campaign ends (optional)</label><input id="fcComposerEnds" type="datetime-local"></div></div>
+</div>
+<div class="fc-composer-field"><label for="fcComposerImage">Cover image (HTTPS URL)</label><input id="fcComposerImage" type="url" placeholder="https://..."><label for="fcComposerVideo">Video URL (optional)</label><input id="fcComposerVideo" type="url" placeholder="https://...">
+<label for="fcComposerUpload">Or upload your own image / short video (6 MB max)</label><div class="fc-function-toolbar"><input id="fcComposerUpload" type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"><button type="button" id="fcComposerUploadButton" class="secondary">Upload file</button></div>
+<label for="fcComposerStatus">Publication state</label><select id="fcComposerStatus"><option value="draft">Draft (private)</option><option value="published">Published / scheduled</option><option value="paused">Paused (hidden)</option></select></div>
+<div class="fc-function-toolbar"><button type="submit" id="fcComposerSave">Save content</button><button type="button" class="secondary" id="fcComposerCancel">Cancel</button></div>
+<p class="muted" id="fcComposerMessage" role="status"></p>
+</form>
+<aside class="fc-composer-preview"><span class="fc-admin-kicker">LIVE PREVIEW</span><div id="fcComposerPreviewImage" class="fc-composer-preview-image">No cover image selected</div>
+<p id="fcComposerPreviewTag">Draft</p><h3 id="fcComposerPreviewTitle">Your headline appears here</h3><p id="fcComposerPreviewText">Write your content to see a preview.</p><small id="fcComposerPreviewSource">Preview only. Not yet published.</small></aside></div>
+</section>
 <div class="fc-admin-record-toolbar"><label for="fcRecordSearch">Search visible records</label><input id="fcRecordSearch" type="search" placeholder="Search name, commodity, date, or source" autocomplete="off"><span id="fcRecordSearchCount" class="muted"></span></div>
 <p id="tableMessage" class="muted" role="status"></p><div class="table-wrap"><table><thead id="head"></thead><tbody id="rows"></tbody></table></div>
 <div class="controls" style="margin-top:14px"><button class="secondary" id="previous">Previous</button><span id="pageInfo"></span><button class="secondary" id="next">Next</button></div>
