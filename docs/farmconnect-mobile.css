@@ -1,0 +1,69 @@
+/* Mobile-first layout corrections shared by all public FarmConnect pages */
+.fc-global-nav .fc-nav-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+.fc-global-nav button.fc-mobile-toggle{display:none!important}
+.fc-mobile-bottom{display:none}
+@media(max-width:720px){
+ html,body{max-width:100%;overflow-x:clip}
+ body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}
+ .fc-global-nav,.fc-redesign .fc-global-nav,.fc-legacy-polished .fc-global-nav,.fc-admin-redesign .fc-global-nav{
+   position:sticky!important;top:0!important;width:100%!important;min-height:0!important;padding:0 16px!important;
+   z-index:1100!important;background:#fff!important;color:#235c40!important;border-bottom:1px solid #dce6dd!important;box-shadow:0 4px 16px #122b1910!important
+ }
+ .fc-global-nav .fc-nav-inner,.fc-redesign .fc-nav-inner,.fc-legacy-polished .fc-nav-inner,.fc-admin-redesign .fc-nav-inner{
+   display:flex!important;flex-direction:column!important;align-items:stretch!important;min-height:0!important;gap:0!important;width:100%!important
+ }
+ .fc-global-nav .fc-nav-top{display:flex!important;align-items:center;justify-content:space-between;width:100%;min-height:62px}
+ .fc-global-nav .fc-brand{font-size:1.01rem!important;min-height:42px!important}
+ .fc-global-nav .fc-brand-mark{width:34px!important;height:34px!important}
+ .fc-global-nav button.fc-mobile-toggle{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;padding:8px 12px!important;min-width:76px;min-height:40px;cursor:pointer;background:#edf4ee!important;color:#235c40!important;border:1px solid #d6e4d9!important;border-radius:8px!important;font-weight:700;font-size:.82rem}
+ .fc-global-nav .fc-nav-links,.fc-redesign .fc-nav-links,.fc-legacy-polished .fc-nav-links,.fc-admin-redesign .fc-nav-links{
+   display:none!important;width:100%!important;max-height:calc(100dvh - 150px);overflow-y:auto!important;overflow-x:hidden!important;
+   padding:0 0 12px!important;flex-direction:column!important;align-items:stretch!important;gap:3px!important;flex-wrap:nowrap!important
+ }
+ .fc-global-nav.fc-mobile-expanded .fc-nav-links{display:flex!important}
+ .fc-global-nav .fc-nav-links a,.fc-redesign .fc-global-nav .fc-nav-links a,.fc-legacy-polished .fc-global-nav .fc-nav-links a,.fc-admin-redesign .fc-global-nav .fc-nav-links a{
+   display:block!important;width:100%!important;border-radius:9px!important;line-height:1.5!important;padding:12px 15px!important;white-space:normal!important;font-size:.95rem!important
+ }
+ .fc-mobile-bottom{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:1150;background:#fff;border-top:1px solid #dae5dd;box-shadow:0 -6px 23px #142c1914;padding:6px max(6px,env(safe-area-inset-left)) calc(5px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-right))}
+ .fc-mobile-bottom a{display:flex;flex-direction:column;gap:0;align-items:center;justify-content:center;min-height:57px;font-size:.71rem;font-weight:700;color:#63766a;text-decoration:none;border-radius:9px}
+ .fc-mobile-bottom a.active{background:#e6f1e9;color:#235c40}
+ .fc-mobile-bottom-icon{font-weight:750;font-size:1.35rem;line-height:1.5}
+ .fc-wrap{width:calc(100% - 32px)!important;max-width:100%!important}
+ .fc-redesign .fc-hero{padding:38px 0 42px!important}
+ .fc-redesign .fc-hero-grid{grid-template-columns:minmax(0,1fr)!important;gap:24px!important}
+ .fc-redesign .fc-hero h1{font-size:clamp(2rem,9vw,3rem)!important;line-height:1.12!important}
+ .fc-redesign .fc-lead{font-size:.98rem!important;line-height:1.65!important}
+ .fc-redesign .fc-hero-aside{padding:20px!important}
+ .fc-redesign .fc-section{padding:40px 0!important}
+ .fc-redesign .fc-price-grid,.fc-redesign .fc-service-grid{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ .fc-redesign .fc-action-row{display:grid!important;grid-template-columns:1fr!important}
+ .fc-redesign .fc-action-row .fc-button{width:100%!important}
+ .fc-redesign .fc-section-header{align-items:flex-start!important;gap:12px!important}
+ .fc-redesign .fc-toolbar{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ .fc-redesign .fc-field{min-width:0!important;width:100%!important;max-width:none!important}
+ .fc-redesign .fc-field input,.fc-redesign .fc-field select{font-size:16px!important}
+ .fc-redesign .fc-button{min-height:48px!important}
+ .fc-redesign .fc-page-head{padding:32px 0 24px!important}
+ .fc-redesign .fc-page-head h1{font-size:clamp(1.9rem,8vw,2.65rem)!important}
+ .fc-redesign .fc-workspace{padding:22px 0 46px!important}
+ .fc-redesign .fc-tabs{margin-bottom:20px!important;gap:0!important;scrollbar-width:none}
+ .fc-redesign .fc-tab{font-size:.82rem!important;padding:12px 13px!important}
+ .fc-redesign .fc-summary-grid{grid-template-columns:minmax(0,1fr)!important}
+ .fc-redesign .fc-table-wrap{max-width:100%!important;-webkit-overflow-scrolling:touch}
+ .fc-redesign .fc-chart-wrap{height:270px!important;padding:12px!important}
+ .fc-redesign .fc-footer-row{flex-direction:column!important;gap:6px!important}
+ .fc-legacy-polished .main-content>.content{width:calc(100% - 32px)!important;max-width:100%!important;padding:22px 0 48px!important}
+ .fc-legacy-polished .market-actions{grid-template-columns:minmax(0,1fr)!important}
+ .fc-admin-redesign main{width:calc(100% - 30px)!important;max-width:100%!important}
+ .fc-admin-redesign #fields{grid-template-columns:minmax(0,1fr)!important}
+ .fc-admin-redesign .controls{align-items:stretch!important}
+ .fc-admin-redesign .controls>*{max-width:100%}
+ .fc-admin-redesign #editorBackdrop{padding:7px!important}
+ .fc-admin-redesign .dialog{max-height:calc(100dvh - 22px)!important;padding:16px!important}
+}
+@media(max-width:390px){
+ .fc-global-nav .fc-brand{font-size:.88rem!important}
+ .fc-global-nav button.fc-mobile-toggle{min-width:65px!important;padding:7px!important}
+ .fc-mobile-bottom a{font-size:.66rem}
+ .fc-redesign .fc-tab{font-size:.76rem!important;padding:12px 9px!important}
+}
