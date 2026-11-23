@@ -138,6 +138,17 @@ body.fc-admin-redesign #workspace .fc-admin-resources{display:none}
 @media(max-width:1180px){.fc-admin-dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.fc-admin-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){body.fc-admin-redesign .fc-admin-shell{grid-template-columns:1fr;gap:20px}.fc-admin-brand{display:none}body.fc-admin-redesign .fc-admin-section-nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}}
 @media(max-width:600px){body.fc-admin-redesign>main{padding:17px 13px}.fc-admin-dashboard-stats{gap:9px}.fc-admin-stat{padding:13px}.fc-admin-stat strong{font-size:1.65rem}.fc-admin-action-grid{grid-template-columns:1fr}.fc-admin-overview-foot{flex-direction:column;align-items:flex-start}body.fc-admin-redesign .fc-admin-section-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.fc-admin-content>.card{padding:16px}body.fc-admin-redesign .intro{align-items:flex-start}}
+</style><style>
+.fc-record-status{display:inline-block;border-radius:20px;padding:5px 9px;background:#eff2ef;color:#607164;font-weight:750;font-size:.73rem;text-transform:capitalize}
+.fc-record-status.good{background:#e5f3e9;color:#236244}
+.fc-record-status.pending{background:#fff0d7;color:#8f6015}
+.fc-record-name{font-size:.83rem;color:#23432f;font-weight:750}
+body.fc-admin-redesign .fc-record-actions{white-space:nowrap;max-width:160px}
+body.fc-admin-redesign .fc-record-actions button{font-size:.75rem;padding:7px 10px;border:1px solid #cfdfd1;border-radius:6px;background:#f3f7f4;color:#22563a}
+body.fc-admin-redesign .fc-record-actions button.fc-record-danger{background:transparent;border-color:transparent;color:#92504a}
+body.fc-admin-redesign .fc-record-actions button.fc-record-danger:hover{background:#fff0ed;border-color:#eccbc6}
+body.fc-admin-redesign tr[hidden]{display:none!important}
+.fc-admin-empty{text-align:center;color:#748779;padding:33px 20px!important}
 </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>FarmConnect · Administration</h1><small>Mulungushi University | Zambia | Supabase</small></div>
@@ -320,33 +331,96 @@ async function setup(){
  }catch(e){$('loginMessage').className='error';$('loginMessage').textContent=e.message+'. Sign in with your administrator account and refresh.';$('who').textContent='No admin access'}
 }
 async function lookup(resourceName){if(lookups[resourceName])return lookups[resourceName];try{lookups[resourceName]=(await api('GET',resourceName,null,{limit:500})).records||[]}catch{lookups[resourceName]=[]}return lookups[resourceName]}
+const PAGE_SIZE=24;
+function dateLabel(value){
+ if(!value)return '—';
+ const raw=String(value).slice(0,10);
+ const date=new Date(raw+'T00:00:00Z');
+ return Number.isNaN(date.valueOf())?raw:date.toLocaleDateString('en-ZM',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'});
+}
+function displayResourceValue(item,col){
+ const val=item[col];
+ if(col==='commodity_id')return lookups.commodities?.find(c=>String(c.id)===String(val))?.name||('Commodity '+brief(val));
+ if(col==='market_id')return lookups.markets?.find(m=>String(m.id)===String(val))?.name||('Market '+brief(val));
+ if(col==='price')return 'K'+Number(val||0).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2})+(item.unit?' / '+item.unit:'');
+ if(col==='published_at'||col==='created_at'||col==='price_date'||col==='starts_at'||col==='ends_at')return dateLabel(val);
+ if(col==='is_verified')return val?'Verified':'Unverified';
+ if(col==='source_name')return brief(val||'Not provided');
+ return brief(val);
+}
+function filterDisplayedRecords(){
+ const q=$('fcRecordSearch').value.trim().toLowerCase();
+ let visible=0;
+ for(const row of $('rows').querySelectorAll('tr[data-search]')){
+  const match=!q||row.dataset.search.includes(q);
+  row.hidden=!match;
+  if(match)visible++;
+ }
+ $('fcRecordSearchCount').textContent=q?visible+' matching on this page':'';
+}
 async function load(){
- if(!authorized)return;const r=resource.value;message('Loading '+pretty(r)+'…');$('kind').hidden=r!=='price_history';$('add').hidden=r==='audit';$('fcSourceTools').hidden=currentAdminView!=='advanced'||r!=='price_history';
+ if(!authorized)return;
+ const r=resource.value;
+ message('Loading '+pretty(r)+'…');
+ $('kind').hidden=r!=='price_history';
+ $('add').hidden=r==='audit';
+ $('fcSourceTools').hidden=currentAdminView!=='advanced'||r!=='price_history';
+ $('fcRecordSearch').value='';
+ $('fcRecordSearchCount').textContent='';
  try{
-  const d=await api('GET',r,null,{limit:100,offset,data_kind:r==='price_history'?$('kind').value:''});
+  if(r==='price_history')await Promise.all([lookup('commodities'),lookup('markets')]);
+  const d=await api('GET',r,null,{limit:PAGE_SIZE,offset,data_kind:r==='price_history'?$('kind').value:''});
+  // Avoid painting results from an outdated navigation request.
+  if(resource.value!==r||!authorized)return;
   rows=d.records||[];fields=d.fields||[];count=d.count??rows.length;
-  $('fcManageTitle').textContent=r==='news'?'Agricultural news':r==='advertisements'?'Sponsored advertising':'Advanced records · '+pretty(r);
-  $('add').textContent=r==='news'?'+ Write article':r==='advertisements'?'+ New advertisement':'+ Add record';
-  const columnOrder=r==='news'?['id','title','category','status','published_at','image_url','source_url']:r==='advertisements'?['id','title','placement','status','starts_at','ends_at','target_url']:r==='price_history'?['id','price_date','commodity_id','market_id','price','unit','data_kind','is_verified','source_name','source_url']:r==='users'?['id','username','email','role','is_active','created_at']:['id',...fields.filter(k=>!['password_hash','ussd_pin_hash'].includes(k))].slice(0,9);
-  let head=$('head');head.replaceChildren();let h=document.createElement('tr');for(const col of columnOrder){const th=document.createElement('th');th.textContent=pretty(col);h.append(th)}if(r!=='audit'){let th=document.createElement('th');th.textContent='Actions';h.append(th)}head.append(h);
+  const titles={news:'News articles',advertisements:'Advertisements',price_history:'Historical market prices',commodities:'Commodities',markets:'Markets',buyers:'Buyers',sellers:'Sellers',audit:'Audit history'};
+  $('fcManageTitle').textContent=titles[r]||pretty(r);
+  $('add').textContent=r==='news'?'+ New article':r==='advertisements'?'+ New advert':'+ Add '+(r==='price_history'?'price':'record');
+  const columns={
+   news:[['title','Article'],['category','Category'],['status','Status'],['published_at','Published']],
+   advertisements:[['title','Campaign'],['placement','Placement'],['status','Status'],['starts_at','Starts'],['ends_at','Ends']],
+   price_history:[['commodity_id','Commodity'],['market_id','Market'],['price','Price'],['price_date','Observation'],['source_name','Source'],['is_verified','Quality']],
+   commodities:[['name','Commodity'],['category','Category'],['unit_of_measure','Unit'],['is_active','Active']],
+   markets:[['name','Market'],['district','District'],['province','Province'],['is_active','Active']],
+   buyers:[['business_name','Buyer'],['commodity','Commodity'],['location','Location'],['status','Status']],
+   sellers:[['farm_name','Seller'],['commodity','Commodity'],['location','Location'],['status','Status']]
+  };
+  const columnOrder=columns[r]||fields.filter(k=>!['password_hash','ussd_pin_hash','user_id','image_url','source_url','video_url','description','notes','content'].includes(k)).slice(0,5).map(k=>[k,pretty(k)]);
+  const head=$('head');head.replaceChildren();
+  const heading=document.createElement('tr');
+  for(const [,label] of columnOrder){const th=document.createElement('th');th.textContent=label;heading.append(th)}
+  if(r!=='audit'){const th=document.createElement('th');th.textContent='Manage';heading.append(th)}
+  head.append(heading);
   const body=$('rows');body.replaceChildren();
   for(const item of rows){
    const tr=document.createElement('tr');
-   for(const col of columnOrder){
-    const td=document.createElement('td');let val=item[col];
-    if(col==='data_kind'){const span=document.createElement('span');span.className='pill '+(val==='demo'?'demo':'verified');span.textContent=val;td.append(span)}
-    else if(col==='commodity_id'&&lookups.commodities)td.textContent=lookups.commodities.find(c=>String(c.id)===String(val))?.name||brief(val);
-    else if(col==='market_id'&&lookups.markets)td.textContent=lookups.markets.find(m=>String(m.id)===String(val))?.name||brief(val);
-    else td.textContent=brief(val);
+   tr.dataset.search=Object.values(item).filter(v=>typeof v==='string'||typeof v==='number').join(' ').toLowerCase()+' '+columnOrder.map(([col])=>displayResourceValue(item,col)).join(' ').toLowerCase();
+   for(const [col] of columnOrder){
+    const td=document.createElement('td'),val=item[col];
+    if(['status','is_verified','is_active'].includes(col)){
+     const tag=document.createElement('span');
+     tag.className='fc-record-status '+(val===true||val==='published'||val==='active'?'good':val==='pending'?'pending':'');
+     tag.textContent=col==='is_verified'?(val?'Verified':'Unverified'):col==='is_active'?(val?'Active':'Inactive'):brief(val);
+     td.append(tag);
+    }else if(col==='title'||col==='name'||col==='commodity_id'||col==='farm_name'||col==='business_name'){
+     const strong=document.createElement('strong');strong.className='fc-record-name';strong.textContent=displayResourceValue(item,col);td.append(strong);
+    }else td.textContent=displayResourceValue(item,col);
     tr.append(td);
    }
-   if(r!=='audit'){const td=document.createElement('td');const edit=document.createElement('button');edit.textContent='Edit';edit.className='secondary';edit.onclick=()=>openEditor(item);const del=document.createElement('button');del.textContent=r==='users'?'Deactivate':'Delete';del.className='danger';del.onclick=()=>remove(item);td.append(edit,del);tr.append(td)}
+   if(r!=='audit'){
+    const td=document.createElement('td');td.className='fc-record-actions';
+    const edit=document.createElement('button');edit.textContent='Edit';edit.className='secondary';edit.onclick=()=>openEditor(item);
+    td.append(edit);
+    const del=document.createElement('button');del.textContent=r==='users'?'Deactivate':'Delete';del.className='fc-record-danger';del.onclick=()=>remove(item);
+    td.append(del);tr.append(td);
+   }
    body.append(tr);
   }
-  if(!rows.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=columnOrder.length+1;td.textContent='No records found for these filters.';tr.append(td);body.append(tr)}
-  $('pageInfo').textContent='Showing '+(rows.length?offset+1:0)+'–'+(offset+rows.length)+' of '+count;
-  $('previous').disabled=offset===0;$('next').disabled=offset+100>=count;
-  message(count+' records available');
+  if(!rows.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=columnOrder.length+1;td.className='fc-admin-empty';td.textContent='No records available. Use Add to create the first entry.';tr.append(td);body.append(tr)}
+  $('pageInfo').textContent=(rows.length?offset+1:0)+'–'+(offset+rows.length)+' of '+count;
+  $('previous').disabled=offset===0;
+  $('next').disabled=offset+PAGE_SIZE>=count;
+  message(count+' total records · '+PAGE_SIZE+' per page');
  }catch(e){message(e.message,'error')}
 }
 const floatCols=new Set(['sort_order','price','volume','current_price','price_7d','price_14d','price_30d','confidence','max_price','min_volume','available_volume','price_per_kg','rating','threshold','farm_size_hectares','latitude','longitude','typical_min_price','typical_max_price','display_order']);
@@ -590,8 +664,9 @@ $('fcAppearanceForm').addEventListener('submit',async e=>{
  finally{button.disabled=false}
 });
 
-$('resource').onchange=()=>{offset=0;lookups={};load()};$('kind').onchange=()=>{offset=0;load()};
-$('refresh').onclick=load;$('add').onclick=()=>openEditor();$('previous').onclick=()=>{offset=Math.max(0,offset-100);load()};$('next').onclick=()=>{offset+=100;load()};
+$('resource').onchange=()=>{offset=0;lookups={};load()};
+$('fcRecordSearch').addEventListener('input',filterDisplayedRecords);$('kind').onchange=()=>{offset=0;load()};
+$('refresh').onclick=load;$('add').onclick=()=>openEditor();$('previous').onclick=()=>{offset=Math.max(0,offset-PAGE_SIZE);load()};$('next').onclick=()=>{offset+=PAGE_SIZE;load()};
 $('closeEditor').onclick=$('cancel').onclick=()=>$('editorBackdrop').classList.remove('open');
 $('logout').onclick=e=>{e.preventDefault();localStorage.removeItem('authToken');localStorage.removeItem('userData');location.href='login.html'};
 
