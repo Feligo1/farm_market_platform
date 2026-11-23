@@ -9,7 +9,16 @@
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#235c40">
 <script src="farmconnect-nav.js?v=20261123-8" defer></script><script src="farmconnect-appearance.js?v=1" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="farmconnect-mobile.css?v=3"></head>
+<link rel="stylesheet" href="farmconnect-mobile.css?v=3"><style>
+.fc-catalog-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;max-height:610px;overflow-y:auto}
+.fc-catalog-item{background:#fff;border:1px solid #dbe7dd;border-radius:9px;padding:14px;display:grid;gap:6px;min-width:0}
+.fc-catalog-item strong{font-size:.95rem;color:#284b36}
+.fc-catalog-item small{font-size:.76rem;color:#697b6f}
+.fc-catalog-item .fc-catalog-price{font-size:1.04rem;color:#23583e;font-weight:800}
+.fc-catalog-item a{color:#235c40;font-size:.82rem;font-weight:750;text-decoration:underline}
+@media(max-width:940px){.fc-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.fc-catalog-grid{grid-template-columns:1fr;max-height:none}}
+</style></head>
 <body class="fc-redesign">
 <main class="fc-main">
 <section class="fc-page-head"><div class="fc-wrap">
@@ -24,6 +33,11 @@
 <button type="button" class="fc-tab" role="tab" aria-selected="false" aria-controls="fcForecastPanel" id="fcForecastTab" data-view="forecast" tabindex="-1">Price forecast</button>
 </div>
 
+<section class="fc-panel" id="fcCatalogPanel" style="margin:0 0 24px">
+<div class="fc-section-header"><div><h2>Browse all agricultural commodities</h2><p>Chickens, goats, cattle, eggs, fish, fruit, vegetables and crops. A commodity can be listed even when no verified historical price has been published.</p></div></div>
+<div class="fc-toolbar"><div class="fc-field"><label for="fcCatalogCategory">Category</label><select id="fcCatalogCategory"><option value="">All categories</option></select></div>
+<div class="fc-field"><label for="fcCatalogSearch">Search commodities</label><input type="search" id="fcCatalogSearch" placeholder="Chicken, maize, goats…"></div></div>
+<p class="fc-status" id="fcCatalogCount" role="status">Loading commodity catalogue…</p><div id="fcCatalogGrid" class="fc-catalog-grid"></div></section>
 <section class="fc-panel" id="fcLatestPanel" role="tabpanel" aria-labelledby="fcLatestTab">
 <div class="fc-section-header"><div><h2>Latest published observations</h2><p>Reference prices by commodity. These are the most recent sourced historical observations, not today's market quotations.</p></div></div>
 <div class="fc-toolbar">
@@ -87,6 +101,36 @@ async function request(path){
  const j=await r.json().catch(()=>({}));if(!r.ok||j.success===false)throw Error(j.error||'Unable to retrieve market data.');
  return j;
 }
+
+let allCommodities=[];
+function renderCatalogue(){
+ const category=$('fcCatalogCategory').value,q=$('fcCatalogSearch').value.toLowerCase().trim();
+ const grid=$('fcCatalogGrid');grid.replaceChildren();
+ const records=allCommodities.filter(c=>(!category||c.category===category)&&(!q||[c.name,c.category].join(' ').toLowerCase().includes(q)));
+ for(const c of records){
+  const price=latest.find(p=>p.commodity===c.name&&p.market==='National Average')||latest.find(p=>p.commodity===c.name);
+  const card=el('article');card.className='fc-catalog-item';
+  const name=el('strong',(c.icon_emoji||'')+' '+c.name);
+  const unit=el('small',(c.category||'Other')+' · Unit: '+(c.unit_of_measure||'kg'));
+  const value=el('div',price?kwacha(price.price)+' / '+price.unit:'No verified historical price yet');
+  value.className='fc-catalog-price';
+  const when=el('small',price?'Observed '+month(price.date)+' · '+price.source:'Available for free marketplace listings');
+  const link=el('a',price?'View historical prices':'Post buying/selling request');
+  link.href=price?'#latest':'post-listing.html?commodity='+encodeURIComponent(c.name);
+  if(price)link.onclick=()=>{activate('latest');$('fcLatestCommodity').value=c.name;renderLatest()};
+  card.append(name,unit,value,when,link);grid.append(card);
+ }
+ $('fcCatalogCount').textContent=records.length+' of '+allCommodities.length+' commodities';
+ if(!records.length)grid.append(el('p','No commodities match your search.'));
+}
+async function loadCatalogue(){
+ try{
+  const data=await request('/commodities?limit=500');
+  allCommodities=data.commodities||[];
+  setOptions('fcCatalogCategory',[...new Set(allCommodities.map(c=>c.category).filter(Boolean))].sort(),'All categories');
+  renderCatalogue();
+ }catch(error){$('fcCatalogCount').textContent='Could not load commodity catalogue';}
+}
 function setOptions(id,items,prompt){
  const s=$(id);s.replaceChildren();
  if(prompt!==null){const x=el('option',prompt);x.value='';s.append(x)}
@@ -136,7 +180,7 @@ async function loadLatest(){
    setOptions('fcLatestCommodity',crops,'All commodities');
    for(const id of ['fcHistoryCommodity','fcForecastCommodity'])setOptions(id,crops,null);
    for(const id of ['fcHistoryMarket','fcForecastMarket'])setOptions(id,markets,null);
-   renderLatest();
+   renderLatest();renderCatalogue();
    if(!latest.length){emptyTable('fcLatestRows',4,'No sourced published prices have been loaded.');return}
    if(location.hash==='#history')loadHistory();
    if(location.hash==='#forecast')loadForecast();
@@ -201,11 +245,13 @@ for(const tab of document.querySelectorAll('.fc-tab'))tab.addEventListener('clic
 $('fcLatestSearch').addEventListener('input',renderLatest);
 $('fcLatestCommodity').addEventListener('change',renderLatest);
 $('fcLatestRefresh').addEventListener('click',loadLatest);
+$('fcCatalogCategory').addEventListener('change',renderCatalogue);
+$('fcCatalogSearch').addEventListener('input',renderCatalogue);
 $('fcHistoryLoad').addEventListener('click',loadHistory);
 $('fcForecastLoad').addEventListener('click',loadForecast);
 window.addEventListener('hashchange',()=>activate(location.hash.slice(1),false));
 activate(location.hash.slice(1),false);
-loadLatest();
+loadLatest();loadCatalogue();
 })();
 </script>
 </body>
