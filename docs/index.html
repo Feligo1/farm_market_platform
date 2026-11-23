@@ -133,7 +133,7 @@ async function loadOpportunities(){
    const link=make('a');link.className='fc-service';link.href='find-buyers.html';
    link.append(make('small','Buying request · '+(item.location||'Zambia')),
      make('strong',item.commodity||'Agricultural produce'),
-     make('span','Wanted: '+(item.min_volume?Number(item.min_volume).toLocaleString('en-ZM')+' kg':'Quantity to discuss')+(item.max_price?' · up to K'+Number(item.max_price).toFixed(2)+'/kg':' · price negotiable')));
+     make('span','Wanted: '+(item.min_volume?Number(item.min_volume).toLocaleString('en-ZM')+' '+(item.quantity_unit||'kg'):'Quantity to discuss')+(item.max_price?' · up to K'+Number(item.max_price).toFixed(2)+' / '+(item.quantity_unit||'kg'):' · price negotiable')));
    grid.append(link);
   }
   $('fcHomeOpportunities').hidden=false;
