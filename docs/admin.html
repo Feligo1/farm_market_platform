@@ -19,20 +19,40 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 .field label{display:block;font-size:13px;font-weight:650;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;padding:9px;border:1px solid #b9d2c4;border-radius:8px;background:#fff}.field textarea{min-height:90px}
 #loginMessage{margin:14px 0}footer{color:#698175;padding:20px 4%;text-align:center}
 @media(max-width:640px){.controls>*{width:100%}.dialog{padding:15px}}
-</style><link rel="stylesheet" href="farmconnect-theme.css?v=20261122-4"><link rel="stylesheet" href="farmconnect-admin-redesign.css?v=1"><script src="farmconnect-nav.js?v=20261122-5" defer></script></head>
+</style><link rel="stylesheet" href="farmconnect-theme.css?v=20261122-4"><link rel="stylesheet" href="farmconnect-admin-redesign.css?v=1"><link rel="stylesheet" href="farmconnect-mobile.css?v=1"><script src="farmconnect-nav.js?v=20261123-2" defer></script><style>
+ .fc-admin-overview{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .fc-admin-overview .metric span{display:block;font-size:.79rem;margin-top:7px}
+ .fc-admin-pending-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .fc-admin-pending{padding:18px;border:1px solid #dce7df;border-radius:9px;background:#fbfdfb;min-width:0}
+ .fc-admin-pending h4{font-size:1rem;margin:0 0 5px;letter-spacing:-.02em}
+ .fc-admin-pending p{font-size:.86rem;overflow-wrap:anywhere;margin:8px 0}
+ .fc-admin-pending .controls{margin-top:12px}
+ .fc-admin-pending .controls button{font-size:.82rem;flex:1}
+ #fcEditorialQuick h3{font-size:1.22rem}
+ @media(max-width:750px){.fc-admin-overview{grid-template-columns:1fr!important}.fc-admin-pending-list{grid-template-columns:1fr}#fcEditorialQuick .controls{display:grid;grid-template-columns:1fr!important}#fcEditorialQuick button{width:100%}}
+ </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>FarmConnect · Administration</h1><small>Mulungushi University | Zambia | Supabase</small></div>
 <nav><a href="index.html">Home</a><a href="prices.html">Prices</a><a href="#" id="logout">Logout</a></nav></header>
 <main><div class="intro"><div><h2>Administrator workspace</h2><p class="muted">Publish agricultural news, manage partner advertising, and maintain verified market data in one secure workspace.</p></div><span id="who" class="pill">Checking admin access…</span></div>
 <div id="loginMessage"></div>
-<div class="grid"><div class="metric"><small>Historical records</small><strong id="historyMetric">—</strong></div><div class="metric"><small>Commodities</small><strong id="commodityMetric">—</strong></div><div class="metric"><small>Markets</small><strong id="marketMetric">—</strong></div><div class="metric"><small>Accounts</small><strong id="userMetric">—</strong></div><div class="metric"><small>News stories</small><strong id="newsMetric">—</strong></div><div class="metric"><small>Advertisements</small><strong id="adMetric">—</strong></div></div>
-<section class="card" id="fcEditorialQuick">
+<div class="grid fc-admin-overview">
+  <div class="metric"><small>Pending market listings</small><strong id="pendingMetric">—</strong><span class="muted">Review buyer and seller requests</span></div>
+  <div class="metric"><small>Published news & drafts</small><strong id="newsMetric">—</strong><span class="muted">Edit articles and media</span></div>
+  <div class="metric"><small>Advertisement campaigns</small><strong id="adMetric">—</strong><span class="muted">Manage sponsor placements</span></div>
+ </div>
+ <div hidden aria-hidden="true"><span id="historyMetric"></span><span id="commodityMetric"></span><span id="marketMetric"></span><span id="userMetric"></span></div>
+ <section class="card" id="fcPendingWorkspace" hidden>
+  <div class="controls" style="justify-content:space-between;align-items:center"><div><h3 style="margin:0;font-size:1.2rem">New marketplace submissions</h3><p class="muted" style="margin:5px 0">Approve suitable listings to make them public. Reject incomplete or suspicious requests.</p></div><button id="fcPendingRefresh" type="button" class="secondary">Refresh requests</button></div>
+  <p id="fcPendingStatus" class="muted" role="status"></p><div id="fcPendingCards" class="fc-admin-pending-list"></div>
+ </section>
+ <section class="card" id="fcEditorialQuick">
 <p style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#2a6b49;margin-bottom:8px">Editorial workspace</p>
 <h3 style="font-size:1.25rem;letter-spacing:-.035em;margin-bottom:6px">Content publishing</h3>
 <p class="muted" style="margin-top:0">Write stories, upload images and short videos, or schedule sponsored messages. Drafts are not public.</p>
-<div class="controls"><button id="fcQuickNews" type="button">Manage news</button><button id="fcQuickAds" type="button" class="secondary">Manage advertisements</button><a href="news.html" target="_blank" rel="noopener noreferrer" style="font-weight:700;color:#235c40">Open news page ↗</a></div>
+<div class="controls"><button id="fcQuickPending" type="button">Review buyer & seller requests</button><button id="fcQuickNews" type="button" class="secondary">Edit news articles</button><button id="fcQuickAds" type="button" class="secondary">Manage adverts</button><button id="fcQuickAdvanced" type="button" class="secondary">Advanced data tools</button></div>
 </section><p class="warning"><b>Data-quality rule:</b> Synthetic/demo history is not a verified price quotation. News and published prices require reliable sources. Sponsored content must always be separate and labelled.</p>
-<section class="card" id="workspace" hidden><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
+<section class="card" id="workspace" hidden><h3 id="fcManageTitle">Manage content and data</h3><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
 <label for="resource">Manage</label><select id="resource" class="grow">
 <option value="news">News articles</option><option value="advertisements">Advertisements</option><option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
 </select><select id="kind"><option value="">All history</option><option value="observed">Observed only</option></select><button id="refresh" class="secondary">Refresh</button><button id="add">+ Add record</button></div>
@@ -74,10 +94,10 @@ async function setup(){
  if(!TOKEN()){$('loginMessage').className='error';$('loginMessage').textContent='Please log in as the administrator first.';return}
  try{
   const d=await api('GET','users',null,{limit:1});
-  authorized=true;$('workspace').hidden=false;$('who').textContent='Admin access verified';
+  authorized=true;$('workspace').hidden=true;$('fcPendingWorkspace').hidden=false;$('who').textContent='Admin access verified';
   $('loginMessage').className='ok';$('loginMessage').textContent='Connected securely to the FarmConnect admin API';
   await Promise.all(['price_history','commodities','markets','users','news','advertisements'].map(async (r,i)=>{try{let data=await api('GET',r,null,{limit:1});$( ['historyMetric','commodityMetric','marketMetric','userMetric','newsMetric','adMetric'][i]).textContent=data.count??'0'}catch{}}));
-  await load();
+  await Promise.all([loadPending(),load()]);
  }catch(e){$('loginMessage').className='error';$('loginMessage').textContent=e.message+'. Sign in with your administrator account and refresh.';$('who').textContent='No admin access'}
 }
 async function lookup(resourceName){if(lookups[resourceName])return lookups[resourceName];try{lookups[resourceName]=(await api('GET',resourceName,null,{limit:500})).records||[]}catch{lookups[resourceName]=[]}return lookups[resourceName]}
@@ -190,8 +210,44 @@ async function remove(item){
  const r=resource.value;if(!confirm((r==='users'?'Deactivate':'Permanently delete')+' '+r+' #'+item.id+'?'))return;
  try{await api('DELETE',r,null,{id:item.id});message('Change saved','ok');await load()}catch(e){alert(e.message)}
 }
-$('fcQuickNews').onclick=()=>{resource.value='news';offset=0;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
-$('fcQuickAds').onclick=()=>{resource.value='advertisements';offset=0;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickNews').onclick=()=>{if(!authorized)return;resource.value='news';offset=0;$('workspace').hidden=false;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickAds').onclick=()=>{if(!authorized)return;resource.value='advertisements';offset=0;$('workspace').hidden=false;load();$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+
+const reviewed=(text)=>String(text??'');
+const listingCard=(entry)=>{
+  const div=document.createElement('article');div.className='fc-admin-pending';
+  const title=document.createElement('h4');title.textContent=(entry.kind==='buyer'?'Buying request':'Selling offer')+' · '+reviewed(entry.commodity);div.append(title);
+  const info=document.createElement('p');info.className='muted';
+  info.textContent=[entry.name||'Unnamed',entry.contact_person,entry.location].filter(Boolean).join(' · ');div.append(info);
+  const details=document.createElement('p');
+  details.textContent='Quantity: '+(entry.quantity??'—')+' kg · Price: '+(entry.price?'K'+entry.price+'/kg':'To be agreed')+' · Contact: '+reviewed(entry.contact_phone);
+  div.append(details);
+  if(entry.notes){const note=document.createElement('p');note.className='muted';note.textContent=entry.notes;div.append(note)}
+  const actions=document.createElement('div');actions.className='controls';
+  for(const [name,action] of [['Approve & publish','approve'],['Reject listing','reject']]){
+    const button=document.createElement('button');button.type='button';button.textContent=name;button.className=action==='approve'?'':'secondary';
+    button.onclick=async()=>{if(!confirm((action==='approve'?'Publish':'Reject')+' this '+entry.kind+' listing?'))return;
+      button.disabled=true;try{await api('POST','review_listing',{kind:entry.kind,id:entry.id,action});await loadPending();}catch(e){alert(e.message)}finally{button.disabled=false}};
+    actions.append(button);
+  }
+  div.append(actions);return div;
+};
+async function loadPending(){
+ if(!authorized)return;
+ $('fcPendingStatus').textContent='Loading requests…';
+ try{
+  const data=await api('GET','pending_listings');
+  const items=data.listings||[],root=$('fcPendingCards');root.replaceChildren();
+  for(const entry of items)root.append(listingCard(entry));
+  if(!items.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='No submissions awaiting review. New buyer and seller requests will appear here.';root.append(empty)}
+  $('pendingMetric').textContent=String(items.length);
+  $('fcPendingStatus').textContent=items.length+' pending '+(items.length===1?'request':'requests');
+ }catch(e){$('pendingMetric').textContent='—';$('fcPendingStatus').textContent=e.message}
+}
+$('fcPendingRefresh').onclick=loadPending;
+$('fcQuickPending').onclick=()=>{if(!authorized)return;$('fcPendingWorkspace').hidden=false;loadPending();$('fcPendingWorkspace').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcQuickAdvanced').onclick=()=>{if(!authorized)return;$('workspace').hidden=false;$('fcSourceTools').hidden=resource.value!=='price_history';$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+
 $('resource').onchange=()=>{offset=0;lookups={};load()};$('kind').onchange=()=>{offset=0;load()};
 $('refresh').onclick=load;$('add').onclick=()=>openEditor();$('previous').onclick=()=>{offset=Math.max(0,offset-100);load()};$('next').onclick=()=>{offset+=100;load()};
 $('closeEditor').onclick=$('cancel').onclick=()=>$('editorBackdrop').classList.remove('open');
