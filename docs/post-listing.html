@@ -114,6 +114,16 @@ $('fcPostForm').addEventListener('submit',async e=>{
   const data=await response.json().catch(()=>({}));
   if(!response.ok||data.success===false)throw Error(data.error||'Unable to submit listing');
   status('Your '+(kind==='buyer'?'buying request':'selling offer')+' has been submitted successfully. It will appear in the marketplace after an administrator reviews it.');
+  // Connect people immediately with currently approved counterparties; no registration or paid messaging.
+  const search=new URLSearchParams({
+    role:kind,
+    commodity:body.commodity,
+    location:body.location
+  });
+  const follow=document.createElement('a');follow.href='match.html?'+search.toString();
+  follow.textContent=kind==='buyer'?'Find available sellers now →':'Find potential buyers now →';
+  follow.className='fc-button';follow.style.cssText='display:inline-block;margin-top:14px;color:#fff;text-decoration:none';
+  $('fcPostStatus').append(follow);
   form.reset();selectRole(kind);
  }catch(err){status(err.message||'Please check the details and try again.',true)}
  finally{button.disabled=false;button.textContent=kind==='seller'?'Submit selling offer →':'Submit buying request →'}
