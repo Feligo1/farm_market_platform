@@ -58,7 +58,12 @@
 "use strict";
 const API="https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api";
 const $=id=>document.getElementById(id),el=(t,s)=>{const x=document.createElement(t);if(s!==undefined)x.textContent=String(s);return x};
-const norm=s=>String(s||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ");
+const norm=s=>String(s||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const normalizedCrop=s=>{
+  const name=norm(s);
+  const aliases={"tomatoes":"tomato","tomato":"tomato","groundnuts":"groundnut","groundnut":"groundnut","peanuts":"groundnut","soybeans":"soybean","soybean":"soybean","soya beans":"soybean","soya bean":"soybean","onions":"onion","onion":"onion","beans":"beans","mixed beans":"mixed beans","maize grain":"maize","maize":"maize","irish potatoes":"potato","potatoes":"potato"};
+  return aliases[name]||name;
+};
 const money=n=>"K"+Number(n).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
 const STORAGE="farmconnect-free-match-search-v1";
 let listings={buyers:[],sellers:[]},loaded=false;
@@ -70,10 +75,10 @@ function criteria(){
 function updateLabel(){$("fcMatchPriceLabel").textContent=$("fcMatchRole").value==="seller"?"My expected selling price per kg (K, optional)":"My maximum buying price per kg (K, optional)"}
 function value(v){return Number.isFinite(Number(v))&&Number(v)>0?Number(v):0}
 function rank(row,p){
- const want=norm(p.commodity),crop=norm(row.commodity);
+ const want=normalizedCrop(p.commodity),crop=normalizedCrop(row.commodity);
  if(!want)return null;
  // Exact commodity name preferred; plural or descriptive commodity labels may still match.
- if(!(crop===want||crop.startsWith(want+" ")||want.startsWith(crop+" ")))return null;
+ if(crop!==want)return null;
  let score=60,reason=["Crop matches"];
  const userLoc=norm(p.location),loc=norm(row.location);
  if(userLoc){
@@ -153,7 +158,8 @@ async function load(){
    return json[type]||[];
   }));
   listings={buyers:results[0],sellers:results[1]};loaded=true;
-  const crops=[...new Set([...results[0],...results[1]].map(x=>x.commodity).filter(Boolean))].sort();
+  const officialCrops=await fetch(API+"/commodities?limit=150").then(r=>r.ok?r.json():{}).catch(()=>({}));
+  const crops=[...new Set([...results[0],...results[1],...(officialCrops.commodities||[])].map(x=>x.commodity||x.name).filter(Boolean))].sort();
   for(const crop of crops){const opt=el("option");opt.value=crop;$("fcMatchCrops").append(opt)}
   find();
  }catch(e){$("fcMatchStatus").textContent=e.message}
