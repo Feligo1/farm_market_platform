@@ -33,7 +33,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
  </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>FarmConnect · Administration</h1><small>Mulungushi University | Zambia | Supabase</small></div>
-<nav><a href="index.html">Home</a><a href="prices.html">Prices</a><a href="#" id="logout">Logout</a></nav></header>
+<nav><a href="#" id="logout">Sign out</a></nav></header>
 <main><div class="intro"><div><h2>Administrator workspace</h2><p class="muted">Publish agricultural news, manage partner advertising, and maintain verified market data in one secure workspace.</p></div><span id="who" class="pill">Checking admin access…</span></div>
 <div id="loginMessage"></div>
 <div class="grid fc-admin-overview">
@@ -51,11 +51,11 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 <h3 style="font-size:1.25rem;letter-spacing:-.035em;margin-bottom:6px">Content publishing</h3>
 <p class="muted" style="margin-top:0">Write stories, upload images and short videos, or schedule sponsored messages. Drafts are not public.</p>
 <div class="controls"><button id="fcQuickPending" type="button">Review buyer & seller requests</button><button id="fcQuickNews" type="button" class="secondary">Edit news articles</button><button id="fcQuickAds" type="button" class="secondary">Manage adverts</button><button id="fcQuickAdvanced" type="button" class="secondary">Advanced data tools</button></div>
-</section><p class="warning"><b>Data-quality rule:</b> Synthetic/demo history is not a verified price quotation. News and published prices require reliable sources. Sponsored content must always be separate and labelled.</p>
+</section><p class="warning"><b>Data-quality rule:</b> Use traceable sources for news and market prices. Do not approve misleading listings. Sponsored posts are clearly labelled for visitors.</p>
 <section class="card" id="workspace" hidden><h3 id="fcManageTitle">Manage content and data</h3><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
 <label for="resource" id="fcAdvancedPickerLabel" hidden>Advanced resource</label><select id="resource" class="grow" hidden>
 <option value="news">News articles</option><option value="advertisements">Advertisements</option><option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
-</select><select id="kind"><option value="">All history</option><option value="observed">Observed only</option></select><button id="refresh" class="secondary">Refresh</button><button id="add">+ Add record</button></div>
+</select><select id="kind"><option value="">All history</option><option value="observed">Sourced only</option></select><button id="refresh" class="secondary">Refresh</button><button id="add">+ Add record</button></div>
 <p id="tableMessage" class="muted" role="status"></p><div class="table-wrap"><table><thead id="head"></thead><tbody id="rows"></tbody></table></div>
 <div class="controls" style="margin-top:14px"><button class="secondary" id="previous">Previous</button><span id="pageInfo"></span><button class="secondary" id="next">Next</button></div>
 </section>
