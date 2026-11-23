@@ -17,7 +17,7 @@
   const top=document.createElement('div');top.className='fc-nav-top';top.append(brand,menu);
   const links=document.createElement('div');links.id='fc-nav-links';links.className='fc-nav-links';
   const items=[['index.html','Home'],['prices.html','Prices'],['find-buyers.html','Marketplace'],['match.html','Find a match'],['news.html','News']];
-  const extras=[['profit-calculator.html','Profit calculator'],['farmer-guide.html','Farmer guide'],['post-listing.html','Post listing']];
+  const extras=[['profit-calculator.html','Profit calculator'],['farmer-guide.html','Farmer guide'],['post-listing.html','Post listing'],['feedback.html','Give feedback']];
   const makeLink=(url,label)=>{
     const a=document.createElement('a');a.href=url;a.textContent=label;
     if(page===url){a.classList.add('fc-current');a.setAttribute('aria-current','page')}
