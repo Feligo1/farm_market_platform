@@ -299,6 +299,11 @@ Deno.serve(async (req: Request) => {
    const {data,error}=await db.from("news").select("id,title,content,summary,image_url,video_url,source_url,category,author_name,status,view_count,like_count,comment_count,published_at,created_at").eq("status","published").lte("published_at",new Date().toISOString()).order("published_at",{ascending:false}).limit(Math.min(limit,200));
    if(error)throw error;return respond({success:true,news:data,count:data?.length||0});
   }
+  if(endpoint==="appearance" && req.method==="GET"){
+    const {data,error}=await db.from("site_appearance").select("hero_image_url,hero_color,page_image_url,page_color,hero_overlay").eq("id",1).single();
+    if(error)throw error;
+    return respond({success:true,appearance:data});
+  }
   if(endpoint==="advertisements" && req.method==="GET"){
     const placement=String(u.searchParams.get("placement")||"news");
     if(!["home","news"].includes(placement))return respond({success:false,error:"Unknown placement"},400);
