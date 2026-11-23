@@ -134,6 +134,8 @@ async function load(){
   data={buyers:r[0],sellers:r[1]};choose(active);
  }catch(e){$('fcMarketCount').textContent='Unavailable';const empty=make('div','Listings could not be loaded. Please refresh this page.');empty.className='fc-empty';$('fcMarketGrid').replaceChildren(empty)}
 }
+const requestedCommodity=params.get('commodity');
+if(requestedCommodity)document.getElementById('fcMarketSearch').value=requestedCommodity.slice(0,90);
 for(const btn of document.querySelectorAll('.fc-choice'))btn.addEventListener('click',()=>choose(btn.dataset.kind));
 for(const id of ['fcMarketSearch','fcMarketLocation'])$(id).addEventListener('input',render);
 $('fcMarketCrop').addEventListener('change',render);
