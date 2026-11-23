@@ -17,7 +17,7 @@
 .fc-catalog-item .fc-catalog-price{font-size:1.04rem;color:#23583e;font-weight:800}
 .fc-catalog-item a{color:#235c40;font-size:.82rem;font-weight:750;text-decoration:underline}
 @media(max-width:940px){.fc-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.fc-catalog-grid{grid-template-columns:1fr;max-height:none}}
+@media(max-width:560px){.fc-catalog-grid{grid-template-columns:1fr;max-height:530px}}
 </style></head>
 <body class="fc-redesign">
 <main class="fc-main">
@@ -33,11 +33,6 @@
 <button type="button" class="fc-tab" role="tab" aria-selected="false" aria-controls="fcForecastPanel" id="fcForecastTab" data-view="forecast" tabindex="-1">Price forecast</button>
 </div>
 
-<section class="fc-panel" id="fcCatalogPanel" style="margin:0 0 24px">
-<div class="fc-section-header"><div><h2>Browse all agricultural commodities</h2><p>Chickens, goats, cattle, eggs, fish, fruit, vegetables and crops. A commodity can be listed even when no verified historical price has been published.</p></div></div>
-<div class="fc-toolbar"><div class="fc-field"><label for="fcCatalogCategory">Category</label><select id="fcCatalogCategory"><option value="">All categories</option></select></div>
-<div class="fc-field"><label for="fcCatalogSearch">Search commodities</label><input type="search" id="fcCatalogSearch" placeholder="Chicken, maize, goats…"></div></div>
-<p class="fc-status" id="fcCatalogCount" role="status">Loading commodity catalogue…</p><div id="fcCatalogGrid" class="fc-catalog-grid"></div></section>
 <section class="fc-panel" id="fcLatestPanel" role="tabpanel" aria-labelledby="fcLatestTab">
 <div class="fc-section-header"><div><h2>Latest published observations</h2><p>Reference prices by commodity. These are the most recent sourced historical observations, not today's market quotations.</p></div></div>
 <div class="fc-toolbar">
@@ -85,6 +80,12 @@
 </div>
 </section>
 </div>
+<section class="fc-section"><div class="fc-wrap"><section class="fc-panel" id="fcCatalogPanel" style="margin:0 0 24px">
+<div class="fc-section-header"><div><h2>Browse all agricultural commodities</h2><p>Chickens, goats, cattle, eggs, fish, fruit, vegetables and crops. A commodity can be listed even when no verified historical price has been published.</p></div></div>
+<div class="fc-toolbar"><div class="fc-field"><label for="fcCatalogCategory">Category</label><select id="fcCatalogCategory"><option value="">All categories</option></select></div>
+<div class="fc-field"><label for="fcCatalogSearch">Search commodities</label><input type="search" id="fcCatalogSearch" placeholder="Chicken, maize, goats…"></div></div>
+<p class="fc-status" id="fcCatalogCount" role="status">Loading commodity catalogue…</p><div id="fcCatalogGrid" class="fc-catalog-grid"></div></section>
+</div></section>
 </main>
 <footer class="fc-footer"><div class="fc-wrap fc-footer-row"><span>© <span id="fcYear"></span> FarmConnect Zambia</span><span><a href="index.html">Home</a> · <a href="find-buyers.html">Buyers &amp; sellers</a> · <a href="news.html">News</a></span></div></footer>
 <script>
