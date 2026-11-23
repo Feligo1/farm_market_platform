@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Published Price Watch | FarmConnect Zambia</title>
+<meta name="description" content="Save free agricultural price targets on your phone. Compare new official published monthly observations when you visit, without SMS fees.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="farmconnect-redesign.css?v=4"><link rel="stylesheet" href="farmconnect-mobile.css?v=2">
+<script src="farmconnect-nav.js?v=20261123-7" defer></script><script src="farmconnect-appearance.js?v=1" defer></script>
+<style>
+.fc-watch-layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:22px;align-items:start}
+.fc-watch-form,.fc-watch-card{background:white;border:1px solid #d8e5db;border-radius:12px;padding:22px}
+.fc-watch-form h2{font-size:1.25rem;margin:0 0 16px}
+.fc-watch-field{margin-bottom:16px;display:flex;flex-direction:column;gap:6px}
+.fc-watch-field label{font-size:.84rem;font-weight:750;color:#32543c}
+.fc-watch-field select,.fc-watch-field input{width:100%;min-height:46px;padding:9px 12px;font:inherit;font-size:16px;border:1px solid #bed1c5;border-radius:8px;background:#fff;color:#213b2a}
+.fc-watch-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.fc-watch-card{display:flex;flex-direction:column;gap:10px}
+.fc-watch-card h3{font-size:1.15rem;margin:0;letter-spacing:-.03em}
+.fc-watch-card small,.fc-watch-card p{font-size:.83rem;color:#697b6f;margin:0}
+.fc-watch-status{font-weight:800;font-size:.82rem;padding:7px 9px;border-radius:7px;width:fit-content;background:#eef3ee;color:#4d6955}
+.fc-watch-status.met{background:#e5f4e6;color:#21623d}
+.fc-watch-status.pending{background:#fff5e5;color:#855d1b}
+.fc-watch-price{font-size:1.55rem;font-weight:800;letter-spacing:-.04em;color:#244d34}
+.fc-watch-remove{cursor:pointer;border:1px solid #c2d4c7;background:#fff;color:#325f45;border-radius:7px;font:inherit;font-size:.83rem;font-weight:750;padding:9px;margin-top:auto}
+.fc-watch-note{background:#eef6ee;border:1px solid #d4e6d7;border-radius:11px;padding:18px;margin-top:22px;font-size:.85rem;color:#506a55;line-height:1.65}
+@media(max-width:860px){.fc-watch-layout{grid-template-columns:1fr}}
+@media(max-width:520px){.fc-watch-cards{grid-template-columns:1fr}.fc-watch-form,.fc-watch-card{padding:18px}}
+</style></head><body class="fc-redesign">
+<main class="fc-main"><section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Free price tracking · No SMS charges</p><h1>Save a crop price target.</h1>
+<p class="fc-lead">Choose when a published crop price reaches your target. FarmConnect checks the latest available sourced record whenever you reopen this page — no subscription or account needed.</p></div></section>
+<section class="fc-section"><div class="fc-wrap fc-watch-layout">
+<form id="fcWatchForm" class="fc-watch-form">
+<h2>Create a price watch</h2>
+<div class="fc-watch-field"><label for="fcWatchCrop">Commodity</label><select required id="fcWatchCrop"><option value="">Loading published commodities…</option></select></div>
+<div class="fc-watch-field"><label for="fcWatchDirection">Notify me on this page when price is</label><select id="fcWatchDirection"><option value="above">At or above target</option><option value="below">At or below target</option></select></div>
+<div class="fc-watch-field"><label for="fcWatchTarget">Target per kg (ZMW)</label><input type="number" id="fcWatchTarget" min="0.01" max="1000000" step="0.01" inputmode="decimal" required placeholder="e.g. 12.50"></div>
+<button class="fc-button" type="submit">Save price watch →</button>
+<p id="fcWatchFeedback" class="fc-note" role="status" style="margin-top:12px"></p>
+</form>
+<div><div class="fc-section-header"><div><p class="fc-eyebrow">Your saved watches</p><h2>Targets and published prices</h2><p>Watches stay on this device. They do not run in the background or trigger SMS.</p></div></div>
+<p id="fcWatchStatus" class="fc-note">Checking official published data…</p>
+<div id="fcWatchCards" class="fc-watch-cards" aria-live="polite"></div>
+<div class="fc-watch-note"><strong>Price data matters:</strong> This compares the most recent available Ministry of Agriculture national-average observation, which may be months old. A target being met does not imply today's buyer offers have that price. Always check the observation month and compare with a current buyer offer before selling.</div>
+</div></div></section></main>
+<footer class="fc-footer"><div class="fc-wrap fc-footer-row"><span>FarmConnect Zambia · Local, no-cost price checking</span><a href="prices.html">View sourced price history</a></div></footer>
+<script>
+(()=>{
+"use strict";
+const API="https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api";
+const STORE="farmconnect-price-watches-v1";
+const $=id=>document.getElementById(id),node=(t,s)=>{const el=document.createElement(t);if(s!==undefined)el.textContent=String(s);return el};
+const money=n=>"K"+Number(n).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
+let prices=new Map(),watches=[];
+try{const data=JSON.parse(localStorage.getItem(STORE)||"[]");if(Array.isArray(data))watches=data.filter(w=>w&&typeof w.crop==="string"&&Number(w.target)>0&&["above","below"].includes(w.direction)).slice(0,15)}catch{}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(watches));return true}catch{return false}}
+function render(){
+ const cards=$("fcWatchCards");cards.replaceChildren();
+ if(!watches.length){const msg=node("p","No price watches saved yet. Choose a commodity and target to start.");msg.className="fc-watch-note";cards.append(msg);return}
+ for(const w of watches){
+  const data=prices.get(w.crop);
+  const valid=data&&Number.isFinite(data.price)&&data.price>0;
+  const met=valid&&(w.direction==="above"?data.price>=w.target:data.price<=w.target);
+  const card=node("article");card.className="fc-watch-card";
+  const title=node("h3",w.crop),note=node("small",(w.direction==="above"?"At or above ":"At or below ")+money(w.target)+"/kg");
+  const rate=node("div",valid?money(data.price)+"/kg":"No sourced price");rate.className="fc-watch-price";
+  const date=node("p",valid?"Observed: "+data.date+" · National Average":"Waiting for sourced price information");
+  const status=node("span",!valid?"No published value":met?"Target met in published record":"Target not met in published record");status.className="fc-watch-status "+(!valid?"":met?"met":"pending");
+  const remove=node("button","Remove watch");remove.type="button";remove.className="fc-watch-remove";
+  remove.addEventListener("click",()=>{watches=watches.filter(x=>x!==w);save();render()});
+  card.append(title,note,rate,date,status,remove);cards.append(card);
+ }
+}
+async function load(){
+ try{
+  const r=await fetch(API+"/prices?limit=500");if(!r.ok)throw Error("Price service unavailable");
+  const json=await r.json();if(!json.success)throw Error(json.error||"No price data");
+  prices=new Map();
+  for(const item of json.prices||[]){
+   const crop=item.commodity_name||item.commodity,date=String(item.price_date||item.last_updated||"").slice(0,10),price=Number(item.price);
+   if(!crop||!date||price<=0||!Number.isFinite(price))continue;
+   if(!prices.has(crop)||date>prices.get(crop).date)prices.set(crop,{date,price});
+  }
+  const select=$("fcWatchCrop");select.replaceChildren();
+  for(const crop of [...prices.keys()].sort()){const option=node("option",crop);option.value=crop;select.append(option)}
+  if(!prices.size){select.append(node("option","No sourced prices yet"));select.disabled=true}
+  $("fcWatchStatus").textContent=prices.size+" commodities with historical published prices available. No real-time monitoring or SMS is performed.";
+ }catch(error){$("fcWatchStatus").textContent="Could not load sourced prices. Saved targets remain on this device."; }
+ render();
+}
+$("fcWatchForm").addEventListener("submit",e=>{
+ e.preventDefault();if(!$("fcWatchForm").reportValidity())return;
+ const crop=$("fcWatchCrop").value,target=Number($("fcWatchTarget").value),direction=$("fcWatchDirection").value;
+ if(!prices.has(crop)||!Number.isFinite(target)||target<=0){$("fcWatchFeedback").textContent="Choose a sourced commodity and a valid target.";return}
+ const prior=watches.find(w=>w.crop===crop&&w.direction===direction);
+ if(prior)prior.target=target;else watches.push({crop,direction,target});
+ watches=watches.slice(-15);$("fcWatchFeedback").textContent=save()?"Price watch saved on this device. Check this page again for new published observations.":"Your browser does not allow saving watches; this setting is temporary.";render();
+});
+render();load();
+})();
+</script></body></html>
