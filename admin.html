@@ -876,6 +876,20 @@ $('fcAppearanceClose').onclick=()=>selectAdminSection('pending');
 $('fcHeroClear').onclick=()=>{$('fcHeroImage').value='';appearancePreview()};
 $('fcPageClear').onclick=()=>{$('fcPageImage').value='';appearancePreview()};
 $('fcResetAppearance').onclick=()=>{if(savedAppearance)appearanceFill(savedAppearance)};
+const appearancePresets={
+ forest:{hero_color:'#194932',page_color:'#f6f8f5',hero_overlay:.74},
+ warm:{hero_color:'#52513b',page_color:'#fbf8f0',hero_overlay:.72},
+ slate:{hero_color:'#263f45',page_color:'#f2f6f7',hero_overlay:.76}
+};
+document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>{
+ const item=appearancePresets[button.dataset.preset];
+ if(!item)return;
+ $('fcHeroColor').value=item.hero_color;
+ $('fcPageColor').value=item.page_color;
+ $('fcOverlay').value=String(Math.round(item.hero_overlay*100));
+ appearancePreview();
+ $('fcAppearanceStatus').textContent='Preset applied in preview. Save to publish changes to the website.';
+}));
 for(const id of ['fcHeroColor','fcPageColor','fcHeroImage','fcPageImage','fcOverlay'])$(id).addEventListener('input',appearancePreview);
 async function uploadAppearance(fileInput,urlInput){
  const file=$(fileInput).files?.[0];if(!file)return;
