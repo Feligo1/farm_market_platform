@@ -66,13 +66,21 @@ const normalizedCrop=s=>{
 };
 const money=n=>"K"+Number(n).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
 const STORAGE="farmconnect-free-match-search-v1";
-let listings={buyers:[],sellers:[]},loaded=false;
+let listings={buyers:[],sellers:[]},loaded=false,commodityCatalog=[];
 let savedSearchSeen=null;
 function criteria(){
  return {role:$("fcMatchRole").value,commodity:$("fcMatchCrop").value.trim(),location:$("fcMatchLocation").value.trim(),
  qty:Number($("fcMatchQty").value)||0,price:Number($("fcMatchPrice").value)||0};
 }
-function updateLabel(){$("fcMatchPriceLabel").textContent=$("fcMatchRole").value==="seller"?"My expected selling price per kg (K, optional)":"My maximum buying price per kg (K, optional)"}
+function selectedUnit(){
+ const name=normalizedCrop($("fcMatchCrop").value);
+ return commodityCatalog.find(c=>normalizedCrop(c.name)===name)?.unit_of_measure||'kg';
+}
+function updateLabel(){
+ const unit=selectedUnit();
+ $("fcMatchPriceLabel").textContent=($("fcMatchRole").value==="seller"?"My expected selling price":"My maximum buying price")+" per "+unit+" (K, optional)";
+ document.querySelector('label[for="fcMatchQty"]').textContent="Quantity in "+unit+" (optional)";
+}
 function value(v){return Number.isFinite(Number(v))&&Number(v)>0?Number(v):0}
 function rank(row,p){
  const want=normalizedCrop(p.commodity),crop=normalizedCrop(row.commodity);
@@ -88,7 +96,9 @@ function rank(row,p){
  }
  const q=value(p.qty);
  const available=value(p.role==="seller"?row.min_volume:row.available_volume);
- if(q&&available){
+ const rowUnit=row.quantity_unit||"kg",chosenUnit=selectedUnit();
+ if(rowUnit!==chosenUnit){score-=20;reason.push("Different quantity unit: "+rowUnit)}
+ if(q&&available&&rowUnit===chosenUnit){
    if(p.role==="seller"){
      // Minimum volume is a buying requirement. Smaller offers may need consolidation.
      if(q>=available){score+=9;reason.push("Meets buyer's minimum volume")}
@@ -99,7 +109,8 @@ function rank(row,p){
    }
  }
  const budget=value(row.max_price),ask=value(row.price_per_kg),desired=value(p.price);
- if(desired){
+ const priceComparable=rowUnit===chosenUnit;
+ if(desired&&priceComparable){
    if(p.role==="seller"&&budget){if(budget>=desired){score+=9;reason.push("Buyer budget meets your asking price")}else{score-=18;reason.push("Buyer budget below your asking price")}}
    if(p.role==="buyer"&&ask){if(desired>=ask){score+=9;reason.push("Seller price within budget")}else{score-=18;reason.push("Seller asking price exceeds budget")}}
  }
@@ -114,8 +125,8 @@ function renderCard(match,p){
  const title=el("h3",row.commodity||"Produce"),name=el("p",(row.business_name||row.farm_name||"FarmConnect member")+" · "+(row.location||"Location unavailable"));
  const specs=el("div");specs.className="fc-match-specs";
  const qty=value(p.role==="seller"?row.min_volume:row.available_volume),price=value(p.role==="seller"?row.max_price:row.price_per_kg);
- for(const [label,content] of [[p.role==="seller"?"Minimum volume":"Available quantity",qty?qty.toLocaleString("en-ZM")+" kg":"Not stated"],
-   [p.role==="seller"?"Buyer budget / kg":"Seller price / kg",price?money(price):"Negotiate"]]){
+ for(const [label,content] of [[p.role==="seller"?"Minimum volume":"Available quantity",qty?qty.toLocaleString("en-ZM")+" "+(row.quantity_unit||"kg"):"Not stated"],
+   [p.role==="seller"?"Buyer budget / "+(row.quantity_unit||"kg"):"Seller price / "+(row.quantity_unit||"kg"),price?money(price):"Negotiate"]]){
   const part=el("div"),small=el("small",label),strong=el("strong",content);part.append(small,strong);specs.append(part);
  }
  const note=el("p",match.reason.join(" · "));note.className="fc-match-note";
@@ -159,12 +170,14 @@ async function load(){
   }));
   listings={buyers:results[0],sellers:results[1]};loaded=true;
   const officialCrops=await fetch(API+"/commodities?limit=150").then(r=>r.ok?r.json():{}).catch(()=>({}));
-  const crops=[...new Set([...results[0],...results[1],...(officialCrops.commodities||[])].map(x=>x.commodity||x.name).filter(Boolean))].sort();
+  commodityCatalog=officialCrops.commodities||[];
+  const crops=[...new Set([...results[0],...results[1],...commodityCatalog].map(x=>x.commodity||x.name).filter(Boolean))].sort();
   for(const crop of crops){const opt=el("option");opt.value=crop;$("fcMatchCrops").append(opt)}
-  find();
+  updateLabel();find();
  }catch(e){$("fcMatchStatus").textContent=e.message}
 }
 $("fcMatchRole").addEventListener("change",()=>{updateLabel();if(loaded&&criteria().commodity)find()});
+$("fcMatchCrop").addEventListener("input",updateLabel);
 $("fcMatchForm").addEventListener("submit",event=>{event.preventDefault();find()});
 $("fcMatchSave").addEventListener("click",()=>{
  const p=criteria();if(!p.commodity){$("fcMatchSaveMessage").textContent="Enter a commodity before saving.";return}
