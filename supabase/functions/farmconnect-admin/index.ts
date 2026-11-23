@@ -184,6 +184,50 @@ Deno.serve(async(req:Request)=>{
     ].sort((a:any,b:any)=>String(b.created_at).localeCompare(String(a.created_at)));
     return reply({success:true,listings:pending,count:pending.length});
   }
+  if(resource==="bulk_review" && req.method==="POST"){
+    const input=await req.json().catch(()=>null);
+    const action=String(input?.action||"");
+    const batch=Array.isArray(input?.listings)?input.listings:[];
+    if(!["approve","reject"].includes(action)||batch.length<1||batch.length>20)
+      return reply({success:false,error:"Select 1 to 20 pending listings and choose approve or reject"},400);
+    const seen=new Set<string>(),outcomes:{kind:string,id:number,ok:boolean,error?:string}[]=[];
+    for(const entry of batch){
+      const kind=String(entry?.kind||""),id=Number(entry?.id),identity=kind+":"+id;
+      if(!["buyer","seller"].includes(kind)||!Number.isSafeInteger(id)||id<=0||seen.has(identity)){
+        outcomes.push({kind,id,ok:false,error:"Invalid or repeated listing"});continue;
+      }
+      seen.add(identity);
+      const table=kind==="buyer"?"buyers":"sellers";
+      const change=action==="approve"?{status:"active",is_verified:true}:{status:"rejected",is_verified:false};
+      const result=await db.from(table).update(change).eq("id",id).eq("status","pending").eq("is_verified",false).select("id,status").maybeSingle();
+      if(result.error||!result.data){outcomes.push({kind,id,ok:false,error:result.error?.message||"Already reviewed or removed"});continue;}
+      outcomes.push({kind,id,ok:true});
+      await audit(actor,action,table,id);
+    }
+    return reply({success:true,updated:outcomes.filter(x=>x.ok).length,failed:outcomes.filter(x=>!x.ok).length,results:outcomes});
+  }
+  if(resource==="data_quality" && req.method==="GET"){
+    const [prices,commodities,markets,news,buyers,sellers]=await Promise.all([
+      db.from("price_history").select("id,commodity_id,market_id,price,unit,price_date,source_name,source_url,is_verified,data_kind").order("price_date",{ascending:false}).limit(1000),
+      db.from("commodities").select("id,name,unit_of_measure,is_active").limit(1000),
+      db.from("markets").select("id,name,is_active").limit(500),
+      db.from("news").select("id,title,source_url,status,published_at").limit(500),
+      db.from("buyers").select("id,status,is_verified").limit(1000),
+      db.from("sellers").select("id,status,is_verified").limit(1000)
+    ]);
+    for(const result of [prices,commodities,markets,news,buyers,sellers])if(result.error)throw result.error;
+    const observations=(prices.data||[]) as any[], products=(commodities.data||[]) as any[],stories=(news.data||[]) as any[];
+    const checks=[
+      {id:"unattributed",severity:"high",label:"Verified prices without complete source attribution",count:observations.filter(x=>x.is_verified===true&&(!String(x.source_name||"").trim()||!/^https:\/\//i.test(String(x.source_url||"")))).length,resource:"price_history"},
+      {id:"bad_price",severity:"high",label:"Invalid or zero commodity prices",count:observations.filter(x=>!Number.isFinite(Number(x.price))||Number(x.price)<=0).length,resource:"price_history"},
+      {id:"unknown_unit",severity:"medium",label:"Prices without a measurement unit",count:observations.filter(x=>!String(x.unit||"").trim()).length,resource:"price_history"},
+      {id:"unsourced_news",severity:"medium",label:"Published articles without a source link",count:stories.filter(x=>x.status==="published"&&!/^https:\/\//i.test(String(x.source_url||""))).length,resource:"news"},
+      {id:"unnamed_products",severity:"medium",label:"Commodities missing a name or selling unit",count:products.filter(x=>!String(x.name||"").trim()||!String(x.unit_of_measure||"").trim()).length,resource:"commodities"},
+      {id:"pending",severity:"info",label:"Marketplace submissions awaiting review",count:[...(buyers.data||[]),...(sellers.data||[])].filter((x:any)=>x.status==="pending"&&x.is_verified!==true).length,resource:"buyers"}
+    ];
+    const lastVerified=observations.find(x=>x.is_verified===true&&x.data_kind!=="demo")?.price_date||null;
+    return reply({success:true,checks,counts:{commodities:products.length,markets:markets.data?.length||0,price_records:observations.length,news:stories.length},last_verified_price:lastVerified,sample_limited:observations.length===1000||products.length===1000,note:"Quality checks identify possible issues; no records have been modified."});
+  }
   if(resource==="review_listing" && req.method==="POST"){
     const body=await req.json().catch(()=>null);
     const kind=String(body?.kind||"");
