@@ -1,0 +1,91 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Farm Profit Calculator | FarmConnect Zambia</title><meta name="description" content="Free Zambian farm sale calculator: estimate total revenue, transport and production costs, and compare two selling options.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="farmconnect-redesign.css?v=4"><link rel="stylesheet" href="farmconnect-mobile.css?v=2"><script src="farmconnect-nav.js?v=20261123-4" defer></script><script src="farmconnect-appearance.js?v=1" defer></script>
+<style>
+.fc-calc-layout{display:grid;grid-template-columns:1fr minmax(0,.8fr);gap:24px;align-items:start}
+.fc-calc-panel{border:1px solid #d9e5dd;background:white;border-radius:12px;padding:25px}
+.fc-calc-fields{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.fc-calc-field{display:flex;flex-direction:column;gap:6px}
+.fc-calc-field label{font-size:.83rem;color:#344d3e;font-weight:750}
+.fc-calc-field input,.fc-calc-field select{width:100%;padding:10px 12px;border:1px solid #c0d1c4;border-radius:8px;min-height:46px;font:inherit;font-size:16px}
+.fc-calc-section{border-top:1px solid #e5eee7;margin-top:24px;padding-top:22px}
+.fc-calc-section h2{font-size:1.17rem;margin:0 0 15px}
+.fc-calc-results{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fc-calc-result{padding:16px;background:#f1f7f2;border-radius:9px}
+.fc-calc-result small{display:block;font-size:.76rem;color:#6a786d;margin-bottom:7px}
+.fc-calc-result strong{display:block;font-size:clamp(1.23rem,3vw,1.65rem);letter-spacing:-.04em}
+.fc-calc-highlight{background:#e7f2e9;border:1px solid #cbe2d1}
+.fc-calc-help{font-size:.84rem;color:#65766a;line-height:1.6;margin:15px 0 0}
+.fc-calc-comparison{padding:20px;border:1px solid #d8e4db;border-radius:11px;background:white;margin-top:14px}
+.fc-calc-comparison h3{font-size:1.06rem;margin:0 0 14px}
+.fc-calc-sources{background:#f4f7f4;padding:15px;border-radius:9px;font-size:.79rem;color:#64756a;margin-top:18px}
+@media(max-width:880px){.fc-calc-layout{grid-template-columns:1fr}}
+@media(max-width:490px){.fc-calc-panel{padding:18px}.fc-calc-fields{grid-template-columns:1fr}.fc-calc-results{grid-template-columns:1fr 1fr}}
+</style></head><body class="fc-redesign">
+<main class="fc-main"><section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Free farmer planning tool</p><h1>Calculate before you sell.</h1><p class="fc-lead">Estimate how much money remains after your costs, and compare two selling locations. Everything runs on your device: no account, API charges or payments required.</p></div></section>
+<section class="fc-section"><div class="fc-wrap fc-calc-layout">
+<div class="fc-calc-panel">
+<h2 style="font-size:1.35rem;margin:0 0 16px">Your crop and sale</h2>
+<div class="fc-calc-fields">
+<div class="fc-calc-field"><label for="fcCalcCommodity">Commodity</label><input id="fcCalcCommodity" placeholder="Maize" maxlength="90" list="fcCalcCrops"><datalist id="fcCalcCrops"></datalist></div>
+<div class="fc-calc-field"><label for="fcCalcQty">Quantity for sale (kg)</label><input id="fcCalcQty" type="number" min="0" step="0.01" inputmode="decimal" value="500"></div>
+<div class="fc-calc-field"><label for="fcCalcPrice">Expected price per kg (K)</label><input id="fcCalcPrice" type="number" min="0" step="0.01" inputmode="decimal" value="12"></div>
+<div class="fc-calc-field"><label for="fcCalcTransport">Transport costs (K)</label><input id="fcCalcTransport" type="number" min="0" step="0.01" inputmode="decimal" value="350"></div>
+<div class="fc-calc-field"><label for="fcCalcProduction">Production costs (K)</label><input id="fcCalcProduction" type="number" min="0" step="0.01" inputmode="decimal" value="1600"></div>
+<div class="fc-calc-field"><label for="fcCalcOther">Storage, market and other costs (K)</label><input id="fcCalcOther" type="number" min="0" step="0.01" inputmode="decimal" value="150"></div>
+</div>
+<div class="fc-calc-section"><h2>Compare another buyer or market</h2>
+<div class="fc-calc-fields">
+<div class="fc-calc-field"><label for="fcCalcAltName">Other market or buyer</label><input id="fcCalcAltName" placeholder="e.g. Lusaka market" maxlength="80"></div>
+<div class="fc-calc-field"><label for="fcCalcAltPrice">Alternative price per kg (K)</label><input id="fcCalcAltPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 13.50"></div>
+<div class="fc-calc-field"><label for="fcCalcAltTransport">Alternative transport costs (K)</label><input id="fcCalcAltTransport" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 650"></div>
+<div class="fc-calc-field"><label for="fcCalcAltOther">Alternative extra costs (K)</label><input id="fcCalcAltOther" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 100"></div>
+</div></div>
+<div class="fc-calc-section"><button type="button" id="fcCalcReset" class="fc-button secondary">Reset calculator</button><a href="prices.html" class="fc-link" style="display:inline-block;margin:13px">View sourced historical crop prices →</a></div>
+</div>
+<div class="fc-calc-panel"><p class="fc-eyebrow">Estimated result</p><h2 style="font-size:1.4rem;margin:0 0 18px">Current selling option</h2>
+<div class="fc-calc-results">
+<div class="fc-calc-result"><small>Estimated sales revenue</small><strong id="fcCalcRevenue">—</strong></div>
+<div class="fc-calc-result"><small>Total entered costs</small><strong id="fcCalcCosts">—</strong></div>
+<div class="fc-calc-result fc-calc-highlight"><small>Estimated net result</small><strong id="fcCalcNet">—</strong></div>
+<div class="fc-calc-result"><small>Break-even price per kg</small><strong id="fcCalcBreakEven">—</strong></div>
+</div>
+<p class="fc-calc-help" id="fcCalcSummary">Enter your expected prices and costs to compare options.</p>
+<div class="fc-calc-comparison" id="fcCalcAlternative" hidden><h3 id="fcCalcAltTitle">Other selling option</h3>
+<div class="fc-calc-results"><div class="fc-calc-result"><small>Alternative net result</small><strong id="fcCalcAltNet">—</strong></div><div class="fc-calc-result"><small>Difference from first option</small><strong id="fcCalcDifference">—</strong></div></div>
+<p id="fcCalcRecommendation" class="fc-calc-help"></p></div>
+<div class="fc-calc-sources"><strong>Data quality:</strong> Starting values are examples, not live market offers. Your calculation uses only the numbers you enter. Include all actual production, commissions, losses, storage and other costs for a meaningful net profit estimate. Compare with <a href="prices.html">dated Ministry of Agriculture data</a>, but do not assume historical national averages are current local prices.</div>
+</div>
+</div></section></main>
+<footer class="fc-footer"><div class="fc-wrap fc-footer-row">FarmConnect Zambia · Free calculation, no personal information collected<a href="match.html">Find a matching buyer</a></div></footer>
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id),num=id=>Math.max(0,Number($(id).value)||0),money=n=>(n<0?"−":"")+"K"+Math.abs(n).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
+function calculate(){
+ const q=num("fcCalcQty"),price=num("fcCalcPrice"),transport=num("fcCalcTransport"),production=num("fcCalcProduction"),other=num("fcCalcOther");
+ const revenue=q*price,costs=transport+production+other,net=revenue-costs,breakEven=q?costs/q:null;
+ $("fcCalcRevenue").textContent=money(revenue);$("fcCalcCosts").textContent=money(costs);
+ $("fcCalcNet").textContent=money(net);$("fcCalcBreakEven").textContent=breakEven==null?"—":money(breakEven);
+ $("fcCalcSummary").textContent=net>=0?"At the entered prices and costs, the sale would leave "+money(net)+".":"At the entered prices and costs, this sale would result in a loss of "+money(-net)+".";
+ const altField=$("fcCalcAltPrice").value.trim(),enabled=altField!=="";
+ $("fcCalcAlternative").hidden=!enabled;
+ if(enabled){
+  const altPrice=num("fcCalcAltPrice"),altTransport=num("fcCalcAltTransport"),altOther=num("fcCalcAltOther");
+  const altNet=q*altPrice-production-altTransport-other-altOther,diff=altNet-net;
+  $("fcCalcAltTitle").textContent=$("fcCalcAltName").value.trim()||"Alternative market";
+  $("fcCalcAltNet").textContent=money(altNet);$("fcCalcDifference").textContent=money(diff);
+  $("fcCalcRecommendation").textContent=diff>0?"The second option leaves "+money(diff)+" more after the entered costs. Confirm buyer reliability, quality and payment conditions.":diff<0?"The first option leaves "+money(-diff)+" more after the entered costs.":"Both options leave the same amount after the entered costs.";
+ }
+}
+document.querySelectorAll(".fc-calc-field input").forEach(x=>x.addEventListener("input",calculate));
+$("fcCalcReset").addEventListener("click",()=>{
+ for(const id of ["fcCalcCommodity","fcCalcAltName","fcCalcAltPrice","fcCalcAltTransport","fcCalcAltOther"])$(id).value="";
+ for(const id of ["fcCalcQty","fcCalcPrice","fcCalcTransport","fcCalcProduction","fcCalcOther"])$(id).value="0";
+ calculate();
+});
+const query=new URLSearchParams(location.search);
+if(query.get("commodity"))$("fcCalcCommodity").value=query.get("commodity").slice(0,90);
+if(query.get("price")&&Number(query.get("price"))>0)$("fcCalcPrice").value=Number(query.get("price"));
+calculate();
+})();
+</script></body></html>
