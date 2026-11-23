@@ -1,140 +1,151 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="FarmConnect Zambia provides published agricultural commodity prices, historical trends, forecasts, and buyer connections.">
-<title>FarmConnect Zambia | Agricultural market information</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Find agricultural commodity prices, connect with buyers and sellers, post produce, and read farming news in Zambia.">
+<title>FarmConnect Zambia | Market prices and buyers for farmers</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="farmconnect-redesign.css?v=3">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#235c40">
-<script src="farmconnect-nav.js?v=20261123" defer></script>
-</head>
-<body class="fc-redesign">
+<link rel="stylesheet" href="farmconnect-redesign.css?v=4"><link rel="stylesheet" href="farmconnect-mobile.css?v=1"><meta name="theme-color" content="#235c40"><link rel="manifest" href="manifest.json">
+<script src="farmconnect-nav.js?v=20261123-2" defer></script>
+<style>
+.fc-home-hero{background:#194932;color:white;padding:76px 0 74px;position:relative;overflow:hidden}
+.fc-home-hero:before{content:"";position:absolute;right:-150px;top:-220px;width:670px;height:670px;border:1px solid #ffffff1b;border-radius:50%;box-shadow:0 0 0 94px #ffffff08,0 0 0 180px #ffffff05;pointer-events:none}
+.fc-home-hero .fc-wrap{position:relative}
+.fc-home-hero-grid{display:grid;grid-template-columns:1.18fr .82fr;gap:clamp(25px,7vw,95px);align-items:center}
+.fc-home-hero .fc-eyebrow{color:#b9dac4}
+.fc-home-hero h1{color:white;font-size:clamp(2.75rem,6vw,5rem);letter-spacing:-.065em;line-height:1.07;max-width:770px}
+.fc-home-hero h1 em{color:#d8e9bb;font-style:normal}
+.fc-home-hero .fc-lead{color:#e0ece3;font-size:1.08rem;max-width:560px}
+.fc-home-hero .fc-note{color:#c3ddcc;margin-top:18px}
+.fc-home-hero .fc-button{background:#f4f8ef;border-color:#f4f8ef;color:#194932!important}
+.fc-home-hero .fc-button.secondary{background:transparent;border-color:#9ac8ac;color:#fff!important}
+.fc-home-price{background:#fafff9;border-radius:14px;padding:25px;box-shadow:0 20px 55px #08271824;color:#183e29}
+.fc-home-price h2{font-size:1.45rem;margin-bottom:9px}
+.fc-home-price .fc-note{color:#60756a;margin:0 0 16px}
+.fc-home-price label{font-size:.83rem;font-weight:800;display:block;margin-bottom:8px}
+.fc-home-price select{width:100%;min-height:49px;font-size:16px;border:1px solid #bfd3c5;background:white;border-radius:8px;padding:10px;color:#23402f}
+.fc-home-price-output{padding:18px 0 15px;margin-top:12px;border-bottom:1px solid #e0e9e0}
+.fc-home-price-output strong{display:block;font-size:2.45rem;letter-spacing:-.055em;color:#194932;line-height:1.2}
+.fc-home-price-output small{color:#657c6d;font-size:.81rem}
+.fc-home-price>a{display:block;margin-top:16px;color:#235c40;font-weight:750}
+.fc-home-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:-31px;position:relative;z-index:1}
+.fc-home-action{background:#fff;border:1px solid #dee9df;box-shadow:0 5px 22px #193b2220;border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-width:0}
+.fc-home-action:hover{border-color:#83ad91;transform:translateY(-2px)}
+.fc-home-action-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#eaf3ec;color:#1d5c3d;font-size:1.3rem;font-weight:750}
+.fc-home-action strong{font-size:1.06rem;line-height:1.3}
+.fc-home-action>span:last-child{font-size:.83rem;color:#62736a;line-height:1.55}
+.fc-home-prices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.fc-home-price-card{background:#fff;border:1px solid var(--fc-line);border-radius:11px;padding:20px}
+.fc-home-price-card span{display:block;color:#627569;font-size:.78rem}
+.fc-home-price-card h3{font-size:1.02rem;margin:0 0 16px}
+.fc-home-price-card strong{display:block;font-size:1.64rem;letter-spacing:-.04em;margin-bottom:8px}
+.fc-home-price-card small{font-size:.79rem;color:#657569}
+.fc-home-feature{background:#edf4ee;border:1px solid #dbe7dd;border-radius:14px;padding:31px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}
+.fc-home-feature h2{font-size:1.62rem}
+.fc-home-feature p{color:#566e5e;max-width:670px;margin:6px 0}
+.fc-home-news{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.fc-home-news-card{display:grid;grid-template-columns:160px minmax(0,1fr);gap:18px;align-items:center;padding:13px;background:#fff;border:1px solid var(--fc-line);border-radius:11px;text-decoration:none}
+.fc-home-news-card img{width:160px;height:135px;object-fit:cover;border-radius:8px;background:#e7ede8}
+.fc-home-news-card small{color:#356848;font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+.fc-home-news-card h3{font-size:1.03rem;line-height:1.35;margin:7px 0 5px}
+.fc-home-news-card p{font-size:.82rem;color:#6a776e;line-height:1.5;margin:0}
+.fc-home-no-news{padding:25px;background:#fff;border:1px solid var(--fc-line);border-radius:10px}
+@media(max-width:1030px){.fc-home-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.fc-home-prices{grid-template-columns:repeat(2,minmax(0,1fr))}.fc-home-news-card{grid-template-columns:110px minmax(0,1fr)}.fc-home-news-card img{width:110px;height:120px}}
+@media(max-width:740px){.fc-home-hero{padding:44px 0 66px}.fc-home-hero-grid{grid-template-columns:1fr;gap:27px}.fc-home-hero h1{font-size:clamp(2.35rem,9.5vw,3.5rem)!important}.fc-home-price{padding:19px}.fc-home-actions{margin-top:-23px;gap:10px}.fc-home-action{padding:16px}.fc-home-action strong{font-size:.93rem}.fc-home-action>span:last-child{font-size:.76rem}.fc-home-prices{gap:10px}.fc-home-price-card{padding:17px}.fc-home-price-card strong{font-size:1.4rem}.fc-home-feature{grid-template-columns:1fr;padding:22px;gap:12px}.fc-home-feature .fc-button{width:100%}.fc-home-news{grid-template-columns:1fr}.fc-home-news-card{grid-template-columns:100px 1fr;gap:11px}.fc-home-news-card img{width:100px;height:104px}.fc-home-news-card h3{font-size:.94rem}}
+@media(max-width:380px){.fc-home-actions{grid-template-columns:1fr}.fc-home-action{display:grid;grid-template-columns:40px 1fr;align-items:center}.fc-home-action>span:last-child{grid-column:2}.fc-home-prices{grid-template-columns:1fr}}
+</style></head><body class="fc-redesign">
 <main class="fc-main">
-<section class="fc-hero">
-<div class="fc-wrap fc-hero-grid">
-<div>
-<p class="fc-eyebrow">FarmConnect · Zambia</p>
-<h1>Know the market before you sell.</h1>
-<p class="fc-lead">Compare published agricultural prices, explore historical trends, and find potential buyers. Designed to make market information easier for Zambian farmers to access.</p>
-<div class="fc-action-row"><a class="fc-button" href="prices.html">Explore market prices <span aria-hidden="true">→</span></a><a class="fc-button secondary" href="find-buyers.html">Find buyers &amp; sellers</a></div>
-<p class="fc-note" style="margin-top:22px">Price updates depend on published market reports. Historical observations are clearly dated and are not live quotations.</p>
-</div>
-<aside class="fc-paper fc-hero-aside" aria-labelledby="fcSnapshotTitle">
-<p class="fc-eyebrow">Market snapshot</p>
-<h2 id="fcSnapshotTitle">About the published dataset</h2>
-<p class="fc-note" id="fcSnapshotDate">Retrieving price records…</p>
-<div id="fcSnapshotRows" aria-live="polite"><p class="fc-note">Loading…</p></div>
-</aside>
-</div>
-</section>
-<section class="fc-section" id="published-prices">
-<div class="fc-wrap">
-<div class="fc-section-header">
-<div><p class="fc-eyebrow">Commodity prices</p><h2>Latest available published prices</h2><p>National average reference prices from sourced monthly observations, not current offers at individual markets.</p></div>
-<a href="prices.html" class="fc-link">View all commodities →</a>
-</div>
-<div id="fcPriceGrid" class="fc-price-grid" aria-live="polite"><div class="fc-empty">Loading published commodity prices…</div></div>
-<p id="fcDataStatus" class="fc-status" role="status"></p>
-</div>
-</section>
-<section class="fc-section" style="padding-top:8px">
-<div class="fc-wrap">
-<div class="fc-section-header"><div><p class="fc-eyebrow">Explore FarmConnect</p><h2>Market tools</h2><p>Find what you need without navigating through repeated dashboards.</p></div></div>
-<div class="fc-service-grid">
-<a class="fc-service" href="prices.html#history"><small>01 / Analyze</small><strong>Historical trends</strong><span>Review how commodity prices changed across published reporting periods.</span></a>
-<a class="fc-service" href="prices.html#forecast"><small>02 / Plan</small><strong>Price forecasts</strong><span>Explore experimental projections built from historical observations.</span></a>
-<a class="fc-service" href="find-buyers.html"><small>03 / Connect</small><strong>Buyers &amp; sellers</strong><span>Browse available trader listings and potential market contacts.</span></a>
-</div>
-</div>
-</section>
-<section class="fc-section" id="fcHomeSponsor" hidden style="padding-top:0">
-<div class="fc-wrap"><div class="fc-section-header"><div><p class="fc-eyebrow">Partners</p><h2>Sponsored information</h2><p>Advertising is clearly identified and separate from agricultural market data.</p></div></div>
-<div id="fcHomeSponsorGrid" class="fc-service-grid"></div></div></section>
+<section class="fc-home-hero"><div class="fc-wrap fc-home-hero-grid">
+<div><p class="fc-eyebrow">Agricultural market information · Zambia</p><h1>Better prices.<br><em>Better opportunities.</em></h1><p class="fc-lead">See published crop prices, find people buying your produce and advertise what you want to sell or buy. Built for Zambian farmers and traders.</p>
+<div class="fc-action-row"><a class="fc-button" href="find-buyers.html">Find buyers &amp; sellers →</a><a class="fc-button secondary" href="post-listing.html">Post your produce</a></div>
+<p class="fc-note">Free to browse and post. No account needed to submit a listing.</p></div>
+<div class="fc-home-price"><p class="fc-eyebrow">Price finder</p><h2>Check a crop price</h2><p class="fc-note">Latest available published national average, not a live local quote.</p>
+<label for="fcHomeCrop">Select your commodity</label><select id="fcHomeCrop"><option value="">Loading published prices…</option></select>
+<div class="fc-home-price-output"><strong id="fcHomeCropPrice">—</strong><small id="fcHomeCropMeta">Choose a commodity</small></div><a href="prices.html">Compare prices &amp; view history →</a></div>
+</div></section>
+<div class="fc-wrap"><div class="fc-home-actions">
+<a class="fc-home-action" href="prices.html"><span class="fc-home-action-icon" aria-hidden="true">K</span><strong>Market prices</strong><span>Check published prices and previous trends.</span></a>
+<a class="fc-home-action" href="find-buyers.html"><span class="fc-home-action-icon" aria-hidden="true">↗</span><strong>Find a market</strong><span>Browse buyers and sellers across Zambia.</span></a>
+<a class="fc-home-action" href="post-listing.html?type=seller"><span class="fc-home-action-icon" aria-hidden="true">＋</span><strong>Sell produce</strong><span>Advertise crops and your available quantity.</span></a>
+<a class="fc-home-action" href="post-listing.html?type=buyer"><span class="fc-home-action-icon" aria-hidden="true">⇄</span><strong>Buy produce</strong><span>Tell farmers exactly what you want to buy.</span></a>
+</div></div>
+<section class="fc-section"><div class="fc-wrap"><div class="fc-section-header"><div><p class="fc-eyebrow">Market reference</p><h2>Published commodity prices</h2><p>National monthly averages from the Ministry of Agriculture. Each price includes its original observation month.</p></div><a class="fc-link" href="prices.html">Explore all prices →</a></div>
+<div class="fc-home-prices" id="fcHomePriceCards" aria-live="polite"><div class="fc-empty">Loading published prices…</div></div>
+<p id="fcHomePriceStatus" class="fc-status" role="status"></p></div></section>
+<section class="fc-section" style="padding-top:0"><div class="fc-wrap"><div class="fc-home-feature"><div><p class="fc-eyebrow">Direct connections</p><h2>Have maize, tomatoes or another crop?</h2><p>Register your produce and preferred price, or let farmers know what you need to buy. Listings are reviewed before anyone can see your contact details.</p></div><a class="fc-button" href="post-listing.html">Create a free listing →</a></div></div></section>
+<section class="fc-section" style="padding-top:0"><div class="fc-wrap"><div class="fc-section-header"><div><p class="fc-eyebrow">From the field</p><h2>Recent farming updates</h2><p>Source-linked agricultural news, weather advisories and digital farming initiatives.</p></div><a href="news.html" class="fc-link">Read all news →</a></div>
+<div class="fc-home-news" id="fcHomeNews"><div class="fc-home-no-news">Loading agricultural news…</div></div></div></section>
+<section class="fc-section" id="fcHomeSponsor" hidden style="padding-top:0"><div class="fc-wrap"><div class="fc-section-header"><div><p class="fc-eyebrow">Partners</p><h2>Sponsored information</h2><p>Advertising is labelled and kept separate from our agricultural price information.</p></div></div><div id="fcHomeSponsorGrid" class="fc-service-grid"></div></div></section>
 </main>
-<footer class="fc-footer"><div class="fc-wrap fc-footer-row"><span>© <span id="fcYear"></span> FarmConnect Zambia · Market information for farmers</span><span><a href="prices.html">Market prices</a> · <a href="news.html">Agricultural news</a></span></div></footer>
+<footer class="fc-footer"><div class="fc-wrap fc-footer-row"><span>© <span id="fcYear"></span> FarmConnect Zambia · For farmers, buyers &amp; sellers</span><span><a href="news.html">News</a> · <a href="prices.html">Market history</a></span></div></footer>
 <script>
 (()=>{
-  'use strict';
-  const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api';
-  const $=id=>document.getElementById(id);
-  const fmtPrice=x=>'K'+Number(x).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const fmtMonth=s=>new Date(String(s).slice(0,10)+'T00:00:00Z').toLocaleDateString('en-ZM',{month:'long',year:'numeric',timeZone:'UTC'});
-  const node=(tag,className,text)=>{const e=document.createElement(tag);if(className)e.className=className;if(text!=null)e.textContent=text;return e};
-  async function load(){
-    try{
-      const response=await fetch(API+'/prices?limit=500',{headers:{Accept:'application/json'}});
-      if(!response.ok)throw Error('Market data request failed');
-      const data=await response.json();if(data.success===false)throw Error(data.error||'Market data unavailable');
-      const unique=new Map();
-      for(const p of data.prices||[]){
-        const name=p.commodity_name||p.commodity;
-        const value=Number(p.price);
-        if(!name||!Number.isFinite(value)||value<=0)continue;
-        const date=String(p.price_date||p.last_updated||'').slice(0,10);
-        const prev=unique.get(name);
-        if(!prev||date>prev.date)unique.set(name,{name,value,date,market:p.market_name||p.market||'Market'});
-      }
-      const list=[...unique.values()].sort((a,b)=>a.name.localeCompare(b.name));
-      const grid=$('fcPriceGrid');grid.replaceChildren();
-      if(!list.length){grid.append(node('div','fc-empty','No sourced published prices are available yet.'));$('fcSnapshotRows').textContent='No published observations available.';return}
-      for(const p of list.slice(0,6)){
-        const card=node('article','fc-price');
-        card.append(node('div','fc-price-title',p.name),node('strong','fc-amount',fmtPrice(p.value)+'/kg'),node('p','fc-price-sub',p.market+' · '+fmtMonth(p.date)));
-        grid.append(card);
-      }
-      const snap=$('fcSnapshotRows');snap.replaceChildren();
-      const details=[
-        ['Commodities covered',String(list.length)],
-        ['Market coverage','Zambia · National'],
-        ['Price unit','Kwacha per kilogram']
-      ];
-      for(const [label,value] of details){
-        const row=node('div','fc-mini-row');
-        row.append(node('span','',label),node('strong','',value));
-        snap.append(row);
-      }
-      const latest=list.map(p=>p.date).sort().at(-1);
-      $('fcSnapshotDate').textContent='Most recent available observation: '+fmtMonth(latest)+'.';
-      $('fcDataStatus').textContent='Source: Zambia Ministry of Agriculture · Latest available monthly records. Prices are historical national averages, not live market quotations.';
-    }catch(err){$('fcPriceGrid').replaceChildren(node('div','fc-empty','Published prices are currently unavailable. Please try again later.'));$('fcSnapshotRows').textContent='Price service unavailable.';$('fcSnapshotDate').textContent='';$('fcDataStatus').textContent=err.message;}
+'use strict';
+const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api';
+const $=id=>document.getElementById(id),make=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);return n};
+const kwacha=v=>'K'+Number(v).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2});
+const month=s=>new Date(String(s).slice(0,10)+'T00:00:00Z').toLocaleDateString('en-ZM',{month:'short',year:'numeric',timeZone:'UTC'});
+let crops=[];
+async function get(route){const r=await fetch(API+route);const d=await r.json().catch(()=>({}));if(!r.ok||d.success===false)throw Error(d.error||'Service unavailable');return d}
+function cropSelected(){
+ const p=crops.find(x=>x.name===$('fcHomeCrop').value);
+ $('fcHomeCropPrice').textContent=p?kwacha(p.price)+'/kg':'—';
+ $('fcHomeCropMeta').textContent=p?'National Average · '+month(p.date):'Choose a published commodity';
+}
+async function loadPrices(){
+ try{
+  const data=await get('/prices?limit=500'),seen=new Map();
+  for(const p of data.prices||[]){
+    const name=p.commodity_name||p.commodity,date=String(p.price_date||p.last_updated||'').slice(0,10),price=Number(p.price);
+    if(!name||!date||!Number.isFinite(price)||price<=0)continue;
+    if(!seen.has(name)||date>seen.get(name).date)seen.set(name,{name,date,price});
   }
-  $('fcYear').textContent=new Date().getFullYear();
-  load();
-  async function loadSponsored(){
-    try{
-      const response=await fetch(API+'/advertisements?placement=home');
-      if(!response.ok)return;
-      const data=await response.json();if(!data.success||!data.advertisements?.length)return;
-      const grid=$('fcHomeSponsorGrid');grid.replaceChildren();
-      for(const ad of data.advertisements.slice(0,3)){
-        const card=node('article','fc-service');
-        card.append(node('small','', 'Advertisement · Sponsored'),node('strong','',ad.title||'Partner information'),node('span','',ad.description||''));
-        const url=String(ad.image_url||'');
-        if(url.startsWith('https://')){const img=node('img');img.src=url;img.alt=ad.title||'Advertisement';img.loading='lazy';img.style.cssText='width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin:12px 0';card.prepend(img);}
-        const video=String(ad.video_url||'');
-        if(video.startsWith('https://')&&(/\.(mp4|webm)(\?|$)/i.test(video)||video.includes('/storage/v1/object/public/'))){
-          const v=node('video');v.controls=true;v.preload='metadata';v.src=video;v.style.cssText='width:100%;aspect-ratio:16/9;border-radius:8px;margin:12px 0';card.prepend(v);
-        }
-        else if(video.startsWith('https://')){
-          try{const u=new URL(video);const id=u.hostname==='youtu.be'?u.pathname.slice(1):['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname)?u.searchParams.get('v'):null;
-            if(id&&/^[a-zA-Z0-9_-]{11}$/.test(id)){
-              const iframe=node('iframe');iframe.src='https://www.youtube-nocookie.com/embed/'+id;iframe.title='Sponsored video: '+String(ad.title||'Advertisement');iframe.loading='lazy';iframe.allowFullscreen=true;iframe.style.cssText='width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin:12px 0';card.prepend(iframe);
-            }
-          }catch{}
-        }
-        const link=String(ad.target_url||'');
-        if(link.startsWith('https://')){const anchor=node('a','','Visit advertiser →');anchor.href=link;anchor.target='_blank';anchor.rel='noopener noreferrer sponsored';anchor.className='fc-link';card.append(anchor)}
-        grid.append(card);
-      }
-      $('fcHomeSponsor').hidden=false;
-    }catch{}
+  crops=[...seen.values()].sort((a,b)=>a.name.localeCompare(b.name));
+  const select=$('fcHomeCrop');select.replaceChildren();
+  for(const c of crops){const opt=make('option',c.name);opt.value=c.name;select.append(opt)}
+  const preferred=crops.find(c=>c.name==='Maize');
+  if(preferred)select.value='Maize';
+  cropSelected();
+  const grid=$('fcHomePriceCards');grid.replaceChildren();
+  const preferredList=['Maize','Rice','Groundnuts','Tomatoes','Soybeans','Onions','Mixed Beans','Sweet Potatoes'];
+  const items=[...crops].sort((a,b)=>preferredList.indexOf(a.name)<0?1:preferredList.indexOf(b.name)<0?-1:preferredList.indexOf(a.name)-preferredList.indexOf(b.name)).slice(0,8);
+  for(const item of items){
+    const card=make('article');card.className='fc-home-price-card';
+    const title=make('h3',item.name),price=make('strong',kwacha(item.price)+'/kg'),period=make('small','National Average · '+month(item.date));
+    card.append(title,price,period);grid.append(card);
   }
-  loadSponsored();
+  if(!items.length)grid.append(make('div','No published prices available.'));
+  $('fcHomePriceStatus').textContent=items.length?'Source: Zambia Ministry of Agriculture. Historical monthly averages, not real-time market quotes.':'No sourced price records are available.';
+ }catch(e){$('fcHomePriceCards').replaceChildren(make('div','Published prices are temporarily unavailable.'));$('fcHomeCrop').replaceChildren(make('option','Data unavailable'));$('fcHomePriceStatus').textContent=e.message}
+}
+async function loadNews(){
+ try{
+  const data=await get('/news?limit=3'),grid=$('fcHomeNews');grid.replaceChildren();
+  for(const item of (data.news||[]).slice(0,2)){
+    const a=make('a');a.className='fc-home-news-card';a.href='news.html';
+    if(typeof item.image_url==='string'&&item.image_url.startsWith('https://')){const img=make('img');img.src=item.image_url;img.loading='lazy';img.alt='Editorial illustration for '+item.title;a.append(img)}
+    const detail=make('div'),category=make('small',item.category||'Agriculture'),title=make('h3',item.title),summary=make('p',item.summary||'Read the full article');detail.append(category,title,summary);a.append(detail);grid.append(a);
+  }
+  if(!grid.children.length){const note=make('div','No agricultural news has been published yet.');note.className='fc-empty';grid.append(note)}
+ }catch{$('fcHomeNews').textContent='Agricultural updates are currently unavailable.'}
+}
+async function loadSponsored(){
+ try{
+  const data=await get('/advertisements?placement=home');
+  if(!data.advertisements?.length)return;
+  const grid=$('fcHomeSponsorGrid');grid.replaceChildren();
+  for(const item of data.advertisements.slice(0,3)){
+    const card=make('article');card.className='fc-service';
+    card.append(make('small','Advertisement · Sponsored'),make('strong',item.title||'Sponsor'),make('span',item.description||''));
+    const src=String(item.image_url||'');
+    if(src.startsWith('https://')){const image=make('img');image.src=src;image.loading='lazy';image.alt='Sponsored: '+item.title;image.style.cssText='width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:7px;margin:12px 0';card.prepend(image)}
+    const link=String(item.target_url||'');
+    if(link.startsWith('https://')){const a=make('a','Visit advertiser →');a.href=link;a.rel='noopener noreferrer sponsored';a.target='_blank';a.className='fc-link';card.append(a)}
+    grid.append(card);
+  }
+  $('fcHomeSponsor').hidden=false;
+ }catch{}
+}
+$('fcYear').textContent=new Date().getFullYear();$('fcHomeCrop').addEventListener('change',cropSelected);
+loadPrices();loadNews();loadSponsored();
 })();
 </script>
 </body></html>
