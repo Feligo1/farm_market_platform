@@ -10,8 +10,8 @@ const schema:Record<string,string[]>={
   markets:["name","market_code","province","district","town","latitude","longitude","address","market_days","operating_hours","contact_phone","has_weighbridge","has_storage","is_active"],
   price_history:["commodity_id","market_id","price","unit","volume","quality","source_type","source_name","source_url","external_id","currency","data_kind","is_verified","trend","price_date","notes"],
   live_prices:["commodity_id","market_id","current_price","price_7d","price_14d","price_30d","trend","recommendation","confidence"],
-  buyers:["business_name","contact_person","contact_phone","contact_email","commodity","location","max_price","min_volume","notes","is_verified","rating","added_by","status"],
-  sellers:["farm_name","contact_person","contact_phone","contact_email","commodity","available_volume","price_per_kg","location","notes","is_verified","rating","status"],
+  buyers:["business_name","contact_person","contact_phone","contact_email","commodity","location","max_price","min_volume","quantity_unit","notes","is_verified","rating","added_by","status"],
+  sellers:["farm_name","contact_person","contact_phone","contact_email","commodity","available_volume","quantity_unit","price_per_kg","location","notes","is_verified","rating","status"],
   news:["title","content","summary","image_url","video_url","source_url","category","author_name","status","published_at"],
   advertisements:["title","description","image_url","video_url","target_url","placement","status","starts_at","ends_at","sort_order"],
   sms_subscriptions:["user_id","commodity","market","alert_type","threshold","active"],
@@ -32,6 +32,7 @@ const protect=(resource:string,input:Record<string,unknown>)=>{
    if(bools.has(field)){if(typeof value!=="boolean")throw new Error(field+" must be boolean");}
    if(numeric.has(field)){if(!Number.isFinite(Number(value)))throw new Error(field+" must be numeric");value=Number(value);}
    if(field==="main_crops"){if(!Array.isArray(value))value=String(value).split(",").map((v)=>v.trim());}
+   if(field==="quantity_unit" && !["kg","each","tray","litre","bundle","head","punnet","set","50kg bag","tonne"].includes(String(value)))throw new Error("Unsupported quantity unit");
    if(typeof value==="string" && value.length>10000)throw new Error(field+" too long");
    clean[field]=value;
  }
