@@ -658,11 +658,62 @@ async function loadPending(){
 $('fcPendingRefresh').onclick=loadPending;
 $('fcQuickPending').onclick=()=>selectAdminSection('pending');
 
+let insightCache=null,feedbackCache=null;
+function makeCsv(rows,fileName){
+ const clean=value=>{
+  const raw=String(value==null?'':value).replace(/[\r\n]+/g,' ');
+  const safe=/^[=+@\-\t]/.test(raw)?'\''+raw:raw;
+  return '"'+safe.replace(/"/g,'""')+'"';
+ };
+ const csv='\uFEFF'+rows.map(row=>row.map(clean).join(',')).join('\r\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);
+ const link=document.createElement('a');link.href=url;link.download=fileName;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+$('fcInsightsExport').onclick=()=>{
+ if(!insightCache){$('fcInsightsStatus').textContent='Refresh insights before exporting.';return}
+ const d=insightCache,rows=[['Type','Name','Buy requests','Sell offers','Total']];
+ for(const x of d.commodities||[])rows.push(['Commodity',x.commodity,x.buyers,x.sellers,Number(x.buyers)+Number(x.sellers)]);
+ for(const x of d.locations||[])rows.push(['District or place',x.name,'','',x.count]);
+ makeCsv(rows,'farmconnect-marketplace-insights.csv');
+};
+$('fcInsightsPlan').onclick=()=>{
+ const panel=$('fcInsightsRecommendations');panel.replaceChildren();panel.hidden=false;
+ if(!insightCache){panel.textContent='Load marketplace insights to calculate opportunities.';return}
+ const data=insightCache,items=(data.commodities||[]),heading=document.createElement('h4'),list=document.createElement('ul');
+ heading.textContent='Actions from published marketplace records';panel.append(heading,list);
+ const suggestions=[];
+ const onlyBuy=items.filter(x=>Number(x.buyers)>0&&Number(x.sellers)===0).slice(0,4);
+ const onlySell=items.filter(x=>Number(x.sellers)>0&&Number(x.buyers)===0).slice(0,4);
+ for(const item of onlyBuy)suggestions.push(item.commodity+': '+item.buyers+' buyer request(s) but no approved seller; encourage farmers to post offers.');
+ for(const item of onlySell)suggestions.push(item.commodity+': '+item.sellers+' selling offer(s) without an approved buyer; promote the commodity to traders.');
+ const equal=items.filter(x=>Number(x.buyers)>0&&Number(x.sellers)>0).slice(0,3);
+ for(const item of equal)suggestions.push(item.commodity+': buyers and sellers are both represented. Check locations, quantity and expected price before recommending a match.');
+ if(!suggestions.length)suggestions.push('No reliable demand-versus-supply imbalance can be inferred from the current approved listings. Recruit genuine buyers and sellers before drawing conclusions.');
+ for(const idea of suggestions){const li=document.createElement('li');li.textContent=idea;list.append(li)}
+ const foot=document.createElement('p');foot.className='muted';foot.textContent='Listing counts are not completed transactions or population-wide market forecasts.';panel.append(foot);
+};
+$('fcFeedbackExport').onclick=()=>{
+ if(!feedbackCache){$('fcFeedbackSummaryStatus').textContent='Load feedback first.';return}
+ const rows=[['Feature','Response count','Helpfulness / 5','Ease of use / 5']];
+ for(const x of feedbackCache.by_feature||[])rows.push([x.feature,x.count,x.helpfulness,x.ease]);
+ makeCsv(rows,'farmconnect-feedback-summary.csv');
+};
+$('fcFeedbackPriorities').onclick=()=>{
+ const panel=$('fcFeedbackPrioritiesResult');panel.replaceChildren();panel.hidden=false;
+ if(!feedbackCache){panel.textContent='Load feedback to identify improvements.';return}
+ const rows=[...(feedbackCache.by_feature||[])].filter(x=>x.count>0).sort((a,b)=>Math.min(a.ease,a.helpfulness)-Math.min(b.ease,b.helpfulness));
+ const title=document.createElement('h4');title.textContent='Areas needing attention';panel.append(title);
+ const list=document.createElement('ul');
+ for(const x of rows.slice(0,5)){const li=document.createElement('li');li.textContent=x.feature+' — '+x.count+' response(s), ease '+x.ease+'/5, helpfulness '+x.helpfulness+'/5.'+(x.ease<3?' Focus on removing confusing steps.':x.helpfulness<3?' Reconsider the usefulness of this feature.':' Collect more evidence before deciding changes.');list.append(li)}
+ if(!list.children.length){const li=document.createElement('li');li.textContent='No submissions yet. Invite real farmers to test the system.';list.append(li)}
+ panel.append(list);
+ const caution=document.createElement('p');caution.className='muted';caution.textContent='These rankings describe voluntary feedback only; small samples are not representative.';panel.append(caution);
+};
 async function loadInsights(){
  if(!authorized)return;
  $('fcInsightsStatus').textContent='Loading existing marketplace records…';
  try{
-  const data=await api('GET','market_insights'),c=data.counts||{};
+  const data=await api('GET','market_insights'),c=data.counts||{};insightCache=data;$('fcInsightsRecommendations').hidden=true;
   const metrics=[
     ['Active buyer requests',c.approved_buyers||0],['Active selling offers',c.approved_sellers||0],
     ['Awaiting review',(c.pending_buyers||0)+(c.pending_sellers||0)],['News articles',c.news_articles||0],
@@ -684,7 +735,7 @@ async function loadFeedbackSummary(){
  if(!authorized)return;
  $('fcFeedbackSummaryStatus').textContent='Loading feedback…';
  try{
-  const data=await api('GET','farmer_feedback');
+  const data=await api('GET','farmer_feedback');feedbackCache=data;$('fcFeedbackPrioritiesResult').hidden=true;
   const metrics=$('fcFeedbackMetrics');metrics.replaceChildren();
   for(const [label,value] of [['Total responses',data.count],['Average helpfulness',data.average_helpfulness==null?'—':data.average_helpfulness+'/5'],['Average ease of use',data.average_ease==null?'—':data.average_ease+'/5']]){
     const card=document.createElement('div');card.className='metric';const small=document.createElement('small');small.textContent=label;const strong=document.createElement('strong');strong.textContent=String(value??'—');card.append(small,strong);metrics.append(card);
