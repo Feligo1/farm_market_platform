@@ -278,8 +278,10 @@ Deno.serve(async (req: Request) => {
    if(commodity)query=query.eq("commodities.name",commodity);
    if(market)query=query.eq("markets.name",market);
    const {data,error}=await query;if(error)throw error;
-   const prices=(data||[]).map((r:any)=>({id:r.id,commodity_name:r.commodities?.name,commodity:r.commodities?.name,icon_emoji:r.commodities?.icon_emoji,market_name:r.markets?.name,market:r.markets?.name,province:r.markets?.province,price:r.price,unit:r.unit,trend:r.trend,last_updated:r.price_date,is_verified:true}));
-   return respond({success:true,prices,count:prices.length});
+   const latest=new Map<string,any>();
+    for(const row of data||[]){const key=String(row.commodities?.name)+"|"+String(row.markets?.name);if(!latest.has(key))latest.set(key,row)}
+    const prices=[...latest.values()].map((r:any)=>({id:r.id,commodity_name:r.commodities?.name,commodity:r.commodities?.name,icon_emoji:r.commodities?.icon_emoji,market_name:r.markets?.name,market:r.markets?.name,province:r.markets?.province,price:r.price,unit:r.unit,trend:r.trend,last_updated:r.price_date,price_date:r.price_date,is_verified:true,source_name:"Zambia Ministry of Agriculture",price_status:"historical"}));
+   return respond({success:true,prices,count:prices.length,notice:"Latest available sourced observation per commodity and market. These are historical reports, not real-time price quotations."});
   }
   return respond({success:false,error:"Unknown endpoint"},404);
  }catch(e){console.error("FarmConnect API failure",e);return respond({success:false,error:"Database request failed"},500);}
