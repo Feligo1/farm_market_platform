@@ -120,9 +120,49 @@ async function openEditor(item=null){
   if(boolCols.has(col)){node=document.createElement('select');[['','— Keep default —'],['true','Yes'],['false','No']].forEach(([v,t])=>{const opt=new Option(t,v);node.add(opt)});if(item&&item[col]!==null)node.value=String(Boolean(item[col]))}
   else if(references[col]){node=document.createElement('select');node.add(new Option('— Select —',''));const values=await lookup(references[col]);for(const ref of values){let name=ref.name||ref.username||ref.title||ref.business_name||ref.id;node.add(new Option(String(name)+' (#'+String(ref.id).slice(0,8)+')',String(ref.id)))}if(item?.[col]!==null&&item?.[col]!==undefined)node.value=String(item[col])}
   else if(['content','notes','description','summary','message'].includes(col)){node=document.createElement('textarea');node.value=item?.[col]??''}
+  else if(col==='status' && (r==='news'||r==='advertisements')){
+    node=document.createElement('select');
+    const options=r==='news'?['draft','published']:['draft','published','paused'];
+    for(const value of options)node.add(new Option(value.charAt(0).toUpperCase()+value.slice(1),value));
+    node.value=item?.[col]||'draft';
+  }
+  else if(col==='placement' && r==='advertisements'){
+    node=document.createElement('select');
+    for(const value of ['news','home','both'])node.add(new Option(value.charAt(0).toUpperCase()+value.slice(1),value));
+    node.value=item?.[col]||'news';
+  }
   else if(col==='role'){node=document.createElement('select');for(const role of ['farmer','buyer','trader','admin'])node.add(new Option(role,role));node.value=item?.[col]||'farmer'}
-  else {node=document.createElement('input');node.type=col==='password'?'password':col==='price_date'?'date':col==='published_at'||col==='sent_at'?'datetime-local':floatCols.has(col)||col.endsWith('_id')&&col!=='user_id'?'number':'text';if(node.type==='number')node.step='any';node.value=item?.[col]??''}
+  else {node=document.createElement('input');node.type=col==='password'?'password':col==='price_date'?'date':['published_at','sent_at','starts_at','ends_at'].includes(col)?'datetime-local':floatCols.has(col)||col.endsWith('_id')&&col!=='user_id'?'number':'text';if(node.type==='number')node.step='any';node.value=item?.[col]??''}
   node.id='field-'+col;node.dataset.col=col;node.setAttribute('autocomplete',col==='password'?'new-password':'off');wrapper.append(node);form.append(wrapper);
+  if((r==='news'||r==='advertisements') && ['image_url','video_url'].includes(col)){
+    const picker=document.createElement('input');
+    picker.type='file';
+    picker.accept=col==='image_url'?'image/jpeg,image/png,image/webp,image/gif':'video/mp4,video/webm';
+    picker.setAttribute('aria-label','Upload '+pretty(col));
+    const hint=document.createElement('small');
+    hint.className='muted';
+    hint.textContent='Upload an image or short video (max 6 MB), or paste a public HTTPS link. Large videos: paste a YouTube/video URL.';
+    picker.addEventListener('change',async()=>{
+      const file=picker.files?.[0];
+      if(!file)return;
+      if(file.size>6000000){hint.textContent='Upload limit: 6 MB. Please use a hosted video URL.';return}
+      picker.disabled=true;hint.textContent='Uploading '+file.name+'…';
+      try{
+        const base64=await new Promise((resolve,reject)=>{
+          const reader=new FileReader();
+          reader.onload=()=>resolve(String(reader.result||'').split(',')[1]||'');
+          reader.onerror=()=>reject(new Error('Cannot read selected file'));
+          reader.readAsDataURL(file);
+        });
+        const result=await api('POST','media_upload',{mime:file.type,base64});
+        node.value=result.url;
+        hint.textContent='Upload complete. Save the record to publish the new media URL.';
+      }catch(err){hint.textContent=err.message||'Upload failed'}
+      finally{picker.disabled=false}
+    });
+    wrapper.append(picker,hint);
+  }
+
  }
  $('editorBackdrop').classList.add('open');
 }
