@@ -31,6 +31,17 @@
 .fc-hub-checklist strong{color:#244b34}
 @media(max-width:950px){.fc-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.fc-livestock-intro{grid-template-columns:1fr}.fc-hub-grid{grid-template-columns:1fr}.fc-hub-card{padding:18px}.fc-hub-checklist{padding:18px}}
+</style><style>
+.fc-hub-plan-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-bottom:20px}
+.fc-hub-plan-fields>div{display:flex;flex-direction:column;gap:6px}
+.fc-hub-plan-fields label{font-size:.82rem;font-weight:750;color:#31523b;line-height:1.4}
+.fc-hub-plan-fields input{width:100%;min-height:45px;font:inherit;font-size:16px;color:#213c2a;background:#fff;border:1px solid #bfd1c1;border-radius:8px;padding:10px}
+.fc-hub-plan-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px}
+.fc-hub-plan-results>div{border:1px solid #d1e6d5;background:#eff7f0;border-radius:8px;padding:13px}
+.fc-hub-plan-results small{display:block;font-size:.73rem;color:#607565;line-height:1.5;margin-bottom:8px}
+.fc-hub-plan-results strong{display:block;font-size:1.3rem;letter-spacing:-.03em;color:#245d3d}
+@media(max-width:800px){.fc-hub-plan-results{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.fc-hub-plan-fields{grid-template-columns:1fr}}
 </style></head><body class="fc-redesign">
 <main class="fc-main"><section class="fc-page-head"><div class="fc-wrap fc-livestock-intro">
 <div><p class="fc-eyebrow">FarmConnect Zambia · Livestock &amp; fisheries</p><h1>Animals, markets and trusted updates.</h1>
@@ -53,6 +64,30 @@
 <p class="fc-hub-note" id="fcHubPricesStatus" role="status">Loading verified prices…</p><div class="fc-hub-grid" id="fcHubPrices"></div>
 <p class="fc-hub-note">These prices are historical reference records, not live offers or a guarantee of current local rates. Check the observation month before negotiating.</p>
 </div></section>
+
+<section class="fc-section" style="padding-top:0"><div class="fc-wrap">
+<div class="fc-hub-heading"><div><p class="fc-eyebrow">Free poultry decision tool</p><h2>Broiler batch profit planner</h2><p>Before buying day-old chicks, calculate your projected costs, expected birds sold and break-even selling price.</p></div></div>
+<div class="fc-hub-checklist">
+<form id="fcPoultryPlanner" class="fc-hub-planner" autocomplete="off">
+<div class="fc-hub-plan-fields">
+<div><label for="fcBirds">Day-old chicks purchased</label><input id="fcBirds" type="number" min="1" max="1000000" step="1" inputmode="numeric" placeholder="e.g. 100" required></div>
+<div><label for="fcMortality">Expected mortality (%)</label><input id="fcMortality" type="number" min="0" max="99" step="0.1" inputmode="decimal" placeholder="e.g. 5" required></div>
+<div><label for="fcChickCost">Cost per day-old chick (K)</label><input id="fcChickCost" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Enter actual price" required></div>
+<div><label for="fcFeedBags">Expected feed bags (50 kg each)</label><input id="fcFeedBags" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="e.g. 10" required></div>
+<div><label for="fcFeedCost">Price per 50 kg feed bag (K)</label><input id="fcFeedCost" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Enter actual price" required></div>
+<div><label for="fcExtraCosts">Vaccination, heat, bedding, transport and other total costs (K)</label><input id="fcExtraCosts" type="number" min="0" max="10000000" step="0.01" inputmode="decimal" placeholder="Enter total" required></div>
+<div><label for="fcSalePrice">Expected selling price per surviving bird (K)</label><input id="fcSalePrice" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Enter expected price" required></div>
+</div>
+<button class="fc-button" type="submit">Calculate batch results →</button>
+</form>
+<div id="fcPoultryResults" hidden class="fc-hub-plan-results" aria-live="polite">
+<div><small>Estimated birds available to sell</small><strong id="fcBirdsSold">—</strong></div>
+<div><small>Estimated total costs</small><strong id="fcBatchCosts">—</strong></div>
+<div><small>Break-even selling price per bird</small><strong id="fcBatchBreakEven">—</strong></div>
+<div><small>Expected net result</small><strong id="fcBatchNet">—</strong></div>
+</div>
+<p class="fc-hub-note" id="fcPoultryNote" role="status">The calculator is a planning estimate only. Enter actual local costs. Mortalities, unexpected disease, flock growth, feed usage and selling price may differ from your assumptions. No data is sent or saved.</p>
+</div></div></section>
 <section class="fc-section" style="padding-top:0"><div class="fc-wrap">
 <div class="fc-hub-heading"><div><p class="fc-eyebrow">Before buying or selling</p><h2>Five practical checks</h2><p>Useful whether you are trading poultry, cattle, goats, fish or animal products.</p></div></div>
 <div class="fc-hub-checklist">
@@ -139,6 +174,25 @@ for(const button of document.querySelectorAll(".fc-hub-filters button"))button.a
  for(const b of document.querySelectorAll(".fc-hub-filters button"))b.setAttribute("aria-pressed",String(b===button));
  drawNews();
 });
+function calcPoultry(event){
+ event.preventDefault();
+ const num=id=>Number($(id).value),birds=num("fcBirds"),mortality=num("fcMortality");
+ const chickCost=num("fcChickCost"),bags=num("fcFeedBags"),feedCost=num("fcFeedCost"),extra=num("fcExtraCosts"),salePrice=num("fcSalePrice");
+ const vals=[birds,mortality,chickCost,bags,feedCost,extra,salePrice];
+ if(vals.some(x=>!Number.isFinite(x)||x<0)||!Number.isSafeInteger(birds)||birds<1||mortality>=100){
+  $("fcPoultryNote").textContent="Enter valid nonnegative costs, a whole number of chicks and an expected mortality below 100%.";
+  $("fcPoultryResults").hidden=true;return;
+ }
+ const available=Math.floor(birds*(1-mortality/100));
+ const cost=birds*chickCost+bags*feedCost+extra,received=available*salePrice,net=received-cost;
+ $("fcBirdsSold").textContent=available.toLocaleString("en-ZM");
+ $("fcBatchCosts").textContent=cash(cost);
+ $("fcBatchBreakEven").textContent=available>0?cash(cost/available):"Cannot calculate";
+ $("fcBatchNet").textContent=(net<0?"−":"")+cash(Math.abs(net));
+ $("fcPoultryResults").hidden=false;
+ $("fcPoultryNote").textContent="Estimate based only on entered assumptions. "+(net<0?"Projected shortfall: ":"Projected surplus: ")+cash(Math.abs(net))+". Confirm local prices and consult veterinary professionals about flock-health requirements.";
+}
+$("fcPoultryPlanner").addEventListener("submit",calcPoultry);
 loadNews();loadPrices();
 })();
 </script></body></html>
