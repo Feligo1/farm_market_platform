@@ -52,6 +52,9 @@
 </div>
 </div>
 </section>
+<section class="fc-section" id="fcHomeSponsor" hidden style="padding-top:0">
+<div class="fc-wrap"><div class="fc-section-header"><div><p class="fc-eyebrow">Partners</p><h2>Sponsored information</h2><p>Advertising is clearly identified and separate from agricultural market data.</p></div></div>
+<div id="fcHomeSponsorGrid" class="fc-service-grid"></div></div></section>
 </main>
 <footer class="fc-footer"><div class="fc-wrap fc-footer-row"><span>© <span id="fcYear"></span> FarmConnect Zambia · Market information for farmers</span><span><a href="prices.html">Market prices</a> · <a href="news.html">Agricultural news</a></span></div></footer>
 <script>
@@ -102,6 +105,29 @@
   }
   $('fcYear').textContent=new Date().getFullYear();
   load();
+  async function loadSponsored(){
+    try{
+      const response=await fetch(API+'/advertisements?placement=home');
+      if(!response.ok)return;
+      const data=await response.json();if(!data.success||!data.advertisements?.length)return;
+      const grid=$('fcHomeSponsorGrid');grid.replaceChildren();
+      for(const ad of data.advertisements.slice(0,3)){
+        const card=node('article','fc-service');
+        card.append(node('small','', 'Advertisement · Sponsored'),node('strong','',ad.title||'Partner information'),node('span','',ad.description||''));
+        const url=String(ad.image_url||'');
+        if(url.startsWith('https://')){const img=node('img');img.src=url;img.alt=ad.title||'Advertisement';img.loading='lazy';img.style.cssText='width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin:12px 0';card.prepend(img);}
+        const video=String(ad.video_url||'');
+        if(video.startsWith('https://')&&(/\.(mp4|webm)(\\?|$)/i.test(video)||video.includes('/storage/v1/object/public/'))){
+          const v=node('video');v.controls=true;v.preload='metadata';v.src=video;v.style.cssText='width:100%;aspect-ratio:16/9;border-radius:8px;margin:12px 0';card.prepend(v);
+        }
+        const link=String(ad.target_url||'');
+        if(link.startsWith('https://')){const anchor=node('a','','Visit advertiser →');anchor.href=link;anchor.target='_blank';anchor.rel='noopener noreferrer sponsored';anchor.className='fc-link';card.append(anchor)}
+        grid.append(card);
+      }
+      $('fcHomeSponsor').hidden=false;
+    }catch{}
+  }
+  loadSponsored();
 })();
 </script>
 </body></html>
