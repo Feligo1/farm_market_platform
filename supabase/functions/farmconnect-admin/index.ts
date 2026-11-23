@@ -85,6 +85,34 @@ Deno.serve(async(req:Request)=>{
     await audit(actor,"upload","farmconnect-media",fileName);
     return reply({success:true,url:publicUrl.publicUrl,mime});
   }
+  if(resource==="appearance"){
+    if(req.method==="GET"){
+      const {data,error}=await db.from("site_appearance").select("hero_image_url,hero_color,page_image_url,page_color,hero_overlay,updated_at").eq("id",1).single();
+      if(error)throw error;return reply({success:true,appearance:data});
+    }
+    if(req.method!=="POST")return reply({success:false,error:"Method not allowed"},405);
+    const input=await req.json().catch(()=>null);
+    if(!input||typeof input!=="object"||Array.isArray(input))return reply({success:false,error:"Invalid appearance settings"},400);
+    const colors=["hero_color","page_color"],urls=["hero_image_url","page_image_url"];
+    const payload:Record<string,unknown>={};
+    for(const field of colors){
+      const color=String(input[field]||"");
+      if(!/^#[0-9a-fA-F]{6}$/.test(color))return reply({success:false,error:"Choose a valid six-digit background colour"},400);
+      payload[field]=color;
+    }
+    for(const field of urls){
+      const source=String(input[field]||"").trim();
+      if(source && (source.length>1900 || !/^https:\/\//i.test(source)))return reply({success:false,error:"Background images must have a valid HTTPS URL"},400);
+      payload[field]=source||null;
+    }
+    const overlay=Number(input.hero_overlay);
+    if(!Number.isFinite(overlay)||overlay<0.35||overlay>0.90)return reply({success:false,error:"Overlay must be between 35% and 90%"},400);
+    payload.hero_overlay=overlay;payload.updated_at=new Date().toISOString();
+    const {data,error}=await db.from("site_appearance").update(payload).eq("id",1).select("*").single();
+    if(error)throw error;
+    await audit(actor,"update","site_appearance",1);
+    return reply({success:true,appearance:data});
+  }
   if(resource==="pending_listings" && req.method==="GET"){
     const [buyerResult,sellerResult]=await Promise.all([
       db.from("buyers").select("id,business_name,contact_person,contact_phone,commodity,location,min_volume,max_price,notes,created_at").eq("status","pending").eq("is_verified",false).order("created_at",{ascending:false}).limit(100),
