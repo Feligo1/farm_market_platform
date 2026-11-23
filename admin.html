@@ -149,9 +149,31 @@ body.fc-admin-redesign .fc-record-actions button.fc-record-danger{background:tra
 body.fc-admin-redesign .fc-record-actions button.fc-record-danger:hover{background:#fff0ed;border-color:#eccbc6}
 body.fc-admin-redesign tr[hidden]{display:none!important}
 .fc-admin-empty{text-align:center;color:#748779;padding:33px 20px!important}
+</style><style>
+/* On tablets and phones, use a single horizontal section switcher instead of a second full menu. */
+@media(max-width:900px){
+ body.fc-admin-redesign .fc-admin-sidebar{position:static!important;padding:0!important;margin:0!important}
+ body.fc-admin-redesign .fc-admin-sidebar .fc-admin-nav-eyebrow{display:none}
+ body.fc-admin-redesign .fc-admin-section-nav{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:5px!important;overflow-x:auto!important;scroll-snap-type:x proximity;padding:0 0 9px;scrollbar-width:thin}
+ body.fc-admin-redesign .fc-admin-section-button{flex:0 0 auto!important;width:auto!important;min-width:max-content!important;padding:11px 14px!important;scroll-snap-align:start}
+ body.fc-admin-redesign .fc-admin-section-button span{font-size:.81rem!important;white-space:nowrap}
+ body.fc-admin-redesign .fc-admin-section-button small{display:none!important}
+ body.fc-admin-redesign .fc-admin-shell{display:block!important}
+ body.fc-admin-redesign .fc-admin-content{margin-top:17px}
+ body.fc-admin-redesign .fc-admin-brand{display:none}
+}
+@media(max-width:520px){
+ body.fc-admin-redesign .fc-admin-dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.fc-admin-redesign .fc-admin-action-grid{grid-template-columns:1fr!important}
+ body.fc-admin-redesign .fc-admin-action-grid button{min-height:125px!important}
+ body.fc-admin-redesign .fc-admin-section-heading{gap:11px}
+ body.fc-admin-redesign .fc-admin-content table{min-width:620px}
+ body.fc-admin-redesign .fc-admin-record-toolbar{flex-wrap:wrap}
+ body.fc-admin-redesign .fc-admin-record-toolbar input{min-width:0;width:100%}
+}
 </style></head>
 <body class="fc-admin-redesign">
-<header><div><h1>FarmConnect · Administration</h1><small>Mulungushi University | Zambia | Supabase</small></div>
+<header><div><h1>Administration</h1><small>FarmConnect Zambia · Secure workspace</small></div>
 <nav><a href="#" id="logout">Sign out</a></nav></header>
 <main><div class="intro"><div><span class="fc-admin-kicker">FARMCONNECT / CONTROL CENTER</span><h2 id="fcCurrentPageTitle">Overview</h2><p class="muted" id="fcCurrentPageIntro">Your publishing, marketplace and data operations in one place.</p></div><span id="who" class="pill">Verifying access…</span></div>
 <div id="loginMessage"></div>
