@@ -311,8 +311,8 @@ Deno.serve(async (req: Request) => {
     return respond({success:true,advertisements:ads,count:ads.length});
   }
   if(endpoint==="buyers"||endpoint==="sellers"){
-   const columns=endpoint==="buyers"?"id,business_name,contact_person,contact_phone,contact_email,commodity,location,max_price,min_volume,notes,is_verified,rating,status":"id,farm_name,contact_person,contact_phone,contact_email,commodity,available_volume,price_per_kg,location,is_verified,rating,status";
-   let query=db.from(endpoint).select(columns).eq("is_verified",true).eq("status","active").limit(limit);
+   const columns=endpoint==="buyers"?"id,business_name,contact_person,contact_phone,commodity,location,max_price,min_volume,notes,is_verified,status":"id,farm_name,contact_person,contact_phone,commodity,available_volume,price_per_kg,location,notes,is_verified,status";
+   let query=db.from(endpoint).select(columns).eq("is_verified",true).eq("status","active").order("created_at",{ascending:false}).limit(limit);
    const commodity=u.searchParams.get("commodity");if(commodity)query=query.ilike("commodity",commodity);
    const {data,error}=await query;if(error)throw error;
    return respond({success:true,[endpoint]:data,count:data?.length||0});
