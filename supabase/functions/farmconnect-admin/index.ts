@@ -174,8 +174,8 @@ Deno.serve(async(req:Request)=>{
   }
   if(resource==="pending_listings" && req.method==="GET"){
     const [buyerResult,sellerResult]=await Promise.all([
-      db.from("buyers").select("id,business_name,contact_person,contact_phone,commodity,location,min_volume,max_price,notes,created_at").eq("status","pending").eq("is_verified",false).order("created_at",{ascending:false}).limit(100),
-      db.from("sellers").select("id,farm_name,contact_person,contact_phone,commodity,location,available_volume,price_per_kg,notes,created_at").eq("status","pending").eq("is_verified",false).order("created_at",{ascending:false}).limit(100)
+      db.from("buyers").select("id,business_name,contact_person,contact_phone,commodity,location,min_volume,max_price,quantity_unit,notes,created_at").eq("status","pending").eq("is_verified",false).order("created_at",{ascending:false}).limit(100),
+      db.from("sellers").select("id,farm_name,contact_person,contact_phone,commodity,location,available_volume,price_per_kg,quantity_unit,notes,created_at").eq("status","pending").eq("is_verified",false).order("created_at",{ascending:false}).limit(100)
     ]);
     if(buyerResult.error||sellerResult.error)throw buyerResult.error||sellerResult.error;
     const pending=[
