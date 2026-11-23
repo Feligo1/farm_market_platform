@@ -30,7 +30,24 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
  .fc-admin-pending .controls button{font-size:.82rem;flex:1}
  #fcEditorialQuick h3{font-size:1.22rem}
  @media(max-width:750px){.fc-admin-overview{grid-template-columns:1fr!important}.fc-admin-pending-list{grid-template-columns:1fr}#fcEditorialQuick .controls{display:grid;grid-template-columns:1fr!important}#fcEditorialQuick button{width:100%}}
- </style></head>
+ </style><style>
+.fc-appearance-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(240px,.85fr);gap:24px}
+.fc-appearance-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fc-appearance-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fc-appearance-field.full{grid-column:1/-1}
+.fc-appearance-field label{font-size:.85rem;font-weight:700;color:#33543f}
+.fc-appearance-field input[type=url]{width:100%;min-height:43px;padding:9px 11px;border:1px solid #c9d9ce;border-radius:8px}
+.fc-appearance-field input[type=color]{height:43px;padding:4px;width:100%;border:1px solid #c9d9ce;background:#fff;border-radius:8px;cursor:pointer}
+.fc-appearance-field input[type=file]{font-size:.83rem;max-width:100%}
+.fc-appearance-help{color:#708074;font-size:.8rem;line-height:1.5}
+.fc-appearance-preview{border:1px solid #d4e2d6;border-radius:12px;overflow:hidden;min-height:280px;display:grid;grid-template-rows:1fr auto;align-items:stretch;background:#f6f8f5}
+.fc-appearance-hero-preview{display:flex;flex-direction:column;justify-content:center;padding:25px;color:#fff;background:#194932}
+.fc-appearance-hero-preview strong{font-size:1.65rem;letter-spacing:-.04em;line-height:1.2}
+.fc-appearance-hero-preview small{margin-top:12px;color:#ecf6ec;line-height:1.6}
+.fc-appearance-base-preview{padding:19px;background:#fff;color:#345441;font-size:.84rem}
+@media(max-width:850px){.fc-appearance-layout{grid-template-columns:1fr}}
+@media(max-width:560px){.fc-appearance-fields{grid-template-columns:1fr}.fc-appearance-field.full{grid-column:1}}
+</style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>FarmConnect · Administration</h1><small>Mulungushi University | Zambia | Supabase</small></div>
 <nav><a href="#" id="logout">Sign out</a></nav></header>
@@ -46,11 +63,24 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
   <div class="controls" style="justify-content:space-between;align-items:center"><div><h3 style="margin:0;font-size:1.2rem">New marketplace submissions</h3><p class="muted" style="margin:5px 0">Approve suitable listings to make them public. Reject incomplete or suspicious requests.</p></div><button id="fcPendingRefresh" type="button" class="secondary">Refresh requests</button></div>
   <p id="fcPendingStatus" class="muted" role="status"></p><div id="fcPendingCards" class="fc-admin-pending-list"></div>
  </section>
- <section class="card" id="fcEditorialQuick">
+ <section class="card" id="fcAppearancePanel" hidden>
+<div class="controls" style="justify-content:space-between"><div><p style="font-size:.73rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#286342;margin-bottom:5px">Website design</p><h3 style="margin:0;font-size:1.35rem">Backgrounds &amp; colours</h3><p class="muted">Change the homepage photo or choose site-wide colours. Preview before saving.</p></div><button class="secondary" type="button" id="fcAppearanceClose">Close</button></div>
+<div class="fc-appearance-layout"><form id="fcAppearanceForm">
+<div class="fc-appearance-fields">
+<div class="fc-appearance-field"><label for="fcHeroColor">Homepage background colour</label><input id="fcHeroColor" type="color" value="#194932"></div>
+<div class="fc-appearance-field"><label for="fcPageColor">Website background colour</label><input id="fcPageColor" type="color" value="#f6f8f5"></div>
+<div class="fc-appearance-field full"><label for="fcHeroImage">Homepage background image (HTTPS URL)</label><input id="fcHeroImage" type="url" placeholder="https://.../photo.jpg"><div class="controls"><input id="fcHeroUpload" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><button id="fcHeroClear" type="button" class="secondary">Use colour only</button></div><small class="fc-appearance-help">Your previously supplied maize photo is the initial background. You can upload your own image (max 6 MB) or paste an HTTPS URL.</small></div>
+<div class="fc-appearance-field full"><label for="fcPageImage">Optional whole-page background image (HTTPS URL)</label><input id="fcPageImage" type="url" placeholder="Leave empty for a clean colour background"><div class="controls"><input id="fcPageUpload" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><button id="fcPageClear" type="button" class="secondary">Use colour only</button></div></div>
+<div class="fc-appearance-field full"><label for="fcOverlay">Photo darkening: <output id="fcOverlayLabel">74%</output></label><input id="fcOverlay" type="range" min="35" max="90" value="74" step="1"><small class="fc-appearance-help">Keep text readable over the background photo.</small></div>
+</div><div class="controls" style="margin-top:20px"><button type="submit" id="fcSaveAppearance">Save website appearance</button><button type="button" class="secondary" id="fcResetAppearance">Reset to previous saved settings</button></div>
+<p class="muted" id="fcAppearanceStatus" role="status"></p></form>
+<div class="fc-appearance-preview" id="fcAppearancePreview"><div class="fc-appearance-hero-preview" id="fcHeroPreview"><strong>Better prices.<br>Better opportunities.</strong><small>See how your chosen background looks behind homepage text.</small></div><div class="fc-appearance-base-preview">Website page background preview · FarmConnect Zambia</div></div>
+</div></section>
+<section class="card" id="fcEditorialQuick">
 <p style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#2a6b49;margin-bottom:8px">Editorial workspace</p>
 <h3 style="font-size:1.25rem;letter-spacing:-.035em;margin-bottom:6px">Content publishing</h3>
 <p class="muted" style="margin-top:0">Write stories, upload images and short videos, or schedule sponsored messages. Drafts are not public.</p>
-<div class="controls"><button id="fcQuickPending" type="button">Review buyer & seller requests</button><button id="fcQuickNews" type="button" class="secondary">Edit news articles</button><button id="fcQuickAds" type="button" class="secondary">Manage adverts</button><button id="fcQuickAdvanced" type="button" class="secondary">Advanced data tools</button></div>
+<div class="controls"><button id="fcQuickPending" type="button">Review buyer & seller requests</button><button id="fcQuickNews" type="button" class="secondary">Edit news articles</button><button id="fcQuickAds" type="button" class="secondary">Manage adverts</button><button id="fcQuickAppearance" type="button" class="secondary">Website appearance</button><button id="fcQuickAdvanced" type="button" class="secondary">Advanced data tools</button></div>
 </section><p class="warning"><b>Data-quality rule:</b> Use traceable sources for news and market prices. Do not approve misleading listings. Sponsored posts are clearly labelled for visitors.</p>
 <section class="card" id="workspace" hidden><h3 id="fcManageTitle">Manage content and data</h3><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
 <label for="resource" id="fcAdvancedPickerLabel" hidden>Advanced resource</label><select id="resource" class="grow" hidden>
@@ -249,6 +279,77 @@ async function loadPending(){
 $('fcPendingRefresh').onclick=loadPending;
 $('fcQuickPending').onclick=()=>{if(!authorized)return;$('fcPendingWorkspace').hidden=false;loadPending();$('fcPendingWorkspace').scrollIntoView({behavior:'smooth',block:'start'})};
 $('fcQuickAdvanced').onclick=()=>{if(!authorized)return;$('resource').hidden=false;$('fcAdvancedPickerLabel').hidden=false;$('workspace').hidden=false;$('fcSourceTools').hidden=resource.value!=='price_history';$('workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+
+
+let savedAppearance=null;
+const appearanceInputs={
+ hero_image_url:'fcHeroImage',hero_color:'fcHeroColor',page_image_url:'fcPageImage',page_color:'fcPageColor'
+};
+function appearanceValues(){
+ const values=Object.fromEntries(Object.entries(appearanceInputs).map(([key,id])=>[key,$(id).value.trim()]));
+ values.hero_overlay=Number($('fcOverlay').value)/100;
+ return values;
+}
+function appearanceFill(data){
+ for(const [name,id] of Object.entries(appearanceInputs))$(id).value=data?.[name]||(['hero_color','page_color'].includes(name)?name==='hero_color'?'#194932':'#f6f8f5':'');
+ $('fcOverlay').value=Math.round(100*(Number(data?.hero_overlay)||.74));
+ appearancePreview();
+}
+function appearancePreview(){
+ const v=appearanceValues();
+ $('fcOverlayLabel').textContent=Math.round(v.hero_overlay*100)+'%';
+ const preview=$('fcAppearancePreview'),hero=$('fcHeroPreview');
+ preview.style.background=v.page_color;
+ const picture=v.hero_image_url;
+ const col=v.hero_color;
+ const rgb=[1,3,5].map(i=>parseInt(col.slice(i,i+2),16)).join(',');
+ hero.style.backgroundColor=col;
+ hero.style.backgroundImage=picture&&/^https:\/\//i.test(picture)?'linear-gradient(rgba('+rgb+','+v.hero_overlay+'),rgba('+rgb+','+v.hero_overlay+')),url('+JSON.stringify(picture)+')':'none';
+ hero.style.backgroundSize='cover';hero.style.backgroundPosition='center';
+}
+async function loadAppearance(){
+ if(!authorized)return;
+ $('fcAppearanceStatus').textContent='Loading current site settings…';
+ try{
+  const data=await api('GET','appearance');
+  savedAppearance=data.appearance;appearanceFill(savedAppearance);
+  $('fcAppearanceStatus').textContent='Current site settings loaded.';
+ }catch(e){$('fcAppearanceStatus').textContent='Settings could not be loaded: '+e.message}
+}
+$('fcQuickAppearance').onclick=()=>{
+ if(!authorized)return;
+ $('fcAppearancePanel').hidden=false;loadAppearance();
+ $('fcAppearancePanel').scrollIntoView({behavior:'smooth',block:'start'});
+};
+$('fcAppearanceClose').onclick=()=>{$('fcAppearancePanel').hidden=true};
+$('fcHeroClear').onclick=()=>{$('fcHeroImage').value='';appearancePreview()};
+$('fcPageClear').onclick=()=>{$('fcPageImage').value='';appearancePreview()};
+$('fcResetAppearance').onclick=()=>{if(savedAppearance)appearanceFill(savedAppearance)};
+for(const id of ['fcHeroColor','fcPageColor','fcHeroImage','fcPageImage','fcOverlay'])$(id).addEventListener('input',appearancePreview);
+async function uploadAppearance(fileInput,urlInput){
+ const file=$(fileInput).files?.[0];if(!file)return;
+ if(file.size>6000000){$('fcAppearanceStatus').textContent='Image too large. Maximum 6 MB.';return}
+ $('fcAppearanceStatus').textContent='Uploading '+file.name+'…';
+ try{
+  const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');reader.onerror=()=>reject(Error('File could not be read'));reader.readAsDataURL(file)});
+  const result=await api('POST','media_upload',{mime:file.type,base64});
+  $(urlInput).value=result.url;appearancePreview();$('fcAppearanceStatus').textContent='Image uploaded. Click Save website appearance to publish it.';
+ }catch(e){$('fcAppearanceStatus').textContent=e.message}
+}
+$('fcHeroUpload').addEventListener('change',()=>uploadAppearance('fcHeroUpload','fcHeroImage'));
+$('fcPageUpload').addEventListener('change',()=>uploadAppearance('fcPageUpload','fcPageImage'));
+$('fcAppearanceForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ if(!authorized)return;
+ const button=$('fcSaveAppearance');button.disabled=true;$('fcAppearanceStatus').textContent='Publishing your design settings…';
+ try{
+  const result=await api('POST','appearance',appearanceValues());
+  savedAppearance=result.appearance;appearanceFill(savedAppearance);
+  $('fcAppearanceStatus').textContent='Saved successfully. The new background or colours will appear on public pages after refreshing.';
+  window.FarmConnectAppearance?.apply(savedAppearance);
+ }catch(err){$('fcAppearanceStatus').textContent='Could not save settings: '+err.message}
+ finally{button.disabled=false}
+});
 
 $('resource').onchange=()=>{offset=0;lookups={};load()};$('kind').onchange=()=>{offset=0;load()};
 $('refresh').onclick=load;$('add').onclick=()=>openEditor();$('previous').onclick=()=>{offset=Math.max(0,offset-100);load()};$('next').onclick=()=>{offset+=100;load()};
