@@ -183,6 +183,22 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 .fc-admin-snapshot-bottom>span:last-child{font-size:.73rem;color:#809082}
 .fc-admin-dashboard-hint{font-size:.82rem;color:#637968;padding:14px 0;border-top:1px solid #e0e8e1}
 @media(max-width:650px){.fc-admin-snapshot{grid-template-columns:1fr}.fc-admin-snapshot-card{min-height:190px;padding:20px}}
+</style><style>
+.fc-function-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:17px 0}
+.fc-function-toolbar input[type=search],.fc-function-toolbar select{border:1px solid #c9d9cf;border-radius:7px;background:white;min-height:42px;padding:9px 11px;font:inherit;font-size:14px;color:#284a35}
+.fc-function-toolbar input[type=search]{flex:1;min-width:210px}
+.fc-function-toolbar button{min-height:40px}
+.fc-function-toolbar button:disabled{opacity:.45;cursor:not-allowed}
+.fc-select-all{display:flex;align-items:center;gap:7px;font-size:.84rem;color:#365c45;font-weight:700}
+.fc-admin-pending-check{display:flex;align-items:center;gap:8px;margin-bottom:11px;font-size:.78rem;color:#51715c}
+.fc-report-panel{padding:20px;background:#f7faf7;border:1px solid #d9e8dc;border-radius:10px;margin:18px 0;line-height:1.65;color:#31543c}
+.fc-report-panel h4{margin:0 0 11px;font-size:1.04rem}
+.fc-report-panel ul{margin:9px 0 0;padding-left:22px}
+.fc-report-panel li{margin:8px 0}
+.fc-report-panel .fc-quality-item{padding:10px 0;border-bottom:1px solid #e3ebe3}
+.fc-report-panel .fc-quality-item:last-child{border:0}
+.fc-report-panel button{margin-left:10px;font-size:.76rem}
+@media(max-width:550px){.fc-function-toolbar input[type=search]{flex:1 1 100%}}
 </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>Administration</h1><small>FarmConnect Zambia · Secure workspace</small></div>
@@ -228,12 +244,12 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 <button class="secondary" id="fcFeedbackRefresh" type="button">Refresh feedback</button></div>
 <div class="grid fc-admin-overview" id="fcFeedbackMetrics"></div>
 <div class="table-wrap" style="margin-top:20px"><table><thead><tr><th>Feature</th><th>Responses</th><th>Helpfulness /5</th><th>Ease /5</th></tr></thead><tbody id="fcFeedbackFeatures"></tbody></table></div>
-<h4 style="margin-top:25px">Recent suggestions</h4><div id="fcFeedbackComments"></div>
+<div class="fc-function-toolbar"><button type="button" id="fcFeedbackExport" class="secondary">Download feedback summary CSV</button><button type="button" id="fcFeedbackPriorities" class="secondary">Identify improvement priorities</button></div><div id="fcFeedbackPrioritiesResult" class="fc-report-panel" hidden></div><h4 style="margin-top:25px">Recent suggestions</h4><div id="fcFeedbackComments"></div>
 <p class="muted" id="fcFeedbackSummaryStatus" role="status"></p><a href="feedback.html" target="_blank" rel="noopener noreferrer" style="color:#255d42;font-weight:750">Open public feedback form ↗</a>
 </section>
 <section class="card" id="fcInsightsPanel" hidden>
 <div class="controls" style="justify-content:space-between;align-items:start"><div><p style="text-transform:uppercase;font-weight:800;letter-spacing:.1em;font-size:.7rem;color:#2d6848">Business overview</p><h3 style="font-size:1.32rem;margin:0">Marketplace insights</h3><p class="muted">Private summary of approved crop requests and offers. Uses existing database records — no external tracking service.</p></div><button class="secondary" id="fcInsightsRefresh" type="button">Refresh insights</button></div>
-<div class="grid fc-admin-overview" id="fcInsightsCards"></div>
+<div class="grid fc-admin-overview" id="fcInsightsCards"></div><div class="fc-function-toolbar"><button type="button" class="secondary" id="fcInsightsExport">Export insights CSV</button><button type="button" class="secondary" id="fcInsightsPlan">Generate market action summary</button></div><div id="fcInsightsRecommendations" class="fc-report-panel" hidden></div>
 <div id="fcInsightsColumns" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:20px;margin-top:24px">
 <div><h4>Most listed commodities</h4><div class="table-wrap"><table><thead><tr><th>Commodity</th><th>Buy requests</th><th>Sell offers</th></tr></thead><tbody id="fcInsightsCropRows"></tbody></table></div></div>
 <div><h4>Locations with reviewed listings</h4><div class="table-wrap"><table><thead><tr><th>Location as entered</th><th>Listings</th></tr></thead><tbody id="fcInsightsLocationRows"></tbody></table></div></div>
@@ -241,12 +257,14 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 </section>
 <section class="card" id="fcPendingWorkspace" hidden>
   <div class="controls" style="justify-content:space-between;align-items:center"><div><h3 style="margin:0;font-size:1.2rem">New marketplace submissions</h3><p class="muted" style="margin:5px 0">Approve suitable listings to make them public. Reject incomplete or suspicious requests.</p></div><button id="fcPendingRefresh" type="button" class="secondary">Refresh requests</button></div>
-  <p id="fcPendingStatus" class="muted" role="status"></p><div id="fcPendingCards" class="fc-admin-pending-list"></div>
+  <div class="fc-function-toolbar"><input id="fcPendingSearch" type="search" placeholder="Search by commodity, district, phone or seller" aria-label="Search pending listings"><select id="fcPendingType" aria-label="Listing type"><option value="">All listings</option><option value="buyer">Buyers</option><option value="seller">Sellers</option></select><select id="fcPendingSort" aria-label="Sort requests"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></div>
+<div class="fc-function-toolbar"><label class="fc-select-all"><input type="checkbox" id="fcPendingSelectAll"> Select visible</label><span id="fcPendingSelected" class="muted">0 selected</span><button id="fcPendingApproveSelected" type="button">Approve selected</button><button id="fcPendingRejectSelected" class="secondary" type="button">Reject selected</button></div>
+<p id="fcPendingStatus" class="muted" role="status"></p><div id="fcPendingCards" class="fc-admin-pending-list"></div>
  </section>
  <section class="card" id="fcAppearancePanel" hidden>
 <div class="controls" style="justify-content:space-between"><div><p style="font-size:.73rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#286342;margin-bottom:5px">Website design</p><h3 style="margin:0;font-size:1.35rem">Backgrounds &amp; colours</h3><p class="muted">Change the homepage photo or choose site-wide colours. Preview before saving.</p></div><button class="secondary" type="button" id="fcAppearanceClose">Close</button></div>
 <div class="fc-appearance-layout"><form id="fcAppearanceForm">
-<div class="fc-appearance-fields">
+<div class="fc-function-toolbar fc-theme-presets"><span class="muted">Design presets</span><button type="button" data-preset="forest" class="secondary">Forest</button><button type="button" data-preset="warm" class="secondary">Warm neutral</button><button type="button" data-preset="slate" class="secondary">Slate</button></div><div class="fc-appearance-fields">
 <div class="fc-appearance-field"><label for="fcHeroColor">Homepage background colour</label><input id="fcHeroColor" type="color" value="#194932"></div>
 <div class="fc-appearance-field"><label for="fcPageColor">Website background colour</label><input id="fcPageColor" type="color" value="#f6f8f5"></div>
 <div class="fc-appearance-field full"><label for="fcHeroImage">Homepage background image (HTTPS URL)</label><input id="fcHeroImage" type="url" placeholder="https://.../photo.jpg"><div class="controls"><input id="fcHeroUpload" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><button id="fcHeroClear" type="button" class="secondary">Use colour only</button></div><small class="fc-appearance-help">Your previously supplied maize photo is the initial background. You can upload your own image (max 6 MB) or paste an HTTPS URL.</small></div>
@@ -260,6 +278,11 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 <label for="resource" id="fcAdvancedPickerLabel" hidden>Advanced resource</label><select id="resource" class="grow" hidden>
 <option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
 </select><select id="kind"><option value="">All history</option><option value="observed">Sourced only</option></select><button id="refresh" class="secondary">Refresh</button><button id="add">+ Add record</button></div>
+<div class="fc-function-toolbar" id="fcEditorialTools" hidden>
+<button type="button" class="secondary" id="fcQuickDraft">Start a news draft</button><button type="button" class="secondary" id="fcPreviewRecord">Preview selected article</button><select id="fcEditorialFilter" aria-label="Editorial status filter"><option value="">All statuses</option><option value="draft">Draft</option><option value="published">Published</option></select></div>
+<div class="fc-function-toolbar" id="fcAdvertisingTools" hidden><button type="button" class="secondary" id="fcAdDraft">Create campaign draft</button><select id="fcAdFilter" aria-label="Ad status filter"><option value="">All campaigns</option><option value="active">Active</option><option value="paused">Paused</option><option value="draft">Draft</option></select></div>
+<div class="fc-function-toolbar" id="fcDataQualityTools" hidden><button type="button" id="fcRunQualityCheck">Run data quality audit</button><button type="button" class="secondary" id="fcExportRecords">Export current records CSV</button><p id="fcQualityStatus" class="muted"></p></div>
+<div id="fcQualityResults" class="fc-report-panel" hidden></div>
 <div class="fc-admin-record-toolbar"><label for="fcRecordSearch">Search visible records</label><input id="fcRecordSearch" type="search" placeholder="Search name, commodity, date, or source" autocomplete="off"><span id="fcRecordSearchCount" class="muted"></span></div>
 <p id="tableMessage" class="muted" role="status"></p><div class="table-wrap"><table><thead id="head"></thead><tbody id="rows"></tbody></table></div>
 <div class="controls" style="margin-top:14px"><button class="secondary" id="previous">Previous</button><span id="pageInfo"></span><button class="secondary" id="next">Next</button></div>
