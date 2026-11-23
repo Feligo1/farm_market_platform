@@ -255,21 +255,47 @@ async function api(method,r,body=null,params={}){
 }
 const pretty=k=>k.replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
 function brief(x){if(x===null||x===undefined)return '—';if(typeof x==='boolean')return x?'Yes':'No';if(typeof x==='object')return JSON.stringify(x);return String(x).length>85?String(x).slice(0,85)+'…':String(x)}
-const adminViews=['pending','news','ads','insights','feedback','appearance','advanced'];
-let currentAdminView='pending';
+const adminViews=['overview','pending','news','ads','insights','feedback','appearance','advanced'];
+const adminMeta={
+ overview:['Overview','Your platform activity and management tools.'],
+ pending:['Buyer & seller requests','Review new buyer and seller submissions.'],
+ news:['News articles','Write, edit and publish agricultural news.'],
+ ads:['Advertisements','Manage paid placements and sponsor content.'],
+ insights:['Marketplace insights','Explore real buyer and seller activity.'],
+ feedback:['Farmer feedback','Review usability ratings and suggestions.'],
+ appearance:['Website appearance','Update your website images and colours.'],
+ advanced:['Data management','Manage commodities, markets and source records.']
+};
+let currentAdminView='overview';
+async function loadOverview(){
+ if(!authorized)return;
+ $('fcOverviewStatus').textContent='Updating dashboard…';
+ const tasks=[['pending_listings','fcOverviewPending'],['news','fcOverviewNews'],['advertisements','fcOverviewAds'],['commodities','fcOverviewCrops']];
+ const outcome=await Promise.allSettled(tasks.map(async([name,id])=>{
+  const result=await api('GET',name,null,{limit:1});
+  $(id).textContent=String(name==='pending_listings'?result.count??result.listings?.length??0:result.count??result.records?.length??0);
+ }));
+ $('fcOverviewStatus').textContent=outcome.some(x=>x.status==='rejected')?'Some totals are unavailable. You can still open each management section.':'Dashboard updated.';
+}
+$('fcOverviewRefresh').onclick=loadOverview;
+$('fcQuickOverview').onclick=()=>selectAdminSection('overview');
+document.querySelectorAll('[data-open-admin]').forEach(el=>el.addEventListener('click',()=>selectAdminSection(el.dataset.openAdmin)));
 function selectAdminSection(view,focus=true){
  if(!authorized||!adminViews.includes(view))return;
  currentAdminView=view;
- const visiblePanel=view==='pending'?'fcPendingWorkspace':view==='insights'?'fcInsightsPanel':view==='feedback'?'fcFeedbackPanel':view==='appearance'?'fcAppearancePanel':'workspace';
- for(const id of ['fcPendingWorkspace','fcInsightsPanel','fcFeedbackPanel','fcAppearancePanel','workspace','fcSourceTools'])
+ const visiblePanel=view==='overview'?'fcOverviewPanel':view==='pending'?'fcPendingWorkspace':view==='insights'?'fcInsightsPanel':view==='feedback'?'fcFeedbackPanel':view==='appearance'?'fcAppearancePanel':'workspace';
+ for(const id of ['fcOverviewPanel','fcPendingWorkspace','fcInsightsPanel','fcFeedbackPanel','fcAppearancePanel','workspace','fcSourceTools'])
    $(id).hidden=(id!==visiblePanel);
  for(const button of document.querySelectorAll('.fc-admin-section-button')){
    if(button.dataset.view===view)button.setAttribute('aria-current','page');
    else button.removeAttribute('aria-current');
  }
+ $('fcCurrentPageTitle').textContent=adminMeta[view][0];
+ $('fcCurrentPageIntro').textContent=adminMeta[view][1];
  $('resource').hidden=view!=='advanced';
  $('fcAdvancedPickerLabel').hidden=view!=='advanced';
- if(view==='news'||view==='ads'){
+ if(view==='overview')loadOverview();
+ else if(view==='news'||view==='ads'){
    resource.value=view==='news'?'news':'advertisements';
    offset=0;
    load();
@@ -290,7 +316,7 @@ async function setup(){
   authorized=true;$('who').textContent='Admin access verified';
   $('loginMessage').className='ok';$('loginMessage').textContent='Connected securely to the FarmConnect admin API';
   const requested=location.hash.slice(1).toLowerCase();
-  selectAdminSection(adminViews.includes(requested)?requested:'pending',false);
+  selectAdminSection(adminViews.includes(requested)?requested:'overview',false);
  }catch(e){$('loginMessage').className='error';$('loginMessage').textContent=e.message+'. Sign in with your administrator account and refresh.';$('who').textContent='No admin access'}
 }
 async function lookup(resourceName){if(lookups[resourceName])return lookups[resourceName];try{lookups[resourceName]=(await api('GET',resourceName,null,{limit:500})).records||[]}catch{lookups[resourceName]=[]}return lookups[resourceName]}
