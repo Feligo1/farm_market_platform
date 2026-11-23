@@ -13,6 +13,53 @@ Deno.serve(async (req: Request) => {
  const limit=Math.max(1,Math.min(Number(u.searchParams.get("limit"))||100,1000));
 
  const authClient = createClient(url!, Deno.env.get("SUPABASE_ANON_KEY") || key!, {auth:{persistSession:false,autoRefreshToken:false}});
+ // Public marketplace submissions never bypass review or create accounts.
+ if(req.method==="POST" && endpoint==="listings"){
+  const len=Number(req.headers.get("content-length")||0);
+  if(len>12000)return respond({success:false,error:"Submission is too large"},413);
+  let input:Record<string,unknown>;
+  try{input=await req.json()}catch{return respond({success:false,error:"Invalid listing details"},400)}
+  if(!input||typeof input!=="object"||Array.isArray(input))return respond({success:false,error:"Invalid listing"},400);
+  if(input.website) return respond({success:true,message:"Listing received for review."},202); // honeypot
+  const kind=String(input.kind||"").trim();
+  if(kind!=="buyer"&&kind!=="seller")return respond({success:false,error:"Choose buying or selling"},400);
+  const type=kind==="buyer"?"buyers":"sellers";
+  const clean=(v:unknown,max:number)=>String(v??"").trim().replace(/[<>]/g,"").slice(0,max);
+  const contact=clean(input.contact_person,90);
+  const business=clean(input.business_name,90);
+  const commodity=clean(input.commodity,90);
+  const location=clean(input.location,120);
+  const notes=clean(input.notes,500);
+  let phone=clean(input.phone,32).replace(/[\s().-]/g,"");
+  if(/^0[79]\d{8}$/.test(phone))phone="+260"+phone.slice(1);
+  if(/^260[79]\d{8}$/.test(phone))phone="+"+phone;
+  if(!/^\+260[79]\d{8}$/.test(phone))
+    return respond({success:false,error:"Enter a valid Zambian mobile number, for example 097XXXXXXX"},400);
+  if(contact.length<3||business.length<2||commodity.length<2||location.length<3)
+    return respond({success:false,error:"Complete your name, farm/business, commodity and district"},400);
+  if(input.consent!==true)return respond({success:false,error:"Consent to publish your business contact number is required"},400);
+  const quantity=Number(input.quantity);
+  const price=input.price===""||input.price==null?null:Number(input.price);
+  if(!Number.isFinite(quantity)||quantity<=0||quantity>1e9||
+    (price!==null&&(!Number.isFinite(price)||price<=0||price>1e8)))
+    return respond({success:false,error:"Enter a valid quantity and optional price (ZMW per kg)"},400);
+  const email=clean(input.email,120);
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return respond({success:false,error:"Enter a valid email or leave it blank"},400);
+  const cutoff=new Date(Date.now()-24*3600*1000).toISOString();
+  const {count,error:rateError}=await db.from(type).select("id",{count:"exact",head:true})
+      .eq("contact_phone",phone).gte("created_at",cutoff);
+  if(rateError){console.error("listing throttling failed",rateError);return respond({success:false,error:"Unable to accept listings at present"},503)}
+  if((count||0)>=3)return respond({success:false,error:"Maximum of three listing requests per phone number in 24 hours. Please try again tomorrow."},429);
+  const row=kind==="buyer"?
+    {business_name:business,contact_person:contact,contact_phone:phone,contact_email:email||null,commodity,
+     location,min_volume:quantity,max_price:price,notes,status:"pending",is_verified:false,added_by:"public"}:
+    {farm_name:business,contact_person:contact,contact_phone:phone,contact_email:email||null,commodity,
+     location,available_volume:quantity,price_per_kg:price,notes,status:"pending",is_verified:false};
+  const {error:insertError}=await db.from(type).insert(row);
+  if(insertError){console.error("public listing error",insertError);return respond({success:false,error:"Could not submit your listing"},503)}
+  return respond({success:true,message:"Listing submitted successfully. Our administrator will review it before it appears publicly.",status:"pending"},202);
+ }
  if(req.method==="POST" && endpoint==="register") return respond({success:false,error:"Public registration is disabled. FarmConnect is free to use without an account."},410);
  if(req.method==="POST" && (endpoint==="register" || endpoint==="login")){
    let body:any;try{body=await req.json()}catch{return respond({success:false,error:"Invalid JSON"},400)}
