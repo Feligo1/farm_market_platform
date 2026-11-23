@@ -113,6 +113,45 @@ Deno.serve(async(req:Request)=>{
     await audit(actor,"update","site_appearance",1);
     return reply({success:true,appearance:data});
   }
+  if(resource==="market_insights" && req.method==="GET"){
+    const sources=await Promise.all([
+      db.from("buyers").select("commodity,location,status,is_verified").limit(1000),
+      db.from("sellers").select("commodity,location,status,is_verified").limit(1000),
+      db.from("news").select("id",{count:"exact",head:true}),
+      db.from("advertisements").select("id",{count:"exact",head:true}),
+      db.from("price_history").select("price_date").eq("is_verified",true).order("price_date",{ascending:false}).limit(1)
+    ]);
+    for(const source of sources){if(source.error)throw source.error}
+    const buyerRows=(sources[0].data||[]) as any[],sellerRows=(sources[1].data||[]) as any[];
+    const clean=(v:any)=>String(v||"").trim().slice(0,100);
+    const grouped=new Map<string,{commodity:string,buyers:number,sellers:number}>();
+    const locations=new Map<string,number>();
+    for(const [list,kind] of [[buyerRows,"buyer"],[sellerRows,"seller"]] as const){
+      for(const entry of list){
+        if(entry.status!=="active"||entry.is_verified!==true)continue;
+        const commodity=clean(entry.commodity)||"Unspecified",key=commodity.toLowerCase();
+        const current=grouped.get(key)||{commodity,buyers:0,sellers:0};
+        if(kind==="buyer")current.buyers++;else current.sellers++;
+        grouped.set(key,current);
+        const place=clean(entry.location)||"Unspecified";
+        locations.set(place,(locations.get(place)||0)+1);
+      }
+    }
+    const counts={
+      total_buyers:buyerRows.length,total_sellers:sellerRows.length,
+      approved_buyers:buyerRows.filter(x=>x.status==="active"&&x.is_verified===true).length,
+      approved_sellers:sellerRows.filter(x=>x.status==="active"&&x.is_verified===true).length,
+      pending_buyers:buyerRows.filter(x=>x.status==="pending").length,
+      pending_sellers:sellerRows.filter(x=>x.status==="pending").length,
+      news_articles:sources[2].count||0,ad_campaigns:sources[3].count||0
+    };
+    return reply({success:true,counts,
+      commodities:[...grouped.values()].sort((a,b)=>(b.buyers+b.sellers)-(a.buyers+a.sellers)).slice(0,15),
+      locations:[...locations.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10).map(([name,count])=>({name,count})),
+      latest_price_observation:sources[4].data?.[0]?.price_date||null,
+      note:"Counts are from stored listings and sourced price history. This is not a measure of completed sales. Listings beyond 1000 per type are not included."
+    });
+  }
   if(resource==="pending_listings" && req.method==="GET"){
     const [buyerResult,sellerResult]=await Promise.all([
       db.from("buyers").select("id,business_name,contact_person,contact_phone,commodity,location,min_volume,max_price,notes,created_at").eq("status","pending").eq("is_verified",false).order("created_at",{ascending:false}).limit(100),
