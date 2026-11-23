@@ -739,7 +739,7 @@
             if(prices.status==='fulfilled'){
               const count=(prices.value.prices||[]).length;
               document.getElementById('statPrices').textContent=count;
-              notice.textContent=count ? 'Showing source-verified price observations. Open Market Prices to compare dates and locations.' : 'No verified commodity prices have been published yet. Demonstration data is excluded from public prices.';
+              notice.textContent=count ? 'Showing source-verified price observations. Open Market Prices to compare dates and locations.' : 'No published prices are available for this selection.';
             } else {notice.textContent='Verified price availability could not be checked. Please try refreshing.'}
         }
 
@@ -766,6 +766,6 @@
         
         window.refreshAllData = refreshAllData;
     </script>
-    <script src="forecast-outlook.js?v=1" defer></script>
+    <script src="forecast-outlook.js?v=2" defer></script>
 </body>
 </html>
