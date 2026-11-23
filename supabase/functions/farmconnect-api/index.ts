@@ -165,7 +165,7 @@ Deno.serve(async (req: Request) => {
  if(req.method==="GET" && endpoint==="forecast"){
    const commodity=String(u.searchParams.get("commodity")||"Maize").trim();
    const market=String(u.searchParams.get("market")||"").trim();
-   const mode=u.searchParams.get("mode")==="demo"?"demo":"verified";
+
    const rawMonths=Number(u.searchParams.get("months")||"3");
    if(!Number.isInteger(rawMonths)||rawMonths<1||rawMonths>12)
      return respond({success:false,error:"Choose between 1 and 12 forecast months."},400);
@@ -184,34 +184,24 @@ Deno.serve(async (req: Request) => {
    };
    type Observation={date:string;price:number};
    let history:Observation[]=[];
-   if(mode==="verified"){
-     const {data:rows,error:historyError}=await db.from("price_history")
-       .select("price,price_date").eq("commodity_id",commodityRecord.id)
-       .eq("market_id",marketRecord.id).eq("is_verified",true)
-       .order("price_date",{ascending:false}).limit(500);
-     if(historyError)throw historyError;
-     const byMonth=new Map<string,{total:number;count:number}>();
-     for(const row of rows||[]){
-       const date=String(row.price_date||"").slice(0,7);
-       const price=Number(row.price);
-       if(!/^\d{4}-\d{2}$/.test(date)||!Number.isFinite(price)||price<=0)continue;
-       const record=byMonth.get(date)||{total:0,count:0};
-       record.total+=price;record.count++;byMonth.set(date,record);
-     }
-     history=[...byMonth.entries()].sort(([a],[b])=>a.localeCompare(b))
-       .map(([month,v])=>({date:month+"-01",price:Math.round(v.total/v.count*100)/100}));
-     if(history.length<3)return respond({success:false,code:"INSUFFICIENT_HISTORY",
-       error:"At least three distinct months of verified historical prices are required.",
-       required_observations:3,available_observations:history.length},422);
-   }else{
-     // Illustrative values are never drawn from, stored as, or labelled verified market prices.
-     const base=100;
-     const today=new Date();
-     const currentMonth=new Date(Date.UTC(today.getUTCFullYear(),today.getUTCMonth(),1)).toISOString().slice(0,10);
-     history=Array.from({length:8},(_,i)=>({
-       date:monthDate(currentMonth,i-7),price:Math.round(base*(1+0.025*i+0.018*Math.sin(i))*100)/100
-     }));
+   const {data:rows,error:historyError}=await db.from("price_history")
+     .select("price,price_date").eq("commodity_id",commodityRecord.id)
+     .eq("market_id",marketRecord.id).eq("is_verified",true)
+     .neq("data_kind","demo").order("price_date",{ascending:false}).limit(500);
+   if(historyError)throw historyError;
+   const byMonth=new Map<string,{total:number;count:number}>();
+   for(const row of rows||[]){
+     const date=String(row.price_date||"").slice(0,7);
+     const price=Number(row.price);
+     if(!/^\d{4}-\d{2}$/.test(date)||!Number.isFinite(price)||price<=0)continue;
+     const record=byMonth.get(date)||{total:0,count:0};
+     record.total+=price;record.count++;byMonth.set(date,record);
    }
+   history=[...byMonth.entries()].sort(([a],[b])=>a.localeCompare(b))
+     .map(([month,v])=>({date:month+"-01",price:Math.round(v.total/v.count*100)/100}));
+   if(history.length<3)return respond({success:false,code:"INSUFFICIENT_HISTORY",
+     error:"At least three distinct months of sourced historical prices are required for this commodity and market.",
+     required_observations:3,available_observations:history.length},422);
    const tail=history.slice(-Math.min(12,history.length));
    const n=tail.length;
    const mean=tail.reduce((a,v)=>a+v.price,0)/n;
@@ -222,7 +212,10 @@ Deno.serve(async (req: Request) => {
    const monthlyStep=Math.max(-latest*0.10,Math.min(latest*0.10,slope));
    const residual=Math.sqrt(tail.reduce((a,v,i)=>a+(v.price-(mean+slope*(i-midpoint)))**2,0)/n);
    const forecast=Array.from({length:months},(_,i)=>{
-     const step=i+1;
+     const latestDate=new Date(history[history.length-1].date+"T00:00:00Z");
+     const today=new Date();
+     const monthsSinceLatest=Math.max(0,(today.getUTCFullYear()-latestDate.getUTCFullYear())*12+today.getUTCMonth()-latestDate.getUTCMonth());
+     const step=monthsSinceLatest+i+1;
      const predicted=Math.max(0.01,latest+monthlyStep*step);
      // Indicative bands, NOT statistically calibrated confidence intervals.
      const spread=Math.max(latest*0.05,residual)*Math.sqrt(step);
@@ -231,12 +224,13 @@ Deno.serve(async (req: Request) => {
        lower_estimate:Math.round(Math.max(0.01,predicted-spread)*100)/100,
        upper_estimate:Math.round((predicted+spread)*100)/100};
    });
-   return respond({success:true,mode,commodity,market,unit,
-     model_used:"Monthly linear-trend baseline",
-     observations:history.length,current_price:latest,historical:history.slice(-12),forecast,
-     notice:mode==="demo"
-       ?"Demonstration only: all prices and projections are simulated, not real Zambian market data."
-       :"Based on verified monthly historical averages. Prediction ranges are indicative, not calibrated confidence intervals. Forecasts are estimates, not guaranteed prices."});
+   const lastObservedDate=history[history.length-1].date;
+   return respond({success:true,mode:"verified",commodity,market,unit,
+     model_used:"Historical monthly trend (experimental)",
+     observations:history.length,current_price:latest,last_observed_date:lastObservedDate,
+     historical:history.slice(-12),forecast,
+     notice:"Latest recorded price is from "+lastObservedDate+". National averages are not today's local prices. These forecasts extrapolate older data and have high uncertainty; do not rely on them for trading decisions."});
+
  }
 
  if(req.method!=="GET") return respond({success:false,error:"Unsupported operation"},405);
@@ -275,16 +269,16 @@ Deno.serve(async (req: Request) => {
    const {data,error}=await query;if(error)throw error;
    const history=(data||[]).map((r:any)=>({id:r.id,commodity:r.commodities?.name,market:r.markets?.name,price:r.price,unit:r.unit,trend:r.trend,price_date:r.price_date,is_verified:r.is_verified===true,data_kind:r.data_kind||"observed",source_name:r.source_name,source_url:r.source_url}));
    const verified=history.filter((r:any)=>r.is_verified&&r.data_kind!=="demo").length;
-   return respond({success:true,history,count:history.length,verified_count:verified,demo_count:history.filter((r:any)=>r.data_kind==="demo").length,notice:"DEMO rows are synthetic, not observed prices. Only verified sourced prices are real market evidence."});
+   return respond({success:true,history,count:history.length,verified_count:verified,demo_count:history.filter((r:any)=>r.data_kind==="demo").length,notice:"Only sourced historical market observations are shown."});
   }
   if(endpoint==="prices" || (endpoint==="real" && u.pathname.endsWith("/prices/real"))){
    // Only real verified observations, no simulated market prices.
-   let query=db.from("price_history").select("id,price,unit,trend,price_date,recorded_at,commodities!inner(name,icon_emoji),markets!inner(name,province)").eq("is_verified",true).order("price_date",{ascending:false}).limit(limit);
+   let query=db.from("price_history").select("id,price,unit,trend,price_date,recorded_at,commodities!inner(name,icon_emoji),markets!inner(name,province)").eq("is_verified",true).neq("data_kind","demo").order("price_date",{ascending:false}).limit(limit);
    const commodity=u.searchParams.get("commodity"),market=u.searchParams.get("market");
    if(commodity)query=query.eq("commodities.name",commodity);
    if(market)query=query.eq("markets.name",market);
    const {data,error}=await query;if(error)throw error;
-   const prices=(data||[]).map((r:any)=>({id:r.id,commodity_name:r.commodities?.name,commodity:r.commodities?.name,icon_emoji:r.commodities?.icon_emoji,market_name:r.markets?.name,market:r.markets?.name,province:r.markets?.province,price:r.price,unit:r.unit,trend:r.trend,last_updated:r.recorded_at,is_verified:true}));
+   const prices=(data||[]).map((r:any)=>({id:r.id,commodity_name:r.commodities?.name,commodity:r.commodities?.name,icon_emoji:r.commodities?.icon_emoji,market_name:r.markets?.name,market:r.markets?.name,province:r.markets?.province,price:r.price,unit:r.unit,trend:r.trend,last_updated:r.price_date,is_verified:true}));
    return respond({success:true,prices,count:prices.length});
   }
   return respond({success:false,error:"Unknown endpoint"},404);
