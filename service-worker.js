@@ -1,8 +1,8 @@
 /* FarmConnect lightweight offline shell. No authentication or API responses are cached. */
-const CACHE="farmconnect-public-shell-v2";
+const CACHE="farmconnect-public-shell-v3";
 const SHELL=[
  "./","./index.html","./prices.html","./find-buyers.html","./post-listing.html",
- "./match.html","./profit-calculator.html","./farmer-guide.html","./news.html",
+ "./match.html","./profit-calculator.html","./farmer-guide.html","./news.html","./livestock.html","./feedback.html",
  "./farmconnect-redesign.css","./farmconnect-mobile.css","./farmconnect-nav.js","./farmconnect-appearance.js"
 ];
 const PUBLIC_PATHS=new Set(SHELL.map(item=>new URL(item,self.registration.scope).pathname));
