@@ -429,6 +429,9 @@ async function load(){
  $('fcSourceTools').hidden=currentAdminView!=='advanced'||r!=='price_history';
  $('fcRecordSearch').value='';
  $('fcRecordSearchCount').textContent='';
+ $('fcEditorialTools').hidden=r!=='news';
+ $('fcAdvertisingTools').hidden=r!=='advertisements';
+ $('fcDataQualityTools').hidden=currentAdminView!=='advanced';
  try{
   if(r==='price_history')await Promise.all([lookup('commodities'),lookup('markets')]);
   const d=await api('GET',r,null,{limit:PAGE_SIZE,offset,data_kind:r==='price_history'?$('kind').value:''});
@@ -455,7 +458,7 @@ async function load(){
   head.append(heading);
   const body=$('rows');body.replaceChildren();
   for(const item of rows){
-   const tr=document.createElement('tr');
+   const tr=document.createElement('tr');tr.dataset.status=String(item.status||'').toLowerCase();
    tr.dataset.search=Object.values(item).filter(v=>typeof v==='string'||typeof v==='number').join(' ').toLowerCase()+' '+columnOrder.map(([col])=>displayResourceValue(item,col)).join(' ').toLowerCase();
    for(const [col] of columnOrder){
     const td=document.createElement('td'),val=item[col];
@@ -473,6 +476,18 @@ async function load(){
     const td=document.createElement('td');td.className='fc-record-actions';
     const edit=document.createElement('button');edit.textContent='Edit';edit.className='secondary';edit.onclick=()=>openEditor(item);
     td.append(edit);
+    if(r==='news'||r==='advertisements'){
+     const preview=document.createElement('button');preview.type='button';preview.textContent='Preview';preview.className='secondary';preview.onclick=()=>previewRecord(item);td.append(preview);
+     const currently=String(item.status||'');
+     const next=currently==='published'?'paused':'published';
+     const toggle=document.createElement('button');toggle.type='button';toggle.className='secondary';toggle.textContent=next==='published'?'Publish':'Pause';
+     toggle.onclick=async()=>{
+      if(!confirm((next==='published'?'Publish':'Pause')+' '+(item.title||'this record')+'?'))return;
+      toggle.disabled=true;
+      try{await api('PATCH',r,{status:next},{id:item.id});await load()}
+      catch(error){message('Cannot update status: '+error.message,'error');toggle.disabled=false}
+     };td.append(toggle);
+    }
     const del=document.createElement('button');del.textContent=r==='users'?'Deactivate':'Delete';del.className='fc-record-danger';del.onclick=()=>remove(item);
     td.append(del);tr.append(td);
    }
@@ -485,6 +500,62 @@ async function load(){
   message(count+' total records · '+PAGE_SIZE+' per page');
  }catch(e){message(e.message,'error')}
 }
+let qualityCache=null;
+$('fcRunQualityCheck').onclick=async()=>{
+ const status=$('fcQualityStatus'),panel=$('fcQualityResults'),btn=$('fcRunQualityCheck');
+ btn.disabled=true;status.textContent='Checking sources, prices, news and pending work…';
+ try{
+  const result=await api('GET','data_quality');
+  qualityCache=result;panel.replaceChildren();panel.hidden=false;
+  const title=document.createElement('h4');title.textContent='Data quality inspection · '+(result.checks||[]).length+' checks';panel.append(title);
+  for(const item of result.checks||[]){
+   const row=document.createElement('div');row.className='fc-quality-item';
+   const name=document.createElement('strong');name.textContent=(item.count===0?'PASS':'CHECK')+' · '+item.label;
+   const text=document.createElement('span');text.textContent=' — '+item.count+' record(s)';
+   const button=document.createElement('button');button.className='secondary';button.type='button';button.textContent='Inspect '+pretty(item.resource);
+   button.onclick=()=>{if(item.resource==='news')selectAdminSection('news');else if(item.resource==='buyers')selectAdminSection('pending');else{resource.value=item.resource;offset=0;load()}};
+   row.append(name,text,button);panel.append(row);
+  }
+  const caution=document.createElement('p');caution.className='muted';caution.textContent=result.note+' Checks cover up to 1,000 recent price records; no changes have been made.';panel.append(caution);
+  status.textContent='Inspection complete. '+(result.checks||[]).filter(x=>x.severity==='high'&&x.count>0).length+' high-priority issue groups.';
+ }catch(e){status.textContent='Data audit failed: '+e.message}
+ finally{btn.disabled=false}
+};
+$('fcExportRecords').onclick=()=>{
+ if(!rows.length){message('Nothing to export on this page.');return}
+ const keys=Object.keys(rows[0]).filter(x=>!['password_hash','ussd_pin_hash'].includes(x));
+ makeCsv([keys,...rows.map(r=>keys.map(k=>r[k]))],'farmconnect-'+resource.value+'-page-'+Math.floor(offset/PAGE_SIZE+1)+'.csv');
+};
+const previewDialog=document.createElement('dialog');previewDialog.id='fcAdminPreview';
+previewDialog.style.cssText='width:min(720px,94vw);max-height:88vh;overflow:auto;border:1px solid #d8e5da;border-radius:12px;padding:24px;background:white;box-shadow:0 18px 60px #1a322733';
+previewDialog.innerHTML='<div class="controls" style="justify-content:space-between"><strong style="font-size:1.2rem">Content preview</strong><button type="button" class="secondary" id="fcClosePreview">Close</button></div><div id="fcPreviewBody" style="line-height:1.75;white-space:pre-wrap;margin-top:16px"></div>';
+document.body.append(previewDialog);
+$('fcClosePreview').onclick=()=>previewDialog.close();
+previewDialog.addEventListener('click',event=>{if(event.target===previewDialog)previewDialog.close()});
+function previewRecord(item){
+ const body=$('fcPreviewBody');body.replaceChildren();
+ const heading=document.createElement('h2');heading.textContent=item.title||'Untitled';body.append(heading);
+ const meta=document.createElement('p');meta.className='muted';meta.textContent=[item.category||item.placement,item.status,item.published_at?dateLabel(item.published_at):''].filter(Boolean).join(' · ');body.append(meta);
+ const imageUrl=item.image_url;
+ if(typeof imageUrl==='string'&&/^https:\/\//i.test(imageUrl)){const pic=document.createElement('img');pic.src=imageUrl;pic.alt='Content preview';pic.style.cssText='width:100%;max-height:300px;object-fit:contain;border-radius:7px';body.append(pic)}
+ for(const val of [item.summary,item.description,item.content])if(val){const p=document.createElement('p');p.textContent=val;body.append(p)}
+ if(item.source_url||item.target_url){const url=String(item.source_url||item.target_url);if(/^https:\/\//i.test(url)){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Open linked source';body.append(a)}}
+ previewDialog.showModal();
+}
+function editorialFilter(){
+ const wanted=resource.value==='news'?$('fcEditorialFilter').value:$('fcAdFilter').value;
+ let countVisible=0;
+ for(const tr of $('rows').querySelectorAll('tr[data-search]')){
+  const match=(!wanted||(tr.dataset.status||'')===wanted)&&(!($('fcRecordSearch').value.trim())||tr.dataset.search.includes($('fcRecordSearch').value.trim().toLowerCase()));
+  tr.hidden=!match;if(match)countVisible++;
+ }
+ $('fcRecordSearchCount').textContent=(wanted||$('fcRecordSearch').value.trim())?countVisible+' matches on current page':'';
+}
+$('fcEditorialFilter').addEventListener('change',editorialFilter);
+$('fcAdFilter').addEventListener('change',editorialFilter);
+$('fcQuickDraft').onclick=async()=>{resource.value='news';await openEditor();const status=document.getElementById('field-status');if(status)status.value='draft'};
+$('fcAdDraft').onclick=async()=>{resource.value='advertisements';await openEditor();const status=document.getElementById('field-status');if(status)status.value='draft'};
+$('fcPreviewRecord').onclick=()=>{if(rows.length)previewRecord(rows[0]);else message('No article to preview on this page.')};
 const floatCols=new Set(['sort_order','price','volume','current_price','price_7d','price_14d','price_30d','confidence','max_price','min_volume','available_volume','price_per_kg','rating','threshold','farm_size_hectares','latitude','longitude','typical_min_price','typical_max_price','display_order']);
 const boolCols=new Set(['is_active','is_verified','active','is_read','is_email_verified','sms_alerts_enabled','has_storage','has_weighbridge']);
 const references={commodity_id:'commodities',market_id:'markets',news_id:'news',user_id:'users',from_user_id:'users',to_user_id:'users'};
