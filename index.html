@@ -346,8 +346,8 @@
     <section id="live-prices" style="padding: 80px 0;">
         <div class="container">
             <div class="section-header" style="text-align: center; margin-bottom: 50px;">
-                <h2 style="font-size: 2.5rem; color: var(--primary);"><i class="fas fa-chart-line"></i> Verified Market Prices</h2>
-                <p id="priceSectionSubtitle" style="color: var(--text-secondary);">Verified Zambian commodity prices, published after source review.</p>
+                <h2 style="font-size: 2.5rem; color: var(--primary);"><i class="fas fa-chart-line"></i> Published Historical Market Prices</h2>
+                <p id="priceSectionSubtitle" style="color: var(--text-secondary);">Latest available Ministry of Agriculture national average prices (January 2026); not live market quotations.</p>
             </div>
             <div id="livePricesContainer"><div class="price-loading" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div> Checking published market prices…</div></div>
             <div style="text-align:center;margin-top:22px"><a href="prices.html" class="btn btn-primary"><i class="fas fa-chart-line"></i> View all market prices & history</a></div>
@@ -384,7 +384,7 @@
     <section id="price-forecast" class="fc-forecast" aria-labelledby="fcForecastHeading">
       <div class="container">
         <h2 id="fcForecastHeading">Commodity price outlook</h2>
-        <p class="fc-forecast-intro">Explore potential price movements for a selected crop and Zambian market. Forecasts require enough verified historical observations. Demonstration results use synthetic sample prices and are not real market predictions.</p>
+        <p class="fc-forecast-intro">Explore experimental monthly projections derived from sourced historical prices. The latest national observations are from January 2026, so projections are uncertain and not current market quotations.</p>
         <form id="fcForecastForm" class="fc-forecast-controls">
           <div class="fc-forecast-field"><label for="fcForecastCommodity">Commodity</label><select id="fcForecastCommodity" required><option value="">Loading commodities…</option></select></div>
           <div class="fc-forecast-field"><label for="fcForecastMarket">Market</label><select id="fcForecastMarket" required><option value="">Loading markets…</option></select></div>
@@ -397,7 +397,7 @@
           <div class="fc-forecast-meta"><span><strong id="fcForecastDataLabel"></strong></span><span>Method: <strong id="fcForecastModel"></strong></span><span id="fcForecastObservations"></span></div>
           <div class="fc-forecast-summary">
             <div class="fc-forecast-stat"><small>Last recorded price</small><strong id="fcForecastCurrent">—</strong></div>
-            <div class="fc-forecast-stat"><small>Next month estimate</small><strong id="fcForecastFirst">—</strong></div>
+            <div class="fc-forecast-stat"><small>Next forecast month</small><strong id="fcForecastFirst">—</strong></div>
             <div class="fc-forecast-stat"><small>Final forecast month</small><strong id="fcForecastLast">—</strong></div>
           </div>
           <div class="fc-forecast-chart">
@@ -469,22 +469,18 @@
         }
 
         function bestPricesByCommodity(prices) {
-            const bestByCommodity = new Map();
+            const latestByCommodity = new Map();
             for (const price of prices) {
-                const commodityName = price.commodity_name || price.commodity;
-                const priceValue = Number(price.price || price.current_price || 0);
-                if (!commodityName || priceValue <= 0) continue;
-                const currentBest = bestByCommodity.get(commodityName);
-                const currentBestValue = currentBest ? Number(currentBest.price || currentBest.current_price || 0) : 0;
-                if (!currentBest || priceValue > currentBestValue) {
-                    bestByCommodity.set(commodityName, price);
+                const name = price.commodity_name || price.commodity;
+                const value = Number(price.price ?? price.current_price);
+                if (!name || !Number.isFinite(value) || value <= 0) continue;
+                const previous = latestByCommodity.get(name);
+                if (!previous || String(price.price_date || price.last_updated || '') > String(previous.price_date || previous.last_updated || '')) {
+                    latestByCommodity.set(name, price);
                 }
             }
-            return Array.from(bestByCommodity.values()).sort((a, b) => {
-                const commodityA = a.commodity_name || a.commodity || '';
-                const commodityB = b.commodity_name || b.commodity || '';
-                return commodityA.localeCompare(commodityB);
-            });
+            return [...latestByCommodity.values()].sort((a,b)=>
+                String(a.commodity_name || a.commodity).localeCompare(String(b.commodity_name || b.commodity)));
         }
 
         function safeUserName(user) {
@@ -675,7 +671,7 @@
             const btn=document.getElementById('sidebarLogoutBtn');
             if(btn)btn.onclick=e=>{e.preventDefault();localStorage.removeItem('authToken');localStorage.removeItem('userData');location.href='index.html'};
             const subtitle=document.getElementById('priceSectionSubtitle');
-            if(subtitle)subtitle.textContent='Verified Zambian commodity prices from published market observations.';
+            if(subtitle)subtitle.textContent='Latest available Ministry of Agriculture monthly prices. National averages, not live local quotations.';
             await fetchLivePrices();
             await fetchAllCommodities();
         }
