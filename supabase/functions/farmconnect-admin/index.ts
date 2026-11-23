@@ -114,12 +114,34 @@ Deno.serve(async(req:Request)=>{
     await audit(actor,"update","site_appearance",1);
     return reply({success:true,appearance:data});
   }
+  if(resource==="feedback_review" && req.method==="POST"){
+    const body=await req.json().catch(()=>null),id=Number(body?.feedback_id);
+    const status=String(body?.status||""),priority=Number(body?.priority),notes=String(body?.admin_notes||"").trim();
+    if(!Number.isSafeInteger(id)||id<=0||!["new","in_progress","resolved","ignored"].includes(status)||
+       !Number.isInteger(priority)||priority<1||priority>3||notes.length>800)
+      return reply({success:false,error:"Choose a valid feedback item, status, priority and notes (800 characters max)"},400);
+    const {data:existing,error:existsError}=await db.from("farmer_feedback").select("id").eq("id",id).maybeSingle();
+    if(existsError)throw existsError;
+    if(!existing)return reply({success:false,error:"Feedback no longer exists"},404);
+    const {data,error}=await db.from("farmer_feedback_reviews")
+      .upsert({feedback_id:id,status,priority,admin_notes:notes,updated_by:actor,updated_at:new Date().toISOString()},{onConflict:"feedback_id"})
+      .select("feedback_id,status,priority,admin_notes,updated_at").single();
+    if(error)throw error;
+    await audit(actor,"review","farmer_feedback",id);
+    return reply({success:true,review:data});
+  }
   if(resource==="farmer_feedback" && req.method==="GET"){
     const {data,error,count}=await db.from("farmer_feedback")
       .select("id,role,feature,helpfulness,ease_of_use,comment,created_at",{count:"exact"})
       .order("created_at",{ascending:false}).limit(500);
     if(error)throw error;
     const rows=data||[];
+    const feedbackIds=rows.map((row:any)=>row.id);
+    const {data:reviewRows,error:reviewError}=feedbackIds.length?
+      await db.from("farmer_feedback_reviews").select("feedback_id,status,priority,admin_notes").in("feedback_id",feedbackIds):
+      {data:[],error:null};
+    if(reviewError)throw reviewError;
+    const reviews=new Map((reviewRows||[]).map((entry:any)=>[Number(entry.feedback_id),entry]));
     const average=(field:"helpfulness"|"ease_of_use")=>rows.length?
       Math.round(rows.reduce((sum:any,r:any)=>sum+Number(r[field]||0),0)*10/rows.length)/10:null;
     const features=new Map<string,{name:string,count:number,helpful:number,ease:number}>();
@@ -130,7 +152,7 @@ Deno.serve(async(req:Request)=>{
     return reply({success:true,count:count||0,sampled:rows.length,average_helpfulness:average("helpfulness"),
       average_ease:average("ease_of_use"),
       by_feature:[...features.values()].map(f=>({feature:f.name,count:f.count,helpfulness:Math.round(f.helpful*10/f.count)/10,ease:Math.round(f.ease*10/f.count)/10})),
-      comments:rows.filter((r:any)=>r.comment).slice(0,30).map((r:any)=>({feature:r.feature,role:r.role,comment:r.comment,helpfulness:r.helpfulness,ease:r.ease_of_use,created_at:r.created_at})),
+      comments:rows.filter((r:any)=>r.comment).slice(0,30).map((r:any)=>({id:r.id,feature:r.feature,role:r.role,comment:r.comment,helpfulness:r.helpfulness,ease:r.ease_of_use,created_at:r.created_at,status:(reviews.get(Number(r.id)) as any)?.status||"new",priority:(reviews.get(Number(r.id)) as any)?.priority||2,admin_notes:(reviews.get(Number(r.id)) as any)?.admin_notes||""})),
       note:"Voluntary anonymous responses. Self-selection and sample size limit representativeness. Last 500 entries only."});
   }
   if(resource==="market_insights" && req.method==="GET"){
