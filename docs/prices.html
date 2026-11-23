@@ -119,7 +119,12 @@ function renderCatalogue(){
   const link=el('a',price?'View historical prices':'Post buying/selling request');
   link.href=price?'#latest':'post-listing.html?commodity='+encodeURIComponent(c.name);
   if(price)link.onclick=()=>{activate('latest');$('fcLatestCommodity').value=c.name;renderLatest()};
-  card.append(name,unit,value,when,link);grid.append(card);
+  card.append(name,unit,value,when,link);
+  if(price&&price.source_url&&/^https:\/\//i.test(price.source_url)){
+    const source=el('a','Official price bulletin ↗');source.href=price.source_url;source.target='_blank';source.rel='noopener noreferrer';
+    card.append(source);
+  }
+  grid.append(card);
  }
  $('fcCatalogCount').textContent=records.length+' of '+allCommodities.length+' commodities';
  if(!records.length)grid.append(el('p','No commodities match your search.'));
@@ -170,7 +175,7 @@ async function loadLatest(){
    const response=await request('/prices?limit=500');
    const unique=new Map();
    for(const p of response.prices||[]){
-     const item={commodity:p.commodity_name||p.commodity,market:p.market_name||p.market,date:String(p.price_date||p.last_updated||'').slice(0,10),price:safeNum(p.price),unit:p.unit||'kg',category:p.category||'Other',source:p.source_name||'Published source'};
+     const item={commodity:p.commodity_name||p.commodity,market:p.market_name||p.market,date:String(p.price_date||p.last_updated||'').slice(0,10),price:safeNum(p.price),unit:p.unit||'kg',category:p.category||'Other',source:p.source_name||'Published source',source_url:p.source_url||null};
      if(!item.commodity||!item.market||item.price<=0)continue;
      const key=item.commodity+'|'+item.market,prev=unique.get(key);
      if(!prev||item.date>prev.date)unique.set(key,item);
