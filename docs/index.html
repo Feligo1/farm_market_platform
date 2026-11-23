@@ -70,6 +70,7 @@
 <section class="fc-section"><div class="fc-wrap"><div class="fc-section-header"><div><p class="fc-eyebrow">Market reference</p><h2>Published commodity prices</h2><p>National monthly averages from the Ministry of Agriculture. Each price includes its original observation month.</p></div><a class="fc-link" href="prices.html">Explore all prices →</a></div>
 <div class="fc-home-prices" id="fcHomePriceCards" aria-live="polite"><div class="fc-empty">Loading published prices…</div></div>
 <p id="fcHomePriceStatus" class="fc-status" role="status"></p></div></section>
+<section class="fc-section" id="fcHomeOpportunities" hidden style="padding-top:0"><div class="fc-wrap"><div class="fc-section-header"><div><p class="fc-eyebrow">Marketplace</p><h2>Buyers looking for produce</h2><p>Recently reviewed buying requests you can respond to directly.</p></div><a class="fc-link" href="find-buyers.html">View marketplace →</a></div><div class="fc-service-grid" id="fcHomeOpportunitiesGrid"></div></div></section>
 <section class="fc-section" style="padding-top:0"><div class="fc-wrap"><div class="fc-home-feature"><div><p class="fc-eyebrow">Direct connections</p><h2>Have maize, tomatoes or another crop?</h2><p>Register your produce and preferred price, or let farmers know what you need to buy. Listings are reviewed before anyone can see your contact details.</p></div><a class="fc-button" href="post-listing.html">Create a free listing →</a></div></div></section>
 <section class="fc-section" style="padding-top:0"><div class="fc-wrap"><div class="fc-section-header"><div><p class="fc-eyebrow">From the field</p><h2>Recent farming updates</h2><p>Source-linked agricultural news, weather advisories and digital farming initiatives.</p></div><a href="news.html" class="fc-link">Read all news →</a></div>
 <div class="fc-home-news" id="fcHomeNews"><div class="fc-home-no-news">Loading agricultural news…</div></div></div></section>
@@ -116,6 +117,21 @@ async function loadPrices(){
   $('fcHomePriceStatus').textContent=items.length?'Source: Zambia Ministry of Agriculture. Historical monthly averages, not real-time market quotes.':'No sourced price records are available.';
  }catch(e){$('fcHomePriceCards').replaceChildren(make('div','Published prices are temporarily unavailable.'));$('fcHomeCrop').replaceChildren(make('option','Data unavailable'));$('fcHomePriceStatus').textContent=e.message}
 }
+async function loadOpportunities(){
+ try{
+  const result=await get('/buyers?limit=3');const items=result.buyers||[];
+  if(!items.length)return;
+  const grid=$('fcHomeOpportunitiesGrid');grid.replaceChildren();
+  for(const item of items.slice(0,3)){
+   const link=make('a');link.className='fc-service';link.href='find-buyers.html';
+   link.append(make('small','Buying request · '+(item.location||'Zambia')),
+     make('strong',item.commodity||'Agricultural produce'),
+     make('span','Wanted: '+(item.min_volume?Number(item.min_volume).toLocaleString('en-ZM')+' kg':'Quantity to discuss')+(item.max_price?' · up to K'+Number(item.max_price).toFixed(2)+'/kg':' · price negotiable')));
+   grid.append(link);
+  }
+  $('fcHomeOpportunities').hidden=false;
+ }catch{}
+}
 async function loadNews(){
  try{
   const data=await get('/news?limit=3'),grid=$('fcHomeNews');grid.replaceChildren();
@@ -145,7 +161,7 @@ async function loadSponsored(){
  }catch{}
 }
 $('fcYear').textContent=new Date().getFullYear();$('fcHomeCrop').addEventListener('change',cropSelected);
-loadPrices();loadNews();loadSponsored();
+loadPrices();loadOpportunities();loadNews();loadSponsored();
 })();
 </script>
 </body></html>
