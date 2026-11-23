@@ -34,14 +34,14 @@
 </style></head>
 <body class="fc-redesign">
 <main class="fc-main"><section class="fc-page-head"><div class="fc-wrap fc-market-intro">
-<div><p class="fc-eyebrow">FarmConnect marketplace</p><h1>Find the right buyer or seller.</h1><p class="fc-lead">Selling produce? Explore buyers looking for your crop. Buying? Find farmers and traders offering produce in Zambia. Connect directly by phone or WhatsApp.</p><p class="fc-note">Only administrator-reviewed listings are displayed. FarmConnect does not guarantee a transaction or handle payments.</p></div>
+<div><p class="fc-eyebrow">FarmConnect marketplace</p><h1>Find the right buyer or seller.</h1><p class="fc-lead">Selling produce? Explore buyers looking for your crop. Buying? Find farmers and traders offering produce in Zambia. Connect directly by phone or WhatsApp. List crops, chickens, goats, fish, eggs and other produce.</p><p class="fc-note">Only administrator-reviewed listings are displayed. FarmConnect does not guarantee a transaction or handle payments.</p></div>
 <div class="fc-market-cta"><strong>Have produce to sell, or want to buy?</strong><p>Post a free listing and describe exactly what you need. No account is required.</p><a href="post-listing.html?type=seller" class="fc-button">I want to sell produce →</a><a href="post-listing.html?type=buyer" class="fc-button secondary">I want to buy produce →</a></div>
 </div></section>
 <section class="fc-section"><div class="fc-wrap">
 <div class="fc-market-help" style="margin:0 0 28px;background:#edf6ee">
 <div><p class="fc-eyebrow">New · Free smart search</p><h2 style="font-size:1.34rem;margin:3px 0 8px">Find a buyer or seller who matches your crop.</h2><p>Choose a commodity, quantity and district. FarmConnect will rank suitable reviewed listings without requiring an account.</p></div>
 <a href="match.html" class="fc-button">Find my match →</a></div>
-<div class="fc-market-top"><div><p class="fc-eyebrow">Browse opportunities</p><h2>Available listings</h2><p class="fc-note">Search by commodity, location or buyer/seller name.</p></div><p id="fcMarketCount" class="fc-note" role="status">Loading listings…</p></div>
+<div class="fc-market-top"><div><p class="fc-eyebrow">Browse opportunities</p><h2>Available listings</h2><p class="fc-note">Search for maize, chickens, goats, eggs, fish, vegetables and other products by location or name.</p></div><p id="fcMarketCount" class="fc-note" role="status">Loading listings…</p></div>
 <div class="fc-market-tabs" aria-label="Choose listings">
 <button type="button" data-kind="buyers" class="fc-choice" aria-pressed="true">Buyers looking for produce</button>
 <button type="button" data-kind="sellers" class="fc-choice" aria-pressed="false">Produce for sale</button>
@@ -72,6 +72,7 @@ function card(record){
  const business=isBuyer?record.business_name:record.farm_name;
  const qty=isBuyer?record.min_volume:record.available_volume;
  const price=isBuyer?record.max_price:record.price_per_kg;
+ const unit=record.quantity_unit||'kg';
  const phone=String(record.contact_phone||'').replace(/\D/g,'');
  const validPhone=/^260[79]\d{8}$/.test(phone);
  const wrap=make('article');wrap.className='fc-listing';
@@ -80,7 +81,7 @@ function card(record){
  const verify=make('span','Admin-reviewed');verify.className='fc-listing-type';verify.style.color='#226e4a';
  const location=make('div','⌖ '+(record.location||'Location not listed'));location.className='fc-listing-location';
  const details=make('div');details.className='fc-listing-details';
- for(const [name,value] of [[isBuyer?'Quantity wanted':'Quantity available',qty?Number(qty).toLocaleString('en-ZM')+' kg':'Ask for quantity'],[isBuyer?'Budget per kg':'Asking per kg',price&&Number(price)>0?number(price):'On request']]){
+ for(const [name,value] of [[isBuyer?'Quantity wanted':'Quantity available',qty?Number(qty).toLocaleString('en-ZM')+' '+unit:'Ask for quantity'],[isBuyer?'Budget per '+unit:'Asking per '+unit,price&&Number(price)>0?number(price):'On request']]){
   const item=make('div');const small=make('span',name),strong=make('strong',value);item.append(small,strong);details.append(item);
  }
  const person=make('p',(business||'FarmConnect member')+' · '+(record.contact_person||'Contact person'));person.className='fc-listing-person';
