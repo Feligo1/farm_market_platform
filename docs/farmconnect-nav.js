@@ -16,12 +16,20 @@
   menu.innerHTML='<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span>';
   const top=document.createElement('div');top.className='fc-nav-top';top.append(brand,menu);
   const links=document.createElement('div');links.id='fc-nav-links';links.className='fc-nav-links';
-  const items=[['index.html','Home'],['prices.html','Market prices'],['find-buyers.html','Marketplace'],['match.html','Find a match'],['profit-calculator.html','Profit calculator'],['farmer-guide.html','Farmer guide'],['post-listing.html','Post listing'],['news.html','News']];
-  for(const [url,label] of items){
-   const a=document.createElement('a');a.href=url;a.textContent=label;
-   if(page===url){a.classList.add('fc-current');a.setAttribute('aria-current','page')}
-   links.append(a);
-  }
+  const items=[['index.html','Home'],['prices.html','Prices'],['find-buyers.html','Marketplace'],['match.html','Find a match'],['news.html','News']];
+  const extras=[['profit-calculator.html','Profit calculator'],['farmer-guide.html','Farmer guide'],['post-listing.html','Post listing']];
+  const makeLink=(url,label)=>{
+    const a=document.createElement('a');a.href=url;a.textContent=label;
+    if(page===url){a.classList.add('fc-current');a.setAttribute('aria-current','page')}
+    return a;
+  };
+  for(const [url,label] of items)links.append(makeLink(url,label));
+  const more=document.createElement('details');more.className='fc-nav-more';
+  if(extras.some(([url])=>url===page))more.classList.add('fc-more-current');
+  const summary=document.createElement('summary');summary.textContent='More tools';
+  const moreLinks=document.createElement('div');moreLinks.className='fc-nav-more-links';
+  for(const [url,label] of extras)moreLinks.append(makeLink(url,label));
+  more.append(summary,moreLinks);links.append(more);
   inner.append(top,links);nav.append(inner);
   document.body.insertBefore(nav,document.body.firstChild);
   menu.addEventListener('click',()=>{
