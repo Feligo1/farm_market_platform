@@ -1,0 +1,84 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Help improve FarmConnect Zambia: free anonymous farmer feedback on market prices, buyer matching and usability.">
+<title>Help Improve FarmConnect | Farmer Feedback</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="farmconnect-redesign.css?v=4"><link rel="stylesheet" href="farmconnect-mobile.css?v=2">
+<script src="farmconnect-nav.js?v=20261123-6" defer></script><script src="farmconnect-appearance.js?v=1" defer></script>
+<style>
+.fc-feedback-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(240px,.7fr);gap:28px;align-items:start}
+.fc-feedback-form{background:#fff;border-radius:13px;border:1px solid #dae5dc;padding:30px}
+.fc-feedback-field{margin-bottom:21px}
+.fc-feedback-field label,.fc-feedback-field legend{display:block;font-size:.9rem;font-weight:750;color:#2b4e37;margin-bottom:9px}
+.fc-feedback-field select,.fc-feedback-field textarea{width:100%;font:inherit;font-size:16px;background:#fff;border:1px solid #bed1c4;border-radius:8px;padding:11px;min-height:48px;color:#243e2c}
+.fc-feedback-field textarea{min-height:110px;resize:vertical}
+.fc-feedback-field fieldset{border:0;padding:0;margin:0}
+.fc-rating-group{display:flex;gap:10px;flex-wrap:wrap}
+.fc-rating-group label{position:relative;flex:1;min-width:48px;max-width:80px;cursor:pointer}
+.fc-rating-group input{position:absolute;opacity:0}
+.fc-rating-group span{display:grid;place-items:center;min-height:50px;border:1px solid #c1d1c4;border-radius:8px;background:#f5f8f5;font-weight:800}
+.fc-rating-group input:checked+span{border-color:#1d5f3c;color:#fff;background:#1d5f3c}
+.fc-rating-group input:focus-visible+span{outline:3px solid #a1bfaa}
+.fc-feedback-help{background:#eef6ef;border:1px solid #d5e5d8;border-radius:12px;padding:23px}
+.fc-feedback-help h2{font-size:1.25rem;margin:0 0 13px}
+.fc-feedback-help p{font-size:.89rem;line-height:1.65;color:#536857}
+.fc-feedback-status{padding:12px;border-radius:8px;line-height:1.55;margin:12px 0}
+.fc-feedback-status:empty{display:none}
+.fc-feedback-status.success{background:#e9f6ec;color:#1d653c}
+.fc-feedback-status.error{background:#fff0eb;color:#a2342a}
+.fc-feedback-trap{position:absolute;left:-10000px;opacity:0}
+@media(max-width:760px){.fc-feedback-layout{grid-template-columns:1fr}.fc-feedback-form{padding:19px}}
+</style></head><body class="fc-redesign">
+<main class="fc-main"><section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Help us improve · No payment or account required</p><h1>What should FarmConnect improve?</h1>
+<p class="fc-lead">Your experience will help us test and improve the platform for Zambian farmers. Feedback is anonymous and voluntary.</p></div></section>
+<section class="fc-section"><div class="fc-wrap fc-feedback-layout">
+<form id="fcFeedbackForm" class="fc-feedback-form">
+<div class="fc-feedback-field"><label for="fcFeedbackRole">Which best describes you?</label><select id="fcFeedbackRole" required><option value="">Choose one</option><option value="farmer">Farmer</option><option value="buyer">Buyer</option><option value="trader">Trader</option><option value="cooperative">Cooperative member</option><option value="other">Other</option></select></div>
+<div class="fc-feedback-field"><label for="fcFeedbackFeature">Which part did you try?</label><select id="fcFeedbackFeature" required><option value="">Choose a feature</option><option value="prices">Market prices</option><option value="marketplace">Buyer and seller listings</option><option value="matching">Find My Match</option><option value="calculator">Profit calculator</option><option value="news">News and videos</option><option value="general">General website</option></select></div>
+<div class="fc-feedback-field"><fieldset><legend>Was this feature helpful? (1 = not helpful, 5 = very helpful)</legend><div class="fc-rating-group" id="fcHelpfulness">
+<label><input type="radio" name="helpfulness" value="1" required><span>1</span></label>
+<label><input type="radio" name="helpfulness" value="2"><span>2</span></label>
+<label><input type="radio" name="helpfulness" value="3"><span>3</span></label>
+<label><input type="radio" name="helpfulness" value="4"><span>4</span></label>
+<label><input type="radio" name="helpfulness" value="5"><span>5</span></label>
+</div></fieldset></div>
+<div class="fc-feedback-field"><fieldset><legend>Was the feature easy to use? (1 = difficult, 5 = very easy)</legend><div class="fc-rating-group" id="fcEase">
+<label><input type="radio" name="ease" value="1" required><span>1</span></label>
+<label><input type="radio" name="ease" value="2"><span>2</span></label>
+<label><input type="radio" name="ease" value="3"><span>3</span></label>
+<label><input type="radio" name="ease" value="4"><span>4</span></label>
+<label><input type="radio" name="ease" value="5"><span>5</span></label>
+</div></fieldset></div>
+<div class="fc-feedback-field"><label for="fcFeedbackComment">What can we improve? (optional)</label><textarea id="fcFeedbackComment" maxlength="500" placeholder="Tell us what worked, what was difficult, or which feature you need most…"></textarea></div>
+<div class="fc-feedback-trap" aria-hidden="true"><label for="fcFeedbackWebsite">Website</label><input id="fcFeedbackWebsite" autocomplete="off" tabindex="-1"></div>
+<button class="fc-button" id="fcFeedbackSubmit" type="submit">Submit anonymous feedback →</button>
+<p class="fc-feedback-status" id="fcFeedbackStatus" role="status" aria-live="polite"></p>
+</form>
+<aside class="fc-feedback-help"><h2>How your feedback helps</h2><p>FarmConnect's final-year research evaluates whether the platform makes market information more accessible and useful for farmers in Zambia.</p>
+<p>Your ratings support usability testing. Comments help us decide what to fix.</p>
+<p><strong>Privacy:</strong> We don't ask for your name, phone number or email in this form. Please don't include personal contact details in comments. Feedback isn't published on the website.</p>
+<p>Want to try more features first? <a href="match.html">Find a buyer</a> or <a href="profit-calculator.html">compare selling costs</a>.</p></aside>
+</div></section></main>
+<footer class="fc-footer"><div class="fc-wrap fc-footer-row"><span>FarmConnect Zambia · Optional anonymous research feedback</span><a href="index.html">Return home</a></div></footer>
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const API="https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api/feedback";
+const form=$("fcFeedbackForm"),button=$("fcFeedbackSubmit"),status=$("fcFeedbackStatus");
+form.addEventListener("submit",async e=>{
+ e.preventDefault();if(!form.reportValidity())return;
+ const body={role:$("fcFeedbackRole").value,feature:$("fcFeedbackFeature").value,helpfulness:Number(form.querySelector('input[name="helpfulness"]:checked')?.value),
+ ease_of_use:Number(form.querySelector('input[name="ease"]:checked')?.value),comment:$("fcFeedbackComment").value.trim(),website:$("fcFeedbackWebsite").value};
+ button.disabled=true;button.textContent="Submitting…";status.className="fc-feedback-status";status.textContent="";
+ try{
+  const response=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||data.success===false)throw Error(data.error||"Unable to submit feedback");
+  form.reset();status.className="fc-feedback-status success";status.textContent="Thank you. Your anonymous feedback has been recorded.";
+ }catch(err){status.className="fc-feedback-status error";status.textContent=err.message||"Please try again."}
+ finally{button.disabled=false;button.textContent="Submit anonymous feedback →"}
+});
+const feature=new URLSearchParams(location.search).get("feature");
+if(["prices","marketplace","matching","calculator","news","general"].includes(feature))$("fcFeedbackFeature").value=feature;
+})();
+</script></body></html>
