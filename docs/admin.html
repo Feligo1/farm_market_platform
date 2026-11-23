@@ -59,7 +59,16 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
   <div class="metric"><small>Advertisement campaigns</small><strong id="adMetric">—</strong><span class="muted">Manage sponsor placements</span></div>
  </div>
  <div hidden aria-hidden="true"><span id="historyMetric"></span><span id="commodityMetric"></span><span id="marketMetric"></span><span id="userMetric"></span></div>
- <section class="card" id="fcInsightsPanel" hidden>
+ <section class="card" id="fcFeedbackPanel" hidden>
+<div class="controls" style="justify-content:space-between"><div><p style="text-transform:uppercase;letter-spacing:.1em;color:#276344;font-size:.72rem;font-weight:800;margin-bottom:8px">Project validation</p>
+<h3 style="font-size:1.25rem;margin:0">Farmer feedback results</h3><p class="muted">Anonymous ratings and optional comments submitted through the free feedback form.</p></div>
+<button class="secondary" id="fcFeedbackRefresh" type="button">Refresh feedback</button></div>
+<div class="grid fc-admin-overview" id="fcFeedbackMetrics"></div>
+<div class="table-wrap" style="margin-top:20px"><table><thead><tr><th>Feature</th><th>Responses</th><th>Helpfulness /5</th><th>Ease /5</th></tr></thead><tbody id="fcFeedbackFeatures"></tbody></table></div>
+<h4 style="margin-top:25px">Recent suggestions</h4><div id="fcFeedbackComments"></div>
+<p class="muted" id="fcFeedbackSummaryStatus" role="status"></p><a href="feedback.html" target="_blank" rel="noopener noreferrer" style="color:#255d42;font-weight:750">Open public feedback form ↗</a>
+</section>
+<section class="card" id="fcInsightsPanel" hidden>
 <div class="controls" style="justify-content:space-between;align-items:start"><div><p style="text-transform:uppercase;font-weight:800;letter-spacing:.1em;font-size:.7rem;color:#2d6848">Business overview</p><h3 style="font-size:1.32rem;margin:0">Marketplace insights</h3><p class="muted">Private summary of approved crop requests and offers. Uses existing database records — no external tracking service.</p></div><button class="secondary" id="fcInsightsRefresh" type="button">Refresh insights</button></div>
 <div class="grid fc-admin-overview" id="fcInsightsCards"></div>
 <div id="fcInsightsColumns" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:20px;margin-top:24px">
@@ -88,7 +97,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 <p style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#2a6b49;margin-bottom:8px">Editorial workspace</p>
 <h3 style="font-size:1.25rem;letter-spacing:-.035em;margin-bottom:6px">Content publishing</h3>
 <p class="muted" style="margin-top:0">Write stories, upload images and short videos, or schedule sponsored messages. Drafts are not public.</p>
-<div class="controls"><button id="fcQuickPending" type="button">Review buyer & seller requests</button><button id="fcQuickNews" type="button" class="secondary">Edit news articles</button><button id="fcQuickAds" type="button" class="secondary">Manage adverts</button><button id="fcQuickInsights" type="button" class="secondary">Marketplace insights</button><button id="fcQuickAppearance" type="button" class="secondary">Website appearance</button><button id="fcQuickAdvanced" type="button" class="secondary">Advanced data tools</button></div>
+<div class="controls"><button id="fcQuickPending" type="button">Review buyer & seller requests</button><button id="fcQuickNews" type="button" class="secondary">Edit news articles</button><button id="fcQuickAds" type="button" class="secondary">Manage adverts</button><button id="fcQuickInsights" type="button" class="secondary">Marketplace insights</button><button id="fcQuickFeedback" type="button" class="secondary">Farmer feedback</button><button id="fcQuickAppearance" type="button" class="secondary">Website appearance</button><button id="fcQuickAdvanced" type="button" class="secondary">Advanced data tools</button></div>
 </section><p class="warning"><b>Data-quality rule:</b> Use traceable sources for news and market prices. Do not approve misleading listings. Sponsored posts are clearly labelled for visitors.</p>
 <section class="card" id="workspace" hidden><h3 id="fcManageTitle">Manage content and data</h3><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
 <label for="resource" id="fcAdvancedPickerLabel" hidden>Advanced resource</label><select id="resource" class="grow" hidden>
@@ -308,6 +317,35 @@ async function loadInsights(){
   $('fcInsightsStatus').textContent='Listings indicate interest, not confirmed sales. District spellings are reported as entered. Price dates reflect the source data.';
  }catch(e){$('fcInsightsStatus').textContent='Insights unavailable: '+e.message}
 }
+
+async function loadFeedbackSummary(){
+ if(!authorized)return;
+ $('fcFeedbackSummaryStatus').textContent='Loading feedback…';
+ try{
+  const data=await api('GET','farmer_feedback');
+  const metrics=$('fcFeedbackMetrics');metrics.replaceChildren();
+  for(const [label,value] of [['Total responses',data.count],['Average helpfulness',data.average_helpfulness==null?'—':data.average_helpfulness+'/5'],['Average ease of use',data.average_ease==null?'—':data.average_ease+'/5']]){
+    const card=document.createElement('div');card.className='metric';const small=document.createElement('small');small.textContent=label;const strong=document.createElement('strong');strong.textContent=String(value??'—');card.append(small,strong);metrics.append(card);
+  }
+  const table=$('fcFeedbackFeatures');table.replaceChildren();
+  for(const row of data.by_feature||[]){
+    const tr=document.createElement('tr');for(const value of [row.feature,row.count,row.helpfulness,row.ease]){
+      const cell=document.createElement('td');cell.textContent=String(value);tr.append(cell)
+    }table.append(tr);
+  }
+  if(!table.children.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=4;td.textContent='No feedback has been submitted yet.';tr.append(td);table.append(tr)}
+  const comments=$('fcFeedbackComments');comments.replaceChildren();
+  for(const row of data.comments||[]){
+    const card=document.createElement('div');card.style.cssText='padding:13px 15px;margin-bottom:9px;border:1px solid #dbe6df;border-radius:9px;background:#fff';
+    const title=document.createElement('strong');title.textContent=row.feature+' · '+row.role+' · '+row.helpfulness+'/5 helpful · '+row.ease+'/5 easy';
+    const p=document.createElement('p');p.textContent=row.comment;p.style.margin='6px 0 0';card.append(title,p);comments.append(card);
+  }
+  if(!comments.children.length){const p=document.createElement('p');p.className='muted';p.textContent='No written suggestions yet.';comments.append(p)}
+  $('fcFeedbackSummaryStatus').textContent='Voluntary responses are not a representative population sample. Summaries use the most recent '+(data.sampled||0)+' responses.';
+ }catch(error){$('fcFeedbackSummaryStatus').textContent='Feedback unavailable: '+error.message}
+}
+$('fcQuickFeedback').onclick=()=>{if(!authorized)return;$('fcFeedbackPanel').hidden=false;loadFeedbackSummary();$('fcFeedbackPanel').scrollIntoView({behavior:'smooth',block:'start'})};
+$('fcFeedbackRefresh').onclick=loadFeedbackSummary;
 $('fcQuickInsights').onclick=()=>{if(!authorized)return;$('fcInsightsPanel').hidden=false;loadInsights();$('fcInsightsPanel').scrollIntoView({behavior:'smooth',block:'start'})};
 $('fcInsightsRefresh').onclick=loadInsights;
 
