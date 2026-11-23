@@ -269,7 +269,7 @@ const listingCard=(entry)=>{
   const info=document.createElement('p');info.className='muted';
   info.textContent=[entry.name||'Unnamed',entry.contact_person,entry.location].filter(Boolean).join(' · ');div.append(info);
   const details=document.createElement('p');
-  details.textContent='Quantity: '+(entry.quantity??'—')+' kg · Price: '+(entry.price?'K'+entry.price+'/kg':'To be agreed')+' · Contact: '+reviewed(entry.contact_phone);
+  details.textContent='Quantity: '+(entry.quantity??'—')+' '+(entry.quantity_unit||'kg')+' · Price: '+(entry.price?'K'+entry.price+' / '+(entry.quantity_unit||'kg'):'To be agreed')+' · Contact: '+reviewed(entry.contact_phone);
   div.append(details);
   if(entry.notes){const note=document.createElement('p');note.className='muted';note.textContent=entry.notes;div.append(note)}
   const actions=document.createElement('div');actions.className='controls';
