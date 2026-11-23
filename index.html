@@ -95,7 +95,7 @@ let crops=[];
 async function get(route){const r=await fetch(API+route);const d=await r.json().catch(()=>({}));if(!r.ok||d.success===false)throw Error(d.error||'Service unavailable');return d}
 function cropSelected(){
  const p=crops.find(x=>x.name===$('fcHomeCrop').value);
- $('fcHomeCropPrice').textContent=p?kwacha(p.price)+'/kg':'—';
+ $('fcHomeCropPrice').textContent=p?kwacha(p.price)+' / '+(p.unit||'kg'):'—';
  $('fcHomeCropMeta').textContent=p?'National Average · '+month(p.date):'Choose a published commodity';
 }
 async function loadPrices(){
@@ -104,7 +104,7 @@ async function loadPrices(){
   for(const p of data.prices||[]){
     const name=p.commodity_name||p.commodity,date=String(p.price_date||p.last_updated||'').slice(0,10),price=Number(p.price);
     if(!name||!date||!Number.isFinite(price)||price<=0)continue;
-    if(!seen.has(name)||date>seen.get(name).date)seen.set(name,{name,date,price});
+    if(!seen.has(name)||date>seen.get(name).date)seen.set(name,{name,date,price,unit:p.unit||'kg',source:p.source_name||'Published source'});
   }
   crops=[...seen.values()].sort((a,b)=>a.name.localeCompare(b.name));
   const select=$('fcHomeCrop');select.replaceChildren();
@@ -113,15 +113,15 @@ async function loadPrices(){
   if(preferred)select.value='Maize';
   cropSelected();
   const grid=$('fcHomePriceCards');grid.replaceChildren();
-  const preferredList=['Maize','Rice','Groundnuts','Tomatoes','Soybeans','Onions','Mixed Beans','Sweet Potatoes'];
+  const preferredList=['Maize','Village Chicken (Live)','Broiler Chicken (Live)','Chicken Eggs (Tray)','Goat (Live)','Fresh Bream','Fresh Milk','Tomatoes','Groundnuts','Rice','Soybeans'];
   const items=[...crops].sort((a,b)=>preferredList.indexOf(a.name)<0?1:preferredList.indexOf(b.name)<0?-1:preferredList.indexOf(a.name)-preferredList.indexOf(b.name)).slice(0,8);
   for(const item of items){
     const card=make('article');card.className='fc-home-price-card';
-    const title=make('h3',item.name),price=make('strong',kwacha(item.price)+'/kg'),period=make('small','National Average · '+month(item.date));
+    const title=make('h3',item.name),price=make('strong',kwacha(item.price)+' / '+(item.unit||'kg')),period=make('small','National Average · '+month(item.date));
     card.append(title,price,period);grid.append(card);
   }
   if(!items.length)grid.append(make('div','No published prices available.'));
-  $('fcHomePriceStatus').textContent=items.length?'Source: Zambia Ministry of Agriculture. Historical monthly averages, not real-time market quotes.':'No sourced price records are available.';
+  $('fcHomePriceStatus').textContent=items.length?'Sources: Zambia Ministry of Agriculture and Ministry of Fisheries and Livestock. Historical averages, not live quotes.':'No sourced price records are available.';
  }catch(e){$('fcHomePriceCards').replaceChildren(make('div','Published prices are temporarily unavailable.'));$('fcHomeCrop').replaceChildren(make('option','Data unavailable'));$('fcHomePriceStatus').textContent=e.message}
 }
 async function loadOpportunities(){
