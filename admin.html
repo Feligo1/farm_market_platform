@@ -221,6 +221,9 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 .fc-composer-preview>small{font-size:.75rem;color:#788b7d}
 @media(max-width:1000px){.fc-composer-layout{grid-template-columns:1fr}.fc-composer-preview{position:static}}
 @media(max-width:600px){.fc-composer{padding:14px}.fc-composer-date-grid{grid-template-columns:1fr}}
+</style><style>
+#workspace.fc-composing > :not(#fcComposer):not(#fcManageTitle){display:none!important}
+#workspace.fc-composing #fcComposer{display:block}
 </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>Administration</h1><small>FarmConnect Zambia · Secure workspace</small></div>
@@ -404,6 +407,7 @@ $('fcQuickOverview').onclick=()=>selectAdminSection('overview');
 document.querySelectorAll('[data-open-admin]').forEach(el=>el.addEventListener('click',()=>selectAdminSection(el.dataset.openAdmin)));
 function selectAdminSection(view,focus=true){
  if(!authorized||!adminViews.includes(view))return;
+ closeComposer();
  currentAdminView=view;
  const visiblePanel=view==='overview'?'fcOverviewPanel':view==='pending'?'fcPendingWorkspace':view==='insights'?'fcInsightsPanel':view==='feedback'?'fcFeedbackPanel':view==='appearance'?'fcAppearancePanel':'workspace';
  for(const id of ['fcOverviewPanel','fcPendingWorkspace','fcInsightsPanel','fcFeedbackPanel','fcAppearancePanel','workspace','fcSourceTools'])
@@ -523,7 +527,7 @@ async function load(){
    }
    if(r!=='audit'){
     const td=document.createElement('td');td.className='fc-record-actions';
-    const edit=document.createElement('button');edit.textContent='Edit';edit.className='secondary';edit.onclick=()=>openEditor(item);
+    const edit=document.createElement('button');edit.textContent='Edit';edit.className='secondary';edit.onclick=()=>r==='news'||r==='advertisements'?openContentComposer(item,r):openEditor(item);
     td.append(edit);
     if(r==='news'||r==='advertisements'){
      const preview=document.createElement('button');preview.type='button';preview.textContent='Preview';preview.className='secondary';preview.onclick=()=>previewRecord(item);td.append(preview);
@@ -602,9 +606,115 @@ function editorialFilter(){
 }
 $('fcEditorialFilter').addEventListener('change',editorialFilter);
 $('fcAdFilter').addEventListener('change',editorialFilter);
-$('fcQuickDraft').onclick=async()=>{resource.value='news';await openEditor();const status=document.getElementById('field-status');if(status)status.value='draft'};
-$('fcAdDraft').onclick=async()=>{resource.value='advertisements';await openEditor();const status=document.getElementById('field-status');if(status)status.value='draft'};
+$('fcQuickDraft').onclick=()=>openContentComposer(null,'news');
+$('fcAdDraft').onclick=()=>openContentComposer(null,'advertisements');
 $('fcPreviewRecord').onclick=()=>{if(rows.length)previewRecord(rows[0]);else message('No article to preview on this page.')};
+let composerEditId=null;
+const composerFieldMap={title:'fcComposerTitle',category:'fcComposerCategory',summary:'fcComposerSummary',content:'fcComposerContent',author_name:'fcComposerAuthor',source_url:'fcComposerSource',image_url:'fcComposerImage',video_url:'fcComposerVideo',description:'fcComposerDescription',target_url:'fcComposerTarget',placement:'fcComposerPlacement',status:'fcComposerStatus',published_at:'fcComposerPublished',starts_at:'fcComposerStarts',ends_at:'fcComposerEnds'};
+function dateInput(value){return value?String(value).replace(' ','T').slice(0,16):''}
+function closeComposer(){
+ $('fcComposer').hidden=true;
+ $('workspace').classList.remove('fc-composing');
+ composerEditId=null;
+}
+function renderComposerPreview(){
+ const title=$('fcComposerTitle').value.trim(),isNews=resource.value==='news',state=$('fcComposerStatus').value;
+ $('fcComposerPreviewTitle').textContent=title||'Your headline appears here';
+ $('fcComposerPreviewText').textContent=(isNews?$('fcComposerSummary').value:$('fcComposerDescription').value).trim()||'Write a summary or description to preview it here.';
+ $('fcComposerPreviewTag').textContent=(isNews?$('fcComposerCategory').value:$('fcComposerPlacement').selectedOptions[0]?.textContent||'Advertisement')+' · '+state;
+ $('fcComposerPreviewSource').textContent=isNews?($('fcComposerSource').value.trim()||'No source link selected'):'Advertisement · Sponsored content';
+ const holder=$('fcComposerPreviewImage'),value=$('fcComposerImage').value.trim();holder.replaceChildren();
+ if(/^https:\/\//i.test(value)){const img=document.createElement('img');img.src=value;img.alt='Article cover preview';img.onerror=()=>{holder.textContent='Image could not be loaded'};holder.append(img)}
+ else holder.textContent='No cover image selected';
+}
+function openContentComposer(item=null,forced=null){
+ if(!authorized)return;
+ const target=forced||(resource.value==='advertisements'?'advertisements':'news');
+ resource.value=target;
+ composerEditId=item?.id??null;
+ $('fcComposerForm').reset();
+ const isNews=target==='news';
+ $('fcComposerNewsFields').hidden=!isNews;
+ $('fcComposerAdFields').hidden=isNews;
+ $('fcComposerHeading').textContent=(composerEditId?'Edit ':'Create ')+(isNews?'news article':'advertising campaign');
+ $('fcComposerMessage').textContent='';
+ $('fcComposerUpload').value='';
+ if(item){
+  for(const [key,id] of Object.entries(composerFieldMap)){
+   const current=item[key];
+   if(current===undefined||current===null)continue;
+   if(['published_at','starts_at','ends_at'].includes(key))$(id).value=dateInput(current);
+   else if($(id).tagName==='SELECT'&&!Array.from($(id).options).some(x=>x.value===String(current))){const opt=new Option(String(current),String(current));$(id).add(opt);$(id).value=String(current)}
+   else $(id).value=String(current);
+  }
+ }
+ $('fcComposer').hidden=false;$('workspace').classList.add('fc-composing');
+ renderComposerPreview();
+ $('fcComposer').scrollIntoView({behavior:'smooth',block:'start'});
+ $('fcComposerTitle').focus({preventScroll:true});
+}
+function validHttpsField(id,required=false){
+ const value=$(id).value.trim();
+ if(!value)return !required;
+ try{return new URL(value).protocol==='https:'}catch{return false}
+}
+function composerIso(id){
+ const value=$(id).value;
+ return value?new Date(value).toISOString():null;
+}
+$('fcComposerForm').addEventListener('input',renderComposerPreview);
+$('fcComposerForm').addEventListener('change',renderComposerPreview);
+$('fcComposerCancel').onclick=closeComposer;
+$('fcComposerClose').onclick=closeComposer;
+$('fcComposerUploadButton').onclick=async()=>{
+ const file=$('fcComposerUpload').files?.[0],button=$('fcComposerUploadButton'),info=$('fcComposerMessage');
+ if(!file){info.textContent='Select an image or short video first.';return}
+ if(file.size>6000000||file.size===0){info.textContent='Files must be between 1 byte and 6 MB.';return}
+ if(!['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/webm'].includes(file.type)){info.textContent='Unsupported file type.';return}
+ button.disabled=true;info.textContent='Uploading '+file.name+'…';
+ try{
+  const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');reader.onerror=()=>reject(new Error('Unable to read file'));reader.readAsDataURL(file)});
+  const response=await api('POST','media_upload',{mime:file.type,base64});
+  $(file.type.startsWith('image/')?'fcComposerImage':'fcComposerVideo').value=response.url;
+  info.textContent='Media uploaded successfully. Save the content to attach it.';
+  renderComposerPreview();
+ }catch(e){info.textContent='Upload failed: '+e.message}
+ finally{button.disabled=false}
+};
+$('fcComposerForm').addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(!authorized)return;
+ const isNews=resource.value==='news',title=$('fcComposerTitle').value.trim(),status=$('fcComposerStatus').value;
+ const message=$('fcComposerMessage');
+ if(title.length<8){message.textContent='Use a specific title of at least 8 characters.';return}
+ if(!validHttpsField('fcComposerImage')||!validHttpsField('fcComposerVideo')){
+  message.textContent='Media links must start with HTTPS.';return;
+ }
+ const payload={title,image_url:$('fcComposerImage').value.trim()||null,video_url:$('fcComposerVideo').value.trim()||null,status};
+ if(isNews){
+  const content=$('fcComposerContent').value.trim(),summary=$('fcComposerSummary').value.trim();
+  if(summary.length<18||content.length<35){message.textContent='Provide a useful summary (18+ characters) and article (35+ characters).';return}
+  if(!validHttpsField('fcComposerSource')){message.textContent='Original source links must use HTTPS.';return}
+  Object.assign(payload,{category:$('fcComposerCategory').value,summary,content,author_name:$('fcComposerAuthor').value.trim()||'FarmConnect Editorial',source_url:$('fcComposerSource').value.trim()||null});
+  if($('fcComposerPublished').value)payload.published_at=composerIso('fcComposerPublished');
+  if(status==='published'&&!payload.source_url&&!confirm('This published article has no external source link. Confirm it is original FarmConnect content.'))return;
+ }else{
+  const description=$('fcComposerDescription').value.trim();
+  if(description.length<15){message.textContent='Campaign description must be at least 15 characters.';return}
+  if(!validHttpsField('fcComposerTarget',true)){message.textContent='Advertisements need a valid HTTPS destination.';return}
+  const starts=composerIso('fcComposerStarts'),ends=composerIso('fcComposerEnds');
+  if(starts&&ends&&new Date(starts)>=new Date(ends)){message.textContent='Campaign end date must follow the start date.';return}
+  Object.assign(payload,{description,target_url:$('fcComposerTarget').value.trim(),placement:$('fcComposerPlacement').value,starts_at:starts,ends_at:ends});
+ }
+ const save=$('fcComposerSave');save.disabled=true;message.textContent='Saving to FarmConnect…';
+ try{
+  const method=composerEditId?'PATCH':'POST';
+  await api(method,resource.value,payload,composerEditId?{id:composerEditId}:{});
+  message.textContent='Saved successfully.';
+  closeComposer();offset=0;await load();
+ }catch(error){message.textContent='Could not save: '+error.message}
+ finally{save.disabled=false}
+});
 const floatCols=new Set(['sort_order','price','volume','current_price','price_7d','price_14d','price_30d','confidence','max_price','min_volume','available_volume','price_per_kg','rating','threshold','farm_size_hectares','latitude','longitude','typical_min_price','typical_max_price','display_order']);
 const boolCols=new Set(['is_active','is_verified','active','is_read','is_email_verified','sms_alerts_enabled','has_storage','has_weighbridge']);
 const references={commodity_id:'commodities',market_id:'markets',news_id:'news',user_id:'users',from_user_id:'users',to_user_id:'users'};
@@ -967,7 +1077,7 @@ $('fcAppearanceForm').addEventListener('submit',async e=>{
 
 $('resource').onchange=()=>{offset=0;lookups={};load()};
 $('fcRecordSearch').addEventListener('input',filterDisplayedRecords);$('kind').onchange=()=>{offset=0;load()};
-$('refresh').onclick=load;$('add').onclick=()=>openEditor();$('previous').onclick=()=>{offset=Math.max(0,offset-PAGE_SIZE);load()};$('next').onclick=()=>{offset+=PAGE_SIZE;load()};
+$('refresh').onclick=load;$('add').onclick=()=>['news','advertisements'].includes(resource.value)?openContentComposer(null,resource.value):openEditor();$('previous').onclick=()=>{offset=Math.max(0,offset-PAGE_SIZE);load()};$('next').onclick=()=>{offset+=PAGE_SIZE;load()};
 $('closeEditor').onclick=$('cancel').onclick=()=>$('editorBackdrop').classList.remove('open');
 $('logout').onclick=e=>{e.preventDefault();localStorage.removeItem('authToken');localStorage.removeItem('userData');location.href='login.html'};
 
