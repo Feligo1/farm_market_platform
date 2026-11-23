@@ -65,7 +65,7 @@
     results.hidden=false;
     el('fcForecastDataLabel').textContent='Sourced historical market data';
     el('fcForecastModel').textContent=data.model_used;
-    el('fcForecastObservations').textContent=String(data.observations)+' recorded dates';
+    el('fcForecastObservations').textContent=String(data.observations)+' recorded months (latest '+readable(data.last_observed_date)+')';
     el('fcForecastCurrent').textContent=money(data.current_price);
     el('fcForecastFirst').textContent=money(data.forecast[0].predicted_price);
     el('fcForecastLast').textContent=money(data.forecast[data.forecast.length-1].predicted_price);
