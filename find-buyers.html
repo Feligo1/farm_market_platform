@@ -36,6 +36,9 @@
 <div class="fc-market-cta"><strong>Have produce to sell, or want to buy?</strong><p>Post a free listing and describe exactly what you need. No account is required.</p><a href="post-listing.html?type=seller" class="fc-button">I want to sell produce →</a><a href="post-listing.html?type=buyer" class="fc-button secondary">I want to buy produce →</a></div>
 </div></section>
 <section class="fc-section"><div class="fc-wrap">
+<div class="fc-market-help" style="margin:0 0 28px;background:#edf6ee">
+<div><p class="fc-eyebrow">New · Free smart search</p><h2 style="font-size:1.34rem;margin:3px 0 8px">Find a buyer or seller who matches your crop.</h2><p>Choose a commodity, quantity and district. FarmConnect will rank suitable reviewed listings without requiring an account.</p></div>
+<a href="match.html" class="fc-button">Find my match →</a></div>
 <div class="fc-market-top"><div><p class="fc-eyebrow">Browse opportunities</p><h2>Available listings</h2><p class="fc-note">Search by commodity, location or buyer/seller name.</p></div><p id="fcMarketCount" class="fc-note" role="status">Loading listings…</p></div>
 <div class="fc-market-tabs" aria-label="Choose listings">
 <button type="button" data-kind="buyers" class="fc-choice" aria-pressed="true">Buyers looking for produce</button>
@@ -70,13 +73,14 @@ function card(record){
  const wrap=make('article');wrap.className='fc-listing';
  const type=make('span',isBuyer?'Buyer request':'For sale');type.className='fc-listing-type';
  const h=make('h3',title);h.className='fc-listing-title';
+ const verify=make('span','Admin-reviewed');verify.className='fc-listing-type';verify.style.color='#226e4a';
  const location=make('div','⌖ '+(record.location||'Location not listed'));location.className='fc-listing-location';
  const details=make('div');details.className='fc-listing-details';
  for(const [name,value] of [[isBuyer?'Quantity wanted':'Quantity available',qty?Number(qty).toLocaleString('en-ZM')+' kg':'Ask for quantity'],[isBuyer?'Budget per kg':'Asking per kg',price&&Number(price)>0?number(price):'On request']]){
   const item=make('div');const small=make('span',name),strong=make('strong',value);item.append(small,strong);details.append(item);
  }
  const person=make('p',(business||'FarmConnect member')+' · '+(record.contact_person||'Contact person'));person.className='fc-listing-person';
- wrap.append(type,h,location,details,person);
+ wrap.append(type,verify,h,location,details,person);
  if(record.notes){const note=make('p',record.notes);note.className='fc-listing-note';wrap.append(note)}
  const actions=make('div');actions.className='fc-listing-action';
  if(validPhone){
