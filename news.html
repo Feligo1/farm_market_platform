@@ -57,7 +57,18 @@
 .fc-video-error .fc-video-playback-note{padding:10px 12px}
 .fc-video-actions button[hidden]{display:none}
 @media(max-width:560px){.fc-video-actions{gap:6px;padding:9px}.fc-video-actions button,.fc-video-actions a{font-size:.77rem;padding:9px}}
-</style><link rel="stylesheet" href="farmconnect-mobile.css?v=3"></head>
+</style><link rel="stylesheet" href="farmconnect-mobile.css?v=3"><style>
+.fc-news-quick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 20px}
+.fc-news-quick-btn{font:inherit;font-size:.86rem;font-weight:720;padding:10px 14px;min-height:42px;background:#fff;color:#27583c;border:1px solid #bdd4c4;border-radius:8px;cursor:pointer}
+.fc-news-quick-btn[aria-pressed=true]{color:#fff;background:#235c40;border-color:#235c40}
+.fc-news-quick-link{margin-left:auto;color:#245c3e!important;font-size:.85rem;font-weight:800;text-decoration:none}
+.fc-news-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;flex-wrap:wrap}
+.fc-news-secondary{font:inherit;padding:5px 0;border:0;color:#286549;background:transparent;font-size:.8rem;font-weight:750;cursor:pointer}
+.fc-news-secondary:hover{text-decoration:underline}
+.fc-news-source{font-size:.75rem;color:#647668}
+.fc-news-source a{color:#245c40;text-decoration:underline}
+@media(max-width:650px){.fc-news-quick-link{margin-left:0;width:100%;padding:9px 0}}
+</style></head>
 <body class="fc-redesign">
 <main class="fc-main">
 <section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Updates for Zambian agriculture</p><h1>News &amp; farming insights</h1><p class="fc-lead">Practical agricultural updates from identified, original publishers. Read the source before acting on time-sensitive reports.</p></div></section>
@@ -65,6 +76,13 @@
 <div class="fc-section-header"><div><p class="fc-eyebrow">Latest stories</p><h2>From the field</h2><p>News summaries reference the original publication and date. Illustrations are not documentary photography.</p></div></div>
 <div class="fc-toolbar"><div class="fc-field"><label for="fcNewsSearch">Search stories</label><input id="fcNewsSearch" type="search" placeholder="Topics, crops and updates"></div>
 <div class="fc-field"><label for="fcNewsCategory">Category</label><select id="fcNewsCategory"><option value="">All categories</option></select></div></div>
+<div class="fc-news-quick" role="group" aria-label="Filter farming updates by topic">
+<button type="button" class="fc-news-quick-btn" data-topic="all" aria-pressed="true">All updates</button>
+<button type="button" class="fc-news-quick-btn" data-topic="livestock" aria-pressed="false">Livestock &amp; poultry</button>
+<button type="button" class="fc-news-quick-btn" data-topic="fisheries" aria-pressed="false">Fish &amp; aquaculture</button>
+<button type="button" class="fc-news-quick-btn" data-topic="saved" aria-pressed="false">Saved stories</button>
+<a class="fc-news-quick-link" href="livestock.html">Livestock hub →</a>
+</div>
 <p id="fcNewsStatus" class="fc-status" role="status">Loading stories…</p>
 <div class="fc-news-grid" id="fcNewsGrid"></div>
 </div></section>
@@ -83,7 +101,12 @@
 'use strict';
 const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api';
 const $=id=>document.getElementById(id),node=(tag,text)=>{const n=document.createElement(tag);if(text!=null)n.textContent=String(text);return n};
-let stories=[];
+let stories=[],newsTopic="all";
+const SAVE_KEY="farmconnect-saved-news-v1";
+let savedArticles=[];
+try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");if(Array.isArray(saved))savedArticles=saved.map(Number).filter(Number.isInteger).slice(0,100)}catch{}
+function saveArticles(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(savedArticles.slice(0,100)))}catch{}}
+function toggleSaved(id){if(savedArticles.includes(id))savedArticles=savedArticles.filter(x=>x!==id);else savedArticles=[id,...savedArticles].slice(0,100);saveArticles();render()}
 const validHttps=s=>{try{const u=new URL(String(s||''));return u.protocol==='https:'?u.href:null}catch{return null}};
 const formatDate=v=>v?new Date(v).toLocaleDateString('en-ZM',{year:'numeric',month:'long',day:'numeric'}):'Date not supplied';
 const youtubeId=url=>{try{let u=new URL(url);if(u.protocol!=='https:')return null;if(u.hostname==='youtu.be')return /^[\w-]{11}$/.test(u.pathname.slice(1))?u.pathname.slice(1):null;if(['www.youtube.com','youtube.com','m.youtube.com'].includes(u.hostname)){let id=u.searchParams.get('v');return id&&/^[\w-]{11}$/.test(id)?id:null}}catch{}return null};
@@ -138,7 +161,11 @@ function attachPlayback(video,player){
 }
 function render(){
  const term=$('fcNewsSearch').value.trim().toLowerCase(),category=$('fcNewsCategory').value;
- const filtered=stories.filter(x=>(!category||x.category===category)&&(!term||(x.title+' '+x.summary+' '+x.content).toLowerCase().includes(term)));
+ const filtered=stories.filter(x=>{
+  const type=String(x.category||"").toLowerCase();
+  const topicMatches=newsTopic==="all"|| (newsTopic==="saved"?savedArticles.includes(Number(x.id)):newsTopic==="livestock"?["livestock","poultry","animal health"].includes(type):newsTopic==="fisheries"?["fisheries","aquaculture"].includes(type):true);
+  return topicMatches&&(!category||x.category===category)&&(!term||(x.title+' '+x.summary+' '+x.content).toLowerCase().includes(term));
+ });
  if(videoObserver)videoObserver.disconnect();
  const grid=$('fcNewsGrid');grid.replaceChildren();
  for(const item of filtered){
@@ -196,15 +223,33 @@ function render(){
   const summary=node('p',item.summary||'View the complete source-linked update.');summary.className='fc-story-summary';
   const meta=node('p',formatDate(item.published_at||item.created_at));meta.className='fc-story-meta';
   const btn=node('button','Read update →');btn.type='button';btn.className='fc-story-open';btn.addEventListener('click',()=>showStory(item));
-  body.append(label,title,summary,meta,btn);card.append(body);grid.append(card);
+  const sourceUrl=validHttps(item.source_url);
+ const sourceInfo=node('div');sourceInfo.className='fc-news-source';
+ if(sourceUrl){const sourceAnchor=node('a','Original source ↗');sourceAnchor.href=sourceUrl;sourceAnchor.target='_blank';sourceAnchor.rel='noopener noreferrer';sourceInfo.append(sourceAnchor)}
+ const actions=node('div');actions.className='fc-news-actions';
+ const saveBtn=node('button',savedArticles.includes(Number(item.id))?'Saved ✓':'Save story');
+ saveBtn.className='fc-news-secondary';saveBtn.type='button';saveBtn.setAttribute('aria-pressed',String(savedArticles.includes(Number(item.id))));
+ saveBtn.addEventListener('click',()=>toggleSaved(Number(item.id)));
+ const shareBtn=node('button','Share');shareBtn.className='fc-news-secondary';shareBtn.type='button';
+ shareBtn.addEventListener('click',async()=>{
+  const url=new URL('news.html',location.href);url.searchParams.set('story',String(item.id));
+  try{if(navigator.share)await navigator.share({title:item.title,url:url.href});
+  else if(navigator.clipboard){await navigator.clipboard.writeText(url.href);shareBtn.textContent='Link copied ✓'}
+  else window.prompt('Copy story link',url.href);
+  }catch(e){if(e.name!=='AbortError')window.prompt('Copy story link',url.href)}
+ });
+ actions.append(btn,saveBtn,shareBtn);
+ body.append(label,title,summary,meta,sourceInfo,actions);card.append(body);grid.append(card);
  }
- $('fcNewsStatus').textContent=filtered.length+' published '+(filtered.length===1?'story':'stories');
+ $('fcNewsStatus').textContent=filtered.length+' '+(filtered.length===1?'story':'stories')+' · Source dates and details are linked where available';
  if(!filtered.length){const empty=node('div','No published updates match this selection.');empty.className='fc-empty';grid.append(empty)}
 }
 async function loadStories(){
  try{const data=await get('/news?limit=100');stories=data.news||[];
  const types=[...new Set(stories.map(x=>x.category).filter(Boolean))].sort();for(const category of types){const opt=node('option',category);opt.value=category;$('fcNewsCategory').append(opt)}
  render();
+ const selected=new URLSearchParams(location.search).get('story');
+ if(selected){const story=stories.find(x=>String(x.id)===selected);if(story)showStory(story)}
  }catch(e){$('fcNewsStatus').textContent=e.message;$('fcNewsGrid').replaceChildren(Object.assign(node('div','News updates are temporarily unavailable.'),{className:'fc-empty'}));}
 }
 function renderAd(ad){
@@ -225,6 +270,11 @@ $('fcNewsSearch').addEventListener('input',render);$('fcNewsCategory').addEventL
 $('fcCloseDialog').addEventListener('click',()=>$('fcNewsDialog').close());
 $('fcNewsDialog').addEventListener('close',()=>{$('fcArticleMedia').replaceChildren()});
 $('fcNewsDialog').addEventListener('click',e=>{if(e.target===$('fcNewsDialog'))$('fcNewsDialog').close()});
+for(const button of document.querySelectorAll('.fc-news-quick-btn'))button.addEventListener('click',()=>{
+  newsTopic=button.dataset.topic;
+  for(const b of document.querySelectorAll('.fc-news-quick-btn'))b.setAttribute('aria-pressed',String(b===button));
+  $('fcNewsCategory').value='';render();
+});
 loadStories();loadAds();
 })();
 </script></body></html>
