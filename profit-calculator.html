@@ -27,11 +27,11 @@
 <h2 style="font-size:1.35rem;margin:0 0 16px">Your crop and sale</h2>
 <div class="fc-calc-fields">
 <div class="fc-calc-field"><label for="fcCalcCommodity">Commodity</label><input id="fcCalcCommodity" placeholder="Maize" maxlength="90" list="fcCalcCrops"><datalist id="fcCalcCrops"></datalist></div>
-<div class="fc-calc-field"><label for="fcCalcQty">Quantity for sale (kg)</label><input id="fcCalcQty" type="number" min="0" step="0.01" inputmode="decimal" value="500"></div>
-<div class="fc-calc-field"><label for="fcCalcPrice">Expected price per kg (K)</label><input id="fcCalcPrice" type="number" min="0" step="0.01" inputmode="decimal" value="12"></div>
-<div class="fc-calc-field"><label for="fcCalcTransport">Transport costs (K)</label><input id="fcCalcTransport" type="number" min="0" step="0.01" inputmode="decimal" value="350"></div>
-<div class="fc-calc-field"><label for="fcCalcProduction">Production costs (K)</label><input id="fcCalcProduction" type="number" min="0" step="0.01" inputmode="decimal" value="1600"></div>
-<div class="fc-calc-field"><label for="fcCalcOther">Storage, market and other costs (K)</label><input id="fcCalcOther" type="number" min="0" step="0.01" inputmode="decimal" value="150"></div>
+<div class="fc-calc-field"><label for="fcCalcQty">Quantity for sale (kg)</label><input id="fcCalcQty" type="number" min="0" step="0.01" inputmode="decimal"></div>
+<div class="fc-calc-field"><label for="fcCalcPrice">Expected price per kg (K)</label><input id="fcCalcPrice" type="number" min="0" step="0.01" inputmode="decimal"></div>
+<div class="fc-calc-field"><label for="fcCalcTransport">Transport costs (K)</label><input id="fcCalcTransport" type="number" min="0" step="0.01" inputmode="decimal"></div>
+<div class="fc-calc-field"><label for="fcCalcProduction">Production costs (K)</label><input id="fcCalcProduction" type="number" min="0" step="0.01" inputmode="decimal"></div>
+<div class="fc-calc-field"><label for="fcCalcOther">Storage, market and other costs (K)</label><input id="fcCalcOther" type="number" min="0" step="0.01" inputmode="decimal"></div>
 </div>
 <div class="fc-calc-section"><h2>Compare another buyer or market</h2>
 <div class="fc-calc-fields">
@@ -53,7 +53,7 @@
 <div class="fc-calc-comparison" id="fcCalcAlternative" hidden><h3 id="fcCalcAltTitle">Other selling option</h3>
 <div class="fc-calc-results"><div class="fc-calc-result"><small>Alternative net result</small><strong id="fcCalcAltNet">—</strong></div><div class="fc-calc-result"><small>Difference from first option</small><strong id="fcCalcDifference">—</strong></div></div>
 <p id="fcCalcRecommendation" class="fc-calc-help"></p></div>
-<div class="fc-calc-sources"><strong>Data quality:</strong> Starting values are examples, not live market offers. Your calculation uses only the numbers you enter. Include all actual production, commissions, losses, storage and other costs for a meaningful net profit estimate. Compare with <a href="prices.html">dated Ministry of Agriculture data</a>, but do not assume historical national averages are current local prices.</div>
+<div class="fc-calc-sources"><strong>Data quality:</strong> No sample prices are pre-filled. Your calculation uses only the numbers you enter. Include all actual production, commissions, losses, storage and other costs for a meaningful net profit estimate. Compare with <a href="prices.html">dated Ministry of Agriculture data</a>, but do not assume historical national averages are current local prices.</div>
 </div>
 </div></section></main>
 <footer class="fc-footer"><div class="fc-wrap fc-footer-row">FarmConnect Zambia · Free calculation, no personal information collected<a href="match.html">Find a matching buyer</a></div></footer>
@@ -63,6 +63,11 @@
 const $=id=>document.getElementById(id),num=id=>Math.max(0,Number($(id).value)||0),money=n=>(n<0?"−":"")+"K"+Math.abs(n).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
 function calculate(){
  const q=num("fcCalcQty"),price=num("fcCalcPrice"),transport=num("fcCalcTransport"),production=num("fcCalcProduction"),other=num("fcCalcOther");
+ if(!q || !price){
+   for(const id of ["fcCalcRevenue","fcCalcCosts","fcCalcNet","fcCalcBreakEven"])$(id).textContent="—";
+   $("fcCalcSummary").textContent="Enter the actual quantity and expected selling price to begin your calculation.";
+   $("fcCalcAlternative").hidden=true;return;
+ }
  const revenue=q*price,costs=transport+production+other,net=revenue-costs,breakEven=q?costs/q:null;
  $("fcCalcRevenue").textContent=money(revenue);$("fcCalcCosts").textContent=money(costs);
  $("fcCalcNet").textContent=money(net);$("fcCalcBreakEven").textContent=breakEven==null?"—":money(breakEven);
@@ -80,7 +85,7 @@ function calculate(){
 document.querySelectorAll(".fc-calc-field input").forEach(x=>x.addEventListener("input",calculate));
 $("fcCalcReset").addEventListener("click",()=>{
  for(const id of ["fcCalcCommodity","fcCalcAltName","fcCalcAltPrice","fcCalcAltTransport","fcCalcAltOther"])$(id).value="";
- for(const id of ["fcCalcQty","fcCalcPrice","fcCalcTransport","fcCalcProduction","fcCalcOther"])$(id).value="0";
+ for(const id of ["fcCalcQty","fcCalcPrice","fcCalcTransport","fcCalcProduction","fcCalcOther"])$(id).value="";
  calculate();
 });
 const query=new URLSearchParams(location.search);
