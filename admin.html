@@ -19,18 +19,18 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 .field label{display:block;font-size:13px;font-weight:650;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;padding:9px;border:1px solid #b9d2c4;border-radius:8px;background:#fff}.field textarea{min-height:90px}
 #loginMessage{margin:14px 0}footer{color:#698175;padding:20px 4%;text-align:center}
 @media(max-width:640px){.controls>*{width:100%}.dialog{padding:15px}}
-</style><link rel="stylesheet" href="farmconnect-theme.css?v=20261122-4"><script src="farmconnect-nav.js?v=20261122-5" defer></script></head>
-<body>
-<header><div><h1>🌽 FarmConnect — Admin Control Center</h1><small>Mulungushi University | Zambia | Supabase</small></div>
+</style><link rel="stylesheet" href="farmconnect-theme.css?v=20261122-4"><link rel="stylesheet" href="farmconnect-admin-redesign.css?v=1"><script src="farmconnect-nav.js?v=20261122-5" defer></script></head>
+<body class="fc-admin-redesign">
+<header><div><h1>FarmConnect · Administration</h1><small>Mulungushi University | Zambia | Supabase</small></div>
 <nav><a href="index.html">Home</a><a href="prices.html">Prices</a><a href="#" id="logout">Logout</a></nav></header>
-<main><div class="intro"><div><h2>Administrator workspace</h2><p class="muted">Manage verified price observations, agricultural markets, commodity records and published content.</p></div><span id="who" class="pill">Checking admin access…</span></div>
+<main><div class="intro"><div><h2>Administrator workspace</h2><p class="muted">Publish agricultural news, manage partner advertising, and maintain verified market data in one secure workspace.</p></div><span id="who" class="pill">Checking admin access…</span></div>
 <div id="loginMessage"></div>
-<div class="grid"><div class="metric"><small>Historical records</small><strong id="historyMetric">—</strong></div><div class="metric"><small>Commodities</small><strong id="commodityMetric">—</strong></div><div class="metric"><small>Markets</small><strong id="marketMetric">—</strong></div><div class="metric"><small>Accounts</small><strong id="userMetric">—</strong></div></div>
-<p class="warning"><b>Data-quality rule:</b> Synthetic/demo history is not a verified price quotation. Only approve genuine observations with traceable sources. For live farmer decisions, use verified records, not demo prices.</p>
-<section class="card" id="workspace" hidden><div class="controls">
+<div class="grid"><div class="metric"><small>Historical records</small><strong id="historyMetric">—</strong></div><div class="metric"><small>Commodities</small><strong id="commodityMetric">—</strong></div><div class="metric"><small>Markets</small><strong id="marketMetric">—</strong></div><div class="metric"><small>Accounts</small><strong id="userMetric">—</strong></div><div class="metric"><small>News stories</small><strong id="newsMetric">—</strong></div><div class="metric"><small>Advertisements</small><strong id="adMetric">—</strong></div></div>
+<p class="warning"><b>Data-quality rule:</b> Synthetic/demo history is not a verified price quotation. News and published prices require reliable sources. Sponsored content must always be separate and labelled.</p>
+<section class="card" id="workspace" hidden><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
 <label for="resource">Manage</label><select id="resource" class="grow">
-<option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="news">Agricultural news</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
-</select><select id="kind"><option value="">All history</option><option value="observed">Observed only</option><option value="demo">Demo only</option></select><button id="refresh" class="secondary">Refresh</button><button id="add">+ Add record</button></div>
+<option value="news">News articles</option><option value="advertisements">Advertisements</option><option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
+</select><select id="kind"><option value="">All history</option><option value="observed">Observed only</option></select><button id="refresh" class="secondary">Refresh</button><button id="add">+ Add record</button></div>
 <p id="tableMessage" class="muted" role="status"></p><div class="table-wrap"><table><thead id="head"></thead><tbody id="rows"></tbody></table></div>
 <div class="controls" style="margin-top:14px"><button class="secondary" id="previous">Previous</button><span id="pageInfo"></span><button class="secondary" id="next">Next</button></div>
 </section>
@@ -71,7 +71,7 @@ async function setup(){
   const d=await api('GET','users',null,{limit:1});
   authorized=true;$('workspace').hidden=false;$('who').textContent='Admin access verified';
   $('loginMessage').className='ok';$('loginMessage').textContent='Connected securely to the FarmConnect admin API';
-  await Promise.all(['price_history','commodities','markets','users'].map(async (r,i)=>{try{let data=await api('GET',r,null,{limit:1});$( ['historyMetric','commodityMetric','marketMetric','userMetric'][i]).textContent=data.count??'0'}catch{}}));
+  await Promise.all(['price_history','commodities','markets','users','news','advertisements'].map(async (r,i)=>{try{let data=await api('GET',r,null,{limit:1});$( ['historyMetric','commodityMetric','marketMetric','userMetric','newsMetric','adMetric'][i]).textContent=data.count??'0'}catch{}}));
   await load();
  }catch(e){$('loginMessage').className='error';$('loginMessage').textContent=e.message+'. Sign in with your administrator account and refresh.';$('who').textContent='No admin access'}
 }
@@ -81,7 +81,7 @@ async function load(){
  try{
   const d=await api('GET',r,null,{limit:100,offset,data_kind:r==='price_history'?$('kind').value:''});
   rows=d.records||[];fields=d.fields||[];count=d.count??rows.length;
-  const columnOrder=r==='price_history'?['id','price_date','commodity_id','market_id','price','unit','data_kind','is_verified','source_name','source_url']:r==='users'?['id','username','email','role','is_active','created_at']:['id',...fields.filter(k=>!['password_hash','ussd_pin_hash'].includes(k))].slice(0,9);
+  const columnOrder=r==='news'?['id','title','category','status','published_at','image_url','source_url']:r==='advertisements'?['id','title','placement','status','starts_at','ends_at','target_url']:r==='price_history'?['id','price_date','commodity_id','market_id','price','unit','data_kind','is_verified','source_name','source_url']:r==='users'?['id','username','email','role','is_active','created_at']:['id',...fields.filter(k=>!['password_hash','ussd_pin_hash'].includes(k))].slice(0,9);
   let head=$('head');head.replaceChildren();let h=document.createElement('tr');for(const col of columnOrder){const th=document.createElement('th');th.textContent=pretty(col);h.append(th)}if(r!=='audit'){let th=document.createElement('th');th.textContent='Actions';h.append(th)}head.append(h);
   const body=$('rows');body.replaceChildren();
   for(const item of rows){
@@ -103,7 +103,7 @@ async function load(){
   message(count+' records available');
  }catch(e){message(e.message,'error')}
 }
-const floatCols=new Set(['price','volume','current_price','price_7d','price_14d','price_30d','confidence','max_price','min_volume','available_volume','price_per_kg','rating','threshold','farm_size_hectares','latitude','longitude','typical_min_price','typical_max_price','display_order']);
+const floatCols=new Set(['sort_order','price','volume','current_price','price_7d','price_14d','price_30d','confidence','max_price','min_volume','available_volume','price_per_kg','rating','threshold','farm_size_hectares','latitude','longitude','typical_min_price','typical_max_price','display_order']);
 const boolCols=new Set(['is_active','is_verified','active','is_read','is_email_verified','sms_alerts_enabled','has_storage','has_weighbridge']);
 const references={commodity_id:'commodities',market_id:'markets',news_id:'news',user_id:'users',from_user_id:'users',to_user_id:'users'};
 async function openEditor(item=null){
