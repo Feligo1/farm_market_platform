@@ -40,13 +40,13 @@
 </style></head>
 <body class="fc-redesign">
 <main class="fc-main">
-<section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Free marketplace posting</p><h1>Tell Zambia what you buy or sell.</h1><p class="fc-lead">Create a clear produce listing in a few steps. No password, account or payment needed. Your listing is reviewed before it becomes public.</p></div></section>
+<section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Free marketplace posting</p><h1>List crops, chickens, goats, fish and more.</h1><p class="fc-lead">Create a clear produce listing in a few steps. No password, account or payment needed. Your listing is reviewed before it becomes public.</p></div></section>
 <section class="fc-section"><div class="fc-wrap fc-post-layout">
 <form id="fcPostForm" class="fc-post-form" novalidate>
 <p class="fc-eyebrow">Step 1 · Choose your role</p>
 <div class="fc-post-type" role="group" aria-label="Choose listing type">
-<button type="button" id="fcSellRole" class="fc-role" aria-pressed="true" data-role="seller"><strong>I want to sell</strong><span>Tell buyers what produce you have available.</span></button>
-<button type="button" id="fcBuyRole" class="fc-role" aria-pressed="false" data-role="buyer"><strong>I want to buy</strong><span>Tell farmers what crops and quantities you need.</span></button>
+<button type="button" id="fcSellRole" class="fc-role" aria-pressed="true" data-role="seller"><strong>I want to sell</strong><span>Tell buyers about your crops, livestock or farm products.</span></button>
+<button type="button" id="fcBuyRole" class="fc-role" aria-pressed="false" data-role="buyer"><strong>I want to buy</strong><span>Tell sellers what products and quantities you need.</span></button>
 </div>
 <div class="fc-form-section"><h2>About you</h2><p>So interested people know who to contact and where you are located.</p>
 <div class="fc-form-grid">
@@ -58,9 +58,9 @@
 </div></div>
 <div class="fc-form-section"><h2 id="fcProduceHeading">What are you selling?</h2><p id="fcProduceIntro">Provide enough details for buyers to understand your offer.</p>
 <div class="fc-form-grid">
-<div class="fc-form-field full"><label for="fcCommodity">Commodity *</label><input id="fcCommodity" name="commodity" list="fcCropList" maxlength="90" required placeholder="e.g. Maize"><datalist id="fcCropList"></datalist></div>
-<div class="fc-form-field"><label for="fcQuantity" id="fcQuantityLabel">Quantity available (kg) *</label><input id="fcQuantity" name="quantity" type="number" min="1" max="1000000000" step="0.01" inputmode="decimal" placeholder="e.g. 500" required></div>
-<div class="fc-form-field"><label for="fcPrice" id="fcPriceLabel">Asking price per kg (K) <small>(optional)</small></label><input id="fcPrice" name="price" type="number" min="0.01" max="100000000" step="0.01" inputmode="decimal" placeholder="e.g. 12.50"></div>
+<div class="fc-form-field full"><label for="fcCommodity">Commodity *</label><input id="fcCommodity" name="commodity" list="fcCropList" maxlength="90" required placeholder="e.g. Maize or Broiler Chicken (Live)"><datalist id="fcCropList"></datalist></div>
+<div class="fc-form-field"><label for="fcQuantity" id="fcQuantityLabel">Quantity available *</label><input id="fcQuantity" name="quantity" type="number" min="1" max="1000000000" step="0.01" inputmode="decimal" placeholder="e.g. 500" required></div>
+<div class="fc-form-field"><label for="fcPrice" id="fcPriceLabel">Asking price per selected unit (K) <small>(optional)</small></label><input id="fcPrice" name="price" type="number" min="0.01" max="100000000" step="0.01" inputmode="decimal" placeholder="e.g. 12.50"></div>
 <div class="fc-form-field full"><label for="fcNotes">Additional details <small>(optional)</small></label><textarea id="fcNotes" name="notes" maxlength="500" placeholder="Crop quality, collection location, expected availability, preferred contact hours…"></textarea></div>
 </div></div>
 <div class="fc-hidden-field" aria-hidden="true"><label for="fcWebsite">Website</label><input id="fcWebsite" name="website" type="text" tabindex="-1" autocomplete="off"></div>
@@ -81,14 +81,23 @@
 (()=>{
 'use strict';
 const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api';
-const $=id=>document.getElementById(id);let kind='seller';
+const $=id=>document.getElementById(id);let kind='seller',catalogue=[];
+function unit(){
+ const choice=$('fcCommodity').value.trim().toLowerCase();
+ return catalogue.find(c=>String(c.name).toLowerCase()===choice)?.unit_of_measure||'kg';
+}
+function refreshUnit(){
+ const u=unit();
+ $('fcQuantityLabel').textContent=(kind==='seller'?'Quantity available':'Quantity wanted')+' ('+u+') *';
+ $('fcPriceLabel').textContent=(kind==='seller'?'Asking price':'Maximum buying price')+' per '+u+' (K, optional)';
+ $('fcNotes').placeholder=u==='each'?'Age, animal size, weight, vaccination history or collection arrangements…':'Quality, weight, collection location, expected availability or preferred contact hours…';
+}
 function selectRole(type){
  kind=type==='buyer'?'buyer':'seller';
  $('fcSellRole').setAttribute('aria-pressed',String(kind==='seller'));
  $('fcBuyRole').setAttribute('aria-pressed',String(kind==='buyer'));
  $('fcBusinessLabel').textContent=kind==='seller'?'Farm / business name *':'Business / buyer name *';
- $('fcQuantityLabel').textContent=kind==='seller'?'Quantity available (kg) *':'Quantity wanted (kg) *';
- $('fcPriceLabel').textContent=kind==='seller'?'Asking price per kg (K) (optional)':'Maximum buying price per kg (K) (optional)';
+ refreshUnit();
  $('fcProduceHeading').textContent=kind==='seller'?'What are you selling?':'What do you want to buy?';
  $('fcProduceIntro').textContent=kind==='seller'?'Give buyers enough information about your produce.':'Tell sellers exactly what crop and quantity you need.';
  $('fcPostSubmit').textContent=kind==='seller'?'Submit selling offer →':'Submit buying request →';
@@ -97,13 +106,17 @@ $('fcSellRole').addEventListener('click',()=>selectRole('seller'));
 $('fcBuyRole').addEventListener('click',()=>selectRole('buyer'));
 const requested=new URLSearchParams(location.search).get('type');selectRole(requested);
 async function loadCrops(){try{
- const r=await fetch(API+'/commodities?limit=100');if(!r.ok)return;const data=await r.json();const list=$('fcCropList');
- for(const crop of data.commodities||[]){const option=document.createElement('option');option.value=crop.name;list.append(option)}
+ const r=await fetch(API+'/commodities?limit=500');if(!r.ok)return;const data=await r.json();catalogue=data.commodities||[];const list=$('fcCropList');
+ for(const crop of catalogue){const option=document.createElement('option');option.value=crop.name;option.label=(crop.category||'Other')+' · '+(crop.unit_of_measure||'kg');list.append(option)}
+ const fromUrl=new URLSearchParams(location.search).get('commodity');if(fromUrl && catalogue.some(c=>c.name===fromUrl))$('fcCommodity').value=fromUrl;
+ refreshUnit();
 }catch{}}
+$('fcCommodity').addEventListener('input',refreshUnit);
 function status(message,error=false){const n=$('fcPostStatus');n.className='fc-post-status '+(error?'error':'ok');n.textContent=message;n.scrollIntoView({behavior:'smooth',block:'nearest'})}
 $('fcPostForm').addEventListener('submit',async e=>{
  e.preventDefault();
  const form=$('fcPostForm');if(!form.reportValidity())return;
+ if(!catalogue.some(c=>c.name.toLowerCase()===$('fcCommodity').value.trim().toLowerCase())){status('Select a commodity from the provided list so the correct unit is used.',true);return}
  if(!$('fcConsent').checked){status('Please agree to make your contact details public after review.',true);return}
  const button=$('fcPostSubmit');button.disabled=true;button.textContent='Submitting…';
  const body={kind,contact_person:$('fcContactPerson').value.trim(),business_name:$('fcBusinessName').value.trim(),phone:$('fcPhone').value.trim(),
