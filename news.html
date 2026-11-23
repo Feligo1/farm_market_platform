@@ -44,14 +44,23 @@
 .fc-video-fallback a{color:var(--fc-green);font-weight:700}
 .fc-video-label{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--fc-green)}
 @media(max-width:760px){.fc-videos-grid{grid-template-columns:1fr}.fc-video-card-body{padding:16px}}
+</style><style>
+/* Native in-feed news videos: muted, inline, auto-playing only while visible */
+.fc-story-player{position:relative;display:flex;flex-direction:column;background:#162b1e;min-width:0}
+.fc-story-player .fc-story-inline-video{width:100%;height:auto;aspect-ratio:16/9;max-height:none;object-fit:contain;display:block;margin:0;border:0;border-radius:0;background:#162b1e}
+.fc-video-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;background:#172c21}
+.fc-video-actions button,.fc-video-actions a{font-family:inherit;font-size:.78rem;font-weight:700;border-radius:7px;padding:9px 11px;min-height:36px;text-decoration:none}
+.fc-video-sound,.fc-video-play{background:#f7fff6;color:#1e5337;border:1px solid #a3c4ae;cursor:pointer}
+.fc-video-external{color:#f3fff3;margin-left:auto;border:1px solid #6d9680}
+.fc-video-playback-note{color:#d0e7d4;font-size:.76rem;padding:0 12px}
+.fc-video-playback-note:empty{display:none}
+.fc-video-error .fc-video-playback-note{padding:10px 12px}
+.fc-video-actions button[hidden]{display:none}
+@media(max-width:560px){.fc-video-actions{gap:6px;padding:9px}.fc-video-actions button,.fc-video-actions a{font-size:.77rem;padding:9px}}
 </style><link rel="stylesheet" href="farmconnect-mobile.css?v=2"></head>
 <body class="fc-redesign">
 <main class="fc-main">
 <section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Updates for Zambian agriculture</p><h1>News &amp; farming insights</h1><p class="fc-lead">Practical agricultural updates from identified, original publishers. Read the source before acting on time-sensitive reports.</p></div></section>
-<section class="fc-section" id="fcNewsVideos" hidden><div class="fc-wrap">
-<div class="fc-section-header"><div><p class="fc-eyebrow">Watch</p><h2>Latest videos</h2><p>Watch videos published with our news stories. All videos are optional to play and will not autoplay.</p></div></div>
-<div class="fc-videos-grid" id="fcNewsVideosGrid" aria-live="polite"></div>
-</div></section>
 <section class="fc-section"><div class="fc-wrap">
 <div class="fc-section-header"><div><p class="fc-eyebrow">Latest stories</p><h2>From the field</h2><p>News summaries reference the original publication and date. Illustrations are not documentary photography.</p></div></div>
 <div class="fc-toolbar"><div class="fc-field"><label for="fcNewsSearch">Search stories</label><input id="fcNewsSearch" type="search" placeholder="Topics, crops and updates"></div>
@@ -84,7 +93,7 @@ function makeMedia(src,title,type='image'){
   const youtube=youtubeId(url);
   if(youtube){const frame=node('iframe');frame.className='fc-video';frame.loading='lazy';frame.title=title||'Video';frame.allow='accelerometer; encrypted-media; picture-in-picture';frame.allowFullscreen=true;frame.src='https://www.youtube-nocookie.com/embed/'+youtube;return frame;}
   if(!/\.(mp4|webm)(\?|$)/i.test(url) && !url.includes('/storage/v1/object/public/'))return null;
-  const video=node('video');video.className='fc-video';video.src=url;video.controls=true;video.playsInline=true;video.preload='metadata';video.setAttribute('playsinline','');video.setAttribute('controlsList','nodownload');return video;
+  const video=node('video');video.className='fc-video';video.src=url;video.controls=true;video.playsInline=true;video.muted=true;video.defaultMuted=true;video.preload='metadata';video.setAttribute('playsinline','');video.setAttribute('muted','');video.setAttribute('controlsList','nodownload');return video;
  }
  const img=node('img');img.src=url;img.alt=title||'Editorial illustration';img.className='fc-story-media';img.loading='lazy';img.decoding='async';img.onerror=()=>{img.replaceWith(Object.assign(node('div','Agricultural news'),{className:'fc-story-placeholder'}))};return img;
 }
@@ -98,38 +107,89 @@ function showStory(item){
  const source=$('fcArticleSource'),url=validHttps(item.source_url);source.hidden=!url;if(url)source.href=url;
  dialog.showModal();
 }
-function renderVideoSection(){
- const videos=stories.filter(item=>validHttps(item.video_url));
- const section=$('fcNewsVideos'),grid=$('fcNewsVideosGrid');
- grid.replaceChildren();
- if(!videos.length){section.hidden=true;return}
- for(const item of videos){
-  const card=node('article');card.className='fc-video-card';
-  const media=makeMedia(item.video_url,item.title,'video');
-  const poster=validHttps(item.image_url);
-  if(media){
-   if(media.tagName==='VIDEO'&&poster)media.poster=poster;
-   media.addEventListener?.('error',()=>{
-     const notice=node('div','This video could not be played here. Use the open-video link below.');notice.className='fc-video-fallback';card.insertBefore(notice,card.querySelector('.fc-video-card-body'));
-   },{once:true});
-   card.append(media);
+let videoObserver=null;
+function attachPlayback(video,player){
+  // A single intersection observer plays only visible muted videos, avoiding unnecessary cellular data.
+  if(!videoObserver && 'IntersectionObserver' in window){
+    videoObserver=new IntersectionObserver(entries=>{
+      for(const entry of entries){
+        const el=entry.target;const container=el.closest('.fc-story-player');
+        if(entry.isIntersecting && !document.hidden){
+          el.muted=true;
+          const sound=container?.querySelector('.fc-video-sound');
+          if(sound){sound.textContent='Turn sound on';sound.setAttribute('aria-label','Turn video sound on')}
+          const attempt=el.play();
+          if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{
+            const play=container?.querySelector('.fc-video-play');
+            if(play)play.hidden=false;
+          });
+        }else{el.pause()}
+      }
+    },{threshold:.55});
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden)document.querySelectorAll('.fc-story-inline-video').forEach(v=>{if(v.tagName==='VIDEO')v.pause()});
+    });
   }
-  const body=node('div');body.className='fc-video-card-body';
-  const label=node('span','News video');label.className='fc-video-label';
-  const title=node('h3',item.title);const summary=node('p',item.summary||'Watch this FarmConnect update.');
-  const source=node('a','Open video in a new tab ↗');source.href=validHttps(item.video_url);source.target='_blank';source.rel='noopener noreferrer';source.className='fc-link';
-  const full=node('button','Read related article →');full.type='button';full.className='fc-story-open';full.style.display='block';full.style.marginTop='13px';full.addEventListener('click',()=>showStory(item));
-  body.append(label,title,summary,source,full);card.append(body);grid.append(card);
- }
- section.hidden=false;
+  if(videoObserver)videoObserver.observe(video);
+  else {
+    video.muted=true;video.autoplay=true;video.preload='metadata';
+    const attempt=video.play();if(attempt?.catch)attempt.catch(()=>{const play=player.querySelector('.fc-video-play');if(play)play.hidden=false});
+  }
 }
 function render(){
  const term=$('fcNewsSearch').value.trim().toLowerCase(),category=$('fcNewsCategory').value;
  const filtered=stories.filter(x=>(!category||x.category===category)&&(!term||(x.title+' '+x.summary+' '+x.content).toLowerCase().includes(term)));
+ if(videoObserver)videoObserver.disconnect();
  const grid=$('fcNewsGrid');grid.replaceChildren();
  for(const item of filtered){
   const card=node('article');card.className='fc-story';
-  const img=makeMedia(item.image_url,'Illustration for '+item.title);card.append(img||Object.assign(node('div','FarmConnect · Agriculture'),{className:'fc-story-placeholder'}));
+  const videoSrc=validHttps(item.video_url);
+  if(videoSrc){
+    const player=node('div');player.className='fc-story-player';
+    const media=makeMedia(item.video_url,item.title,'video');
+    const poster=validHttps(item.image_url);
+    if(media){
+      if(media.tagName==='VIDEO'){
+        if(poster)media.poster=poster;
+        media.controls=false;
+        media.autoplay=true;
+        media.loop=true;
+        media.muted=true;media.defaultMuted=true;
+        media.playsInline=true;media.setAttribute('playsinline','');
+        media.preload='none';
+        media.className='fc-video fc-story-inline-video';
+        media.setAttribute('aria-label','News video: '+(item.title||''));
+        media.addEventListener('error',()=>{player.classList.add('fc-video-error');feedback.textContent='Video unavailable. Open it in a new tab to try again.'});
+        attachPlayback(media,player);
+      }else{
+        media.classList.add('fc-story-inline-video');
+        media.loading='lazy';
+        media.allow='autoplay; encrypted-media; picture-in-picture';
+        media.src=media.src+(media.src.includes('?')?'&':'?')+'autoplay=1&mute=1&loop=1';
+      }
+      player.append(media);
+    }
+    const feedback=node('div');feedback.className='fc-video-playback-note';feedback.setAttribute('role','status');
+    const controls=node('div');controls.className='fc-video-actions';
+    const sound=node('button','Turn sound on');sound.type='button';sound.className='fc-video-sound';
+    sound.setAttribute('aria-label','Turn video sound on');
+    const play=node('button','Play video');play.type='button';play.className='fc-video-play';play.hidden=true;
+    if(media && media.tagName==='VIDEO'){
+      sound.addEventListener('click',()=>{media.muted=!media.muted;
+        if(media.muted){sound.textContent='Turn sound on';sound.setAttribute('aria-label','Turn video sound on');}
+        else{sound.textContent='Mute';sound.setAttribute('aria-label','Mute video');if(media.paused)media.play().catch(()=>{feedback.textContent='Tap Play to start this video.'})}
+      });
+      play.addEventListener('click',()=>{media.muted=true;sound.textContent='Turn sound on';media.play().then(()=>{play.hidden=true;feedback.textContent=''}).catch(()=>{feedback.textContent='Unable to play inline. Try opening the video.'})});
+      media.addEventListener('play',()=>{play.hidden=true});
+    }else{sound.hidden=true;play.hidden=true}
+    const external=node('a','Open video ↗');external.href=videoSrc;external.target='_blank';external.rel='noopener noreferrer';external.className='fc-video-external';
+    controls.append(sound,play,external);
+    player.append(controls,feedback);
+    card.append(player);
+  }else{
+    const img=makeMedia(item.image_url,'Illustration for '+item.title);
+    card.append(img||Object.assign(node('div','FarmConnect · Agriculture'),{className:'fc-story-placeholder'}));
+  }
   const body=node('div');body.className='fc-story-body';
   const label=node('span',item.category||'Agricultural news');label.className='fc-story-tag';
   const title=node('h3',item.title||'Untitled update');title.className='fc-story-title';
@@ -144,7 +204,7 @@ function render(){
 async function loadStories(){
  try{const data=await get('/news?limit=100');stories=data.news||[];
  const types=[...new Set(stories.map(x=>x.category).filter(Boolean))].sort();for(const category of types){const opt=node('option',category);opt.value=category;$('fcNewsCategory').append(opt)}
- renderVideoSection();render();
+ render();
  }catch(e){$('fcNewsStatus').textContent=e.message;$('fcNewsGrid').replaceChildren(Object.assign(node('div','News updates are temporarily unavailable.'),{className:'fc-empty'}));}
 }
 function renderAd(ad){
