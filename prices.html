@@ -343,15 +343,15 @@
                 <div class="filters">
                     <div class="filter-group"><label for="forecastCommodity">Commodity</label><select id="forecastCommodity" class="form-select"><option value="Maize">Maize</option></select></div>
                     <div class="filter-group"><label for="forecastMarket">Market</label><select id="forecastMarket" class="form-select"><option value="all">All Markets</option></select></div>
-                    <div class="filter-group"><label for="forecastDays">Forecast Days</label><select id="forecastDays" class="form-select"><option value="7">7 days</option><option value="14" selected>14 days</option><option value="30">30 days</option></select></div>
+                    <div class="filter-group"><label for="forecastDays">Forecast Months</label><select id="forecastDays" class="form-select"><option value="1">1 month</option><option value="2">2 months</option><option value="3" selected>3 months</option></select></div>
                     <button class="btn" id="generateForecast"><i class="fas fa-chart-line"></i> Generate</button>
                 </div>
                 <div class="forecast-layout">
                     <div class="panel">
                         <div class="panel-header"><h3><i class="fas fa-wand-magic-sparkles"></i> Forecast Summary</h3><span class="badge" id="forecastBadge">Waiting</span></div>
                         <div class="forecast-summary">
-                            <div class="forecast-big"><span>Current Price</span><strong id="forecastCurrent">--</strong><small id="forecastContext">Choose a commodity</small></div>
-                            <div class="forecast-big"><span>Recommendation</span><strong id="forecastRecommendation">--</strong><small id="forecastConfidence">Confidence --</small></div>
+                            <div class="forecast-big"><span>Last Recorded Price</span><strong id="forecastCurrent">--</strong><small id="forecastContext">Choose a commodity</small></div>
+                            <div class="forecast-big"><span>Forecast Basis</span><strong id="forecastRecommendation">--</strong><small id="forecastConfidence">Confidence --</small></div>
                             <div id="forecastMiniList"></div>
                         </div>
                     </div>
@@ -585,7 +585,7 @@
             const market = document.getElementById('histMarket').value;
             const days = document.getElementById('histDays').value;
             if (!commodity || commodity === 'all') {
-                showToast('Select a commodity to view historical records, including clearly labelled demo data.', 'info');
+                showToast('Select a commodity to view sourced historical records.', 'info');
                 return;
             }
             let path = `/prices/history?commodity=${encodeURIComponent(commodity)}&days=${encodeURIComponent(days)}`;
@@ -612,7 +612,7 @@
 
         function renderHistoricalTable() {
             const tbody = document.getElementById('histTableBody');
-            document.getElementById('historyCountBadge').textContent = `${state.historical.length} records · ${state.historical.filter(x=>x.data_kind==='demo').length} DEMO (not real)`;
+            document.getElementById('historyCountBadge').textContent = `${state.historical.length} sourced records`;
             if (!state.historical.length) {
                 tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No historical observations found for this selection.</td></tr>';
                 return;
@@ -621,7 +621,7 @@
                 <tr>
                     <td><strong>${safe(item.commodity)}</strong></td>
                     <td>${safe(item.market)}</td>
-                    <td class="price-cell">${money(item.price)} ${item.data_kind === "demo" ? '<span style="font-size:11px;background:#ffebad;color:#513c00;padding:3px 5px">DEMO — NOT REAL</span>' : (item.is_verified ? '<span style="color:#167442">Verified</span>' : '<span>Unverified</span>')}</td>
+                    <td class="price-cell">${money(item.price)} ${item.is_verified ? '<span style="color:#167442">Sourced</span>' : '<span>Unverified</span>'}</td>
                     <td>${formatDate(item.date)}<div style="font-size:11px">${safe(item.source_name)}</div></td>
                     <td class="${trendClass(item.trend)}"><i class="fas ${trendIcon(item.trend)}"></i> ${safe(item.trend)}</td>
                 </tr>
@@ -667,78 +667,39 @@
         }
 
         async function generateForecast() {
-            const commodity = document.getElementById('forecastCommodity').value;
-            const market = document.getElementById('forecastMarket').value;
-            const days = document.getElementById('forecastDays').value;
-            if (!commodity || commodity === 'all') {
-                showToast('Select a specific commodity for forecast.', 'info');
-                return;
-            }
-            let path = `/forecast?commodity=${encodeURIComponent(commodity)}&days=${encodeURIComponent(days)}`;
-            if (market !== 'all') path += `&market=${encodeURIComponent(market)}`;
+            const commodity=document.getElementById('forecastCommodity').value;
+            const market=document.getElementById('forecastMarket').value;
+            const months=document.getElementById('forecastDays').value;
+            if(!commodity||commodity==='all'){showToast('Select a commodity.','info');return}
+            if(!market||market==='all'){showToast('Select National Average or a market with sourced history.','info');return}
             try {
-                const data = await apiGet(path);
-                state.forecast = {
-                    commodity: data.commodity || commodity,
-                    market: data.market || market,
-                    current: number(data.current_price),
-                    trend: data.trend || 'stable',
-                    recommendation: data.recommendation || 'Monitor',
-                    confidence: data.confidence || '--',
-                    rows: data.forecast || []
+                const data=await apiGet('/forecast?'+new URLSearchParams({commodity,market,months}));
+                state.forecast={
+                    commodity:data.commodity,market:data.market,current:number(data.current_price),
+                    recommendation:data.model_used,confidence:'Experimental; older price history',
+                    notice:data.notice,lastObserved:data.last_observed_date,rows:data.forecast
                 };
-                renderForecastSummary();
-                renderForecastTable();
-                renderForecastChart();
-                updateHero();
-            } catch (error) {
-                showToast(error.message || 'Failed to generate forecast.', 'error');
-            }
+                renderForecastSummary();renderForecastTable();renderForecastChart();updateHero();
+            }catch(error){state.forecast=null;showToast(error.message||'Forecast unavailable.','error');}
         }
-
-        function renderForecastSummary() {
-            const forecast = state.forecast;
-            if (!forecast) return;
-            document.getElementById('forecastBadge').textContent = `${forecast.rows.length} days`;
-            document.getElementById('forecastCurrent').textContent = money(forecast.current);
-            document.getElementById('forecastContext').textContent = `${forecast.commodity} in ${forecast.market || 'selected market'}`;
-            document.getElementById('forecastRecommendation').textContent = forecast.recommendation;
-            document.getElementById('forecastConfidence').textContent = `Confidence ${forecast.confidence}`;
-            document.getElementById('forecastMiniList').innerHTML = forecast.rows.slice(0, 5).map(row => {
-                const width = Math.min(100, Math.max(18, 40 + number(row.change_percent) * 8));
-                return `
-                    <div class="forecast-row">
-                        <strong>Day ${row.day}</strong>
-                        <div class="forecast-bar"><div class="forecast-fill" style="width:${width}%"></div></div>
-                        <span>${money(row.predicted_price)}</span>
-                    </div>
-                `;
-            }).join('');
+        function renderForecastSummary(){
+            const f=state.forecast;if(!f)return;
+            document.getElementById('forecastBadge').textContent=f.rows.length+' months';
+            document.getElementById('forecastCurrent').textContent=money(f.current);
+            document.getElementById('forecastContext').textContent=f.commodity+' · '+f.market+' · '+formatDate(f.lastObserved);
+            document.getElementById('forecastRecommendation').textContent='Monthly trend';
+            document.getElementById('forecastConfidence').textContent=f.notice;
+            document.getElementById('forecastMiniList').innerHTML=f.rows.map(r=>'<div class="forecast-row"><strong>'+safe(formatDate(r.date))+'</strong><span>'+money(r.predicted_price)+'</span></div>').join('');
         }
-
-        function renderForecastTable() {
-            const tbody = document.getElementById('forecastTableBody');
-            const forecast = state.forecast;
-            if (!forecast || !forecast.rows.length) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No forecast data available.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = forecast.rows.map(row => `
-                <tr>
-                    <td><strong>${safe(forecast.commodity)}</strong></td>
-                    <td>${safe(forecast.market || 'All markets')}</td>
-                    <td>${formatDate(row.date)}</td>
-                    <td class="price-cell">${money(row.predicted_price)}</td>
-                    <td class="${number(row.change_percent) >= 0 ? 'price-up' : 'price-down'}">${number(row.change_percent) >= 0 ? '+' : ''}${number(row.change_percent).toFixed(2)}%</td>
-                    <td><span class="badge ${row.confidence === 'Medium' ? 'warn' : ''}">${safe(row.confidence)}</span></td>
-                </tr>
-            `).join('');
+        function renderForecastTable(){
+            const f=state.forecast;if(!f)return;
+            document.getElementById('forecastTableBody').innerHTML=f.rows.map(r=>'<tr><td>'+safe(f.commodity)+'</td><td>'+safe(f.market)+'</td><td>'+safe(formatDate(r.date))+'</td><td>'+money(r.predicted_price)+'</td><td>—</td><td>Experimental</td></tr>').join('');
         }
 
         function renderForecastChart() {
             const forecast = state.forecast;
             if (!forecast) return;
-            const labels = ['Current', ...forecast.rows.map(row => formatDate(row.date))];
+            const labels = ['Last recorded', ...forecast.rows.map(row => formatDate(row.date))];
             const values = [forecast.current, ...forecast.rows.map(row => number(row.predicted_price))];
             if (forecastChart) forecastChart.destroy();
             forecastChart = new Chart(document.getElementById('forecastChart'), {
@@ -801,7 +762,7 @@
             exportRows(
                 ['Commodity', 'Market', 'Province', 'Price', 'Trend', 'Recommendation', 'Updated'],
                 state.filteredLive.map(item => [item.commodity, item.market, item.province, item.price, item.trend, item.recommendation, formatDateTime(item.updated)]),
-                'farmconnect_live_prices.csv'
+                'farmconnect_latest_published_prices.csv'
             );
         }
         function exportHistorical() {
@@ -815,7 +776,7 @@
             const forecast = state.forecast;
             exportRows(
                 ['Commodity', 'Market', 'Date', 'Predicted Price', 'Change %', 'Confidence'],
-                forecast ? forecast.rows.map(row => [forecast.commodity, forecast.market, formatDate(row.date), row.predicted_price, row.change_percent, row.confidence]) : [],
+                forecast ? forecast.rows.map(row => [forecast.commodity, forecast.market, formatDate(row.date), row.predicted_price, 'experimental', 'not calibrated']) : [],
                 'farmconnect_forecast.csv'
             );
         }
