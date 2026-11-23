@@ -26,7 +26,7 @@
 </div>
 <aside class="fc-paper fc-hero-aside" aria-labelledby="fcSnapshotTitle">
 <p class="fc-eyebrow">Market snapshot</p>
-<h2 id="fcSnapshotTitle">Latest published national averages</h2>
+<h2 id="fcSnapshotTitle">About the published dataset</h2>
 <p class="fc-note" id="fcSnapshotDate">Retrieving price records…</p>
 <div id="fcSnapshotRows" aria-live="polite"><p class="fc-note">Loading…</p></div>
 </aside>
@@ -84,12 +84,16 @@
         card.append(node('div','fc-price-title',p.name),node('strong','fc-amount',fmtPrice(p.value)+'/kg'),node('p','fc-price-sub',p.market+' · '+fmtMonth(p.date)));
         grid.append(card);
       }
-      const ordered=list.filter(p=>['Maize','Rice','Groundnuts'].includes(p.name)).sort((a,b)=>['Maize','Rice','Groundnuts'].indexOf(a.name)-['Maize','Rice','Groundnuts'].indexOf(b.name));
       const snap=$('fcSnapshotRows');snap.replaceChildren();
-      for(const p of ordered){
-        const row=node('div','fc-mini-row');const desc=node('div');
-        desc.append(node('strong','',p.name),node('small','',fmtMonth(p.date)));
-        row.append(desc,node('strong','',fmtPrice(p.value)+'/kg'));snap.append(row);
+      const details=[
+        ['Commodities covered',String(list.length)],
+        ['Market coverage','Zambia · National'],
+        ['Price unit','Kwacha per kilogram']
+      ];
+      for(const [label,value] of details){
+        const row=node('div','fc-mini-row');
+        row.append(node('span','',label),node('strong','',value));
+        snap.append(row);
       }
       const latest=list.map(p=>p.date).sort().at(-1);
       $('fcSnapshotDate').textContent='Most recent available observation: '+fmtMonth(latest)+'.';
