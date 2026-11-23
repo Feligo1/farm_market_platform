@@ -12,7 +12,8 @@ const schema:Record<string,string[]>={
   live_prices:["commodity_id","market_id","current_price","price_7d","price_14d","price_30d","trend","recommendation","confidence"],
   buyers:["business_name","contact_person","contact_phone","contact_email","commodity","location","max_price","min_volume","notes","is_verified","rating","added_by","status"],
   sellers:["farm_name","contact_person","contact_phone","contact_email","commodity","available_volume","price_per_kg","location","is_verified","rating","status"],
-  news:["title","content","summary","image_url","category","author_name","status","published_at"],
+  news:["title","content","summary","image_url","video_url","source_url","category","author_name","status","published_at"],
+  advertisements:["title","description","image_url","video_url","target_url","placement","status","starts_at","ends_at","sort_order"],
   sms_subscriptions:["user_id","commodity","market","alert_type","threshold","active"],
   sms_history:["phone","message","type","status","provider","sent_at","error_message"],
   messages:["from_user_id","to_user_id","subject","message","is_read"],
@@ -21,7 +22,7 @@ const schema:Record<string,string[]>={
   users:["username","email","phone","first_name","last_name","role","is_active","is_email_verified","location","province","district","main_crops","farm_size_hectares","business_name","sms_alerts_enabled"]
 };
 const bools=new Set(["is_active","is_verified","active","is_read","is_email_verified","sms_alerts_enabled","has_storage","has_weighbridge"]);
-const numeric=new Set(["commodity_id","market_id","news_id","price","current_price","price_7d","price_14d","price_30d","volume","confidence","display_order","typical_min_price","typical_max_price","latitude","longitude","max_price","min_volume","available_volume","price_per_kg","rating","threshold","farm_size_hectares"]);
+const numeric=new Set(["commodity_id","market_id","news_id","price","current_price","price_7d","price_14d","price_30d","volume","confidence","display_order","typical_min_price","typical_max_price","latitude","longitude","max_price","min_volume","available_volume","price_per_kg","rating","threshold","farm_size_hectares","sort_order"]);
 const protect=(resource:string,input:Record<string,unknown>)=>{
  const clean:Record<string,unknown>={};
  for(const field of schema[resource]||[]){
@@ -33,6 +34,15 @@ const protect=(resource:string,input:Record<string,unknown>)=>{
    if(field==="main_crops"){if(!Array.isArray(value))value=String(value).split(",").map((v)=>v.trim());}
    if(typeof value==="string" && value.length>10000)throw new Error(field+" too long");
    clean[field]=value;
+ }
+ if(["news","advertisements"].includes(resource)){
+   for(const col of ["image_url","video_url","source_url","target_url"]){
+     if(typeof clean[col]==="string" && clean[col] && !/^https:\/\//i.test(String(clean[col])))throw new Error(col+" must start with https://");
+     if(typeof clean[col]==="string" && clean[col] && String(clean[col]).length>2000)throw new Error(col+" URL too long");
+   }
+   if(clean.status && !["draft","published","paused"].includes(String(clean.status)))throw new Error("Invalid publishing status");
+   if(resource==="advertisements" && clean.placement && !["home","news","both"].includes(String(clean.placement)))throw new Error("Invalid ad placement");
+   if(resource==="news" && clean.status==="published" && !clean.published_at && !input.published_at)clean.published_at=new Date().toISOString();
  }
  if(resource==="price_history"){
    if(clean.data_kind==="demo"){clean.is_verified=false;clean.source_type="DEMO_SYNTHETIC";}
@@ -58,6 +68,23 @@ Deno.serve(async(req:Request)=>{
  if(accountError||!account||account.role!=="admin"||account.is_active!==true)return reply({success:false,error:"Admin access required"},403);
  const u=new URL(req.url), resource=u.searchParams.get("resource")||"price_history",id=u.searchParams.get("id"),limit=Math.min(Math.max(Number(u.searchParams.get("limit"))||100,1),500),offset=Math.max(Number(u.searchParams.get("offset"))||0,0);
  try{
+  if(resource==="media_upload" && req.method==="POST"){
+    const input=await req.json().catch(()=>null);
+    const mime=String(input?.mime||"").toLowerCase();
+    const allowed:Record<string,string>={"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif","video/mp4":"mp4","video/webm":"webm"};
+    if(!allowed[mime])return reply({success:false,error:"Unsupported media type. Use JPG, PNG, WebP, GIF, MP4 or WebM."},400);
+    const encoded=String(input?.base64||"");
+    if(encoded.length>8600000||encoded.length<10)return reply({success:false,error:"File is empty or exceeds 6 MB. Use an HTTPS video URL for larger video ads."},413);
+    let bytes:Uint8Array;
+    try{const decoded=atob(encoded);bytes=Uint8Array.from(decoded,c=>c.charCodeAt(0));}catch{return reply({success:false,error:"Invalid uploaded media"},400)}
+    if(bytes.length>6000000)return reply({success:false,error:"Maximum media upload is 6 MB"},413);
+    const ext=allowed[mime],fileName=actor+"/"+crypto.randomUUID()+"."+ext;
+    const {error:uploadError}=await db.storage.from("farmconnect-media").upload(fileName,bytes,{contentType:mime,upsert:false,cacheControl:"3600"});
+    if(uploadError)throw uploadError;
+    const {data:publicUrl}=db.storage.from("farmconnect-media").getPublicUrl(fileName);
+    await audit(actor,"upload","farmconnect-media",fileName);
+    return reply({success:true,url:publicUrl.publicUrl,mime});
+  }
   if(resource==="audit" && req.method==="GET"){
    const {data,error}=await db.from("admin_audit_log").select("id,actor_id,action,resource,record_id,occurred_at").order("occurred_at",{ascending:false}).range(offset,offset+limit-1);
    if(error)throw error;return reply({success:true,records:data});
