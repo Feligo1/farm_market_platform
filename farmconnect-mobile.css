@@ -67,3 +67,7 @@
  .fc-mobile-bottom a{font-size:.66rem}
  .fc-redesign .fc-tab{font-size:.76rem!important;padding:12px 9px!important}
 }
+
+/* Single-navigation mobile policy: no bottom bar or reserved gap. */
+.fc-mobile-bottom{display:none!important}
+@media(max-width:720px){body{padding-bottom:0!important}}
