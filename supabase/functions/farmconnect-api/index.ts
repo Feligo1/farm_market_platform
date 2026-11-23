@@ -249,8 +249,20 @@ Deno.serve(async (req: Request) => {
    return respond({success:true,[endpoint]:data,count:data?.length||0});
   }
   if(endpoint==="news"){
-   const {data,error}=await db.from("news").select("id,title,content,summary,image_url,category,author_name,status,view_count,like_count,comment_count,published_at,created_at").eq("status","published").order("published_at",{ascending:false}).limit(Math.min(limit,200));
+   const {data,error}=await db.from("news").select("id,title,content,summary,image_url,video_url,source_url,category,author_name,status,view_count,like_count,comment_count,published_at,created_at").eq("status","published").order("published_at",{ascending:false}).limit(Math.min(limit,200));
    if(error)throw error;return respond({success:true,news:data,count:data?.length||0});
+  }
+  if(endpoint==="advertisements" && req.method==="GET"){
+    const placement=String(u.searchParams.get("placement")||"news");
+    if(!["home","news"].includes(placement))return respond({success:false,error:"Unknown placement"},400);
+    const now=new Date().toISOString();
+    const {data,error}=await db.from("advertisements")
+      .select("id,title,description,image_url,video_url,target_url,placement,sort_order,starts_at,ends_at")
+      .eq("status","published").in("placement",[placement,"both"])
+      .order("sort_order",{ascending:true}).order("id",{ascending:false}).limit(12);
+    if(error)throw error;
+    const ads=(data||[]).filter((a:any)=>(!a.starts_at||a.starts_at<=now)&&(!a.ends_at||a.ends_at>=now));
+    return respond({success:true,advertisements:ads,count:ads.length});
   }
   if(endpoint==="buyers"||endpoint==="sellers"){
    const columns=endpoint==="buyers"?"id,business_name,contact_person,contact_phone,contact_email,commodity,location,max_price,min_volume,notes,is_verified,rating,status":"id,farm_name,contact_person,contact_phone,contact_email,commodity,available_volume,price_per_kg,location,is_verified,rating,status";
