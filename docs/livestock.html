@@ -1,0 +1,144 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="FarmConnect Zambia livestock hub: sourced poultry, cattle, goat, fish and animal-health news, historical prices and free trade tools."><title>Livestock & Poultry Hub | FarmConnect Zambia</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="farmconnect-redesign.css?v=4"><link rel="stylesheet" href="farmconnect-mobile.css?v=3">
+<script src="farmconnect-nav.js?v=20261123-9" defer></script><script src="farmconnect-appearance.js?v=1" defer></script>
+<style>
+.fc-livestock-intro{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(230px,.7fr);gap:24px;align-items:start}
+.fc-livestock-intro .fc-lead{max-width:760px}
+.fc-livestock-aside{background:#edf5ee;border:1px solid #cde3d2;border-radius:11px;padding:22px}
+.fc-livestock-aside strong{display:block;margin-bottom:9px;color:#24543a}
+.fc-livestock-aside p{font-size:.83rem;color:#536b59;line-height:1.65;margin:0}
+.fc-hub-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.fc-hub-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.fc-hub-heading h2{font-size:1.7rem;letter-spacing:-.04em;margin:0}
+.fc-hub-heading p{color:#647b6a;font-size:.88rem;margin:8px 0 0}
+.fc-hub-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.fc-hub-filters button{font:inherit;background:white;border:1px solid #c5d8c8;border-radius:8px;padding:9px 14px;cursor:pointer;color:#28573b;font-size:.86rem;font-weight:700}
+.fc-hub-filters button[aria-pressed=true]{background:#235c40;color:white;border-color:#235c40}
+.fc-hub-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.fc-hub-card{background:#fff;border:1px solid #dce8de;border-radius:11px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.fc-hub-card strong,.fc-hub-card h3{font-size:1.09rem;line-height:1.45;letter-spacing:-.02em;margin:0;color:#1d3827}
+.fc-hub-card p{font-size:.88rem;line-height:1.6;color:#576b5c;margin:0;flex:1}
+.fc-hub-card small{font-size:.76rem;color:#708174}
+.fc-hub-card a{display:inline-flex;min-height:35px;align-items:center;color:#21583d;font-size:.84rem;font-weight:750;text-decoration:underline}
+.fc-hub-tag{font-size:.74rem;font-weight:800;color:#265e40;text-transform:uppercase;letter-spacing:.075em}
+.fc-hub-price{font-size:1.4rem;letter-spacing:-.04em;color:#24573c;font-weight:800}
+.fc-hub-price small{display:block;font-size:.76rem;color:#667b6e;letter-spacing:0;font-weight:500}
+.fc-hub-note{font-size:.82rem;color:#647568;line-height:1.65;margin:14px 0}
+.fc-hub-checklist{background:#fff;border:1px solid #d9e5db;border-radius:11px;padding:24px}
+.fc-hub-checklist ol{padding-left:21px;color:#40574a;line-height:1.85;margin:12px 0}
+.fc-hub-checklist li{margin-bottom:8px}
+.fc-hub-checklist strong{color:#244b34}
+@media(max-width:950px){.fc-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.fc-livestock-intro{grid-template-columns:1fr}.fc-hub-grid{grid-template-columns:1fr}.fc-hub-card{padding:18px}.fc-hub-checklist{padding:18px}}
+</style></head><body class="fc-redesign">
+<main class="fc-main"><section class="fc-page-head"><div class="fc-wrap fc-livestock-intro">
+<div><p class="fc-eyebrow">FarmConnect Zambia · Livestock &amp; fisheries</p><h1>Animals, markets and trusted updates.</h1>
+<p class="fc-lead">One place for chickens, cattle, goats, pigs, fish and dairy. Read original-source news, review historical prices, find buyers and compare your costs.</p>
+<div class="fc-hub-actions"><a href="post-listing.html?type=seller" class="fc-button">Sell livestock or fish →</a><a href="match.html" class="fc-button secondary">Find a buyer</a></div></div>
+<aside class="fc-livestock-aside"><strong>Animal health information</strong><p>News about vaccination and disease-control measures can change quickly. FarmConnect is not a veterinary authority and does not issue movement permits or certify animals. Always follow the latest district veterinary guidance and official Ministry of Fisheries and Livestock notices.</p></aside>
+</div></section>
+<section class="fc-section"><div class="fc-wrap">
+<div class="fc-hub-heading"><div><p class="fc-eyebrow">From original publishers</p><h2>Livestock, poultry &amp; fisheries news</h2><p>Read a summary, then visit the original source for current requirements and complete details.</p></div><a href="news.html">Browse all farming news →</a></div>
+<div class="fc-hub-filters" role="group" aria-label="Livestock news topic">
+<button type="button" data-category="all" aria-pressed="true">All livestock updates</button>
+<button type="button" data-category="poultry" aria-pressed="false">Poultry</button>
+<button type="button" data-category="livestock" aria-pressed="false">Cattle &amp; goats</button>
+<button type="button" data-category="fisheries" aria-pressed="false">Fisheries</button>
+<button type="button" data-category="animal health" aria-pressed="false">Animal health</button></div>
+<p class="fc-hub-note" id="fcHubNewsStatus" role="status">Loading source-linked news…</p><div class="fc-hub-grid" id="fcHubNews"></div>
+</div></section>
+<section class="fc-section" style="padding-top:0"><div class="fc-wrap">
+<div class="fc-hub-heading"><div><p class="fc-eyebrow">Official historical observations</p><h2>Animal and fish market prices</h2><p>National average prices where published. Units differ: each animal, bird, tray, litre, kilogram or feed bag.</p></div><a href="prices.html">All commodities and price history →</a></div>
+<p class="fc-hub-note" id="fcHubPricesStatus" role="status">Loading verified prices…</p><div class="fc-hub-grid" id="fcHubPrices"></div>
+<p class="fc-hub-note">These prices are historical reference records, not live offers or a guarantee of current local rates. Check the observation month before negotiating.</p>
+</div></section>
+<section class="fc-section" style="padding-top:0"><div class="fc-wrap">
+<div class="fc-hub-heading"><div><p class="fc-eyebrow">Before buying or selling</p><h2>Five practical checks</h2><p>Useful whether you are trading poultry, cattle, goats, fish or animal products.</p></div></div>
+<div class="fc-hub-checklist">
+<ol><li><strong>Check who you are trading with.</strong> Confirm their name, contact number and location. An admin-reviewed listing is not a health or identity certificate.</li>
+<li><strong>Agree on measurement and condition.</strong> Specify animal count, live weight if relevant, age or grade, vaccination records where applicable, or fish quality and quantity.</li>
+<li><strong>Verify the current movement rules.</strong> For live animals, check official veterinary restrictions, movement permits and documentation before travelling.</li>
+<li><strong>Calculate actual costs.</strong> Include feed, transport, veterinary costs, handling, storage and expected losses before deciding a selling price.</li>
+<li><strong>Confirm payment and collection safely.</strong> Verify buyers independently; do not pay strangers an advance fee to secure a promised transaction.</li></ol>
+<div class="fc-hub-actions"><a class="fc-button" href="profit-calculator.html">Calculate selling costs</a><a class="fc-button secondary" href="find-buyers.html">Browse reviewed listings</a></div>
+</div>
+<p class="fc-hub-note">For official animal-health guidance: <a href="https://www.mfl.gov.zm/" target="_blank" rel="noopener noreferrer">Ministry of Fisheries and Livestock ↗</a>. For practical reporting on livestock disease: <a href="https://www.fao.org/zambia/" target="_blank" rel="noopener noreferrer">FAO Zambia ↗</a>.</p>
+</div></section>
+</main><footer class="fc-footer"><div class="fc-wrap fc-footer-row"><span>FarmConnect Zambia · Free decision support for livestock and fish farmers</span><a href="feedback.html?feature=general">Help improve this hub</a></div></footer>
+<script>
+(()=>{
+"use strict";
+const API="https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api";
+const $=id=>document.getElementById(id),create=(tag,content)=>{const n=document.createElement(tag);if(content!=null)n.textContent=String(content);return n};
+const cash=v=>"K"+Number(v).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
+const formatDate=v=>{const d=new Date(String(v||"").slice(0,10)+"T00:00:00Z");return Number.isNaN(d.valueOf())?"Date not supplied":d.toLocaleDateString("en-ZM",{month:"short",year:"numeric",timeZone:"UTC"})};
+const topics=new Set(["livestock","poultry","animal health","fisheries","aquaculture"]);
+let articles=[],active="all";
+async function request(p){const r=await fetch(API+p);if(!r.ok)throw Error("Data temporarily unavailable");const j=await r.json();if(!j.success)throw Error(j.error||"Data error");return j}
+function drawNews(){
+ const grid=$("fcHubNews");grid.replaceChildren();
+ const rows=articles.filter(a=>active==="all"||String(a.category).toLowerCase()===active);
+ $("fcHubNewsStatus").textContent=rows.length+" source-linked "+(rows.length===1?"update":"updates")+" available";
+ for(const story of rows){
+  const card=create("article");card.className="fc-hub-card";
+  const tag=create("span",story.category);tag.className="fc-hub-tag";
+  const title=create("h3",story.title);
+  const summary=create("p",story.summary||"Read this update from the original publisher.");
+  const meta=create("small","FarmConnect record: "+formatDate(story.published_at||story.created_at));
+  const link=create("a","Read story on FarmConnect →");link.href="news.html?story="+encodeURIComponent(story.id);
+  const src=String(story.source_url||"");
+  card.append(tag,title,summary,meta,link);
+  if(/^https:\/\//.test(src)){const original=create("a","Original publisher ↗");original.href=src;original.target="_blank";original.rel="noopener noreferrer";card.append(original)}
+  grid.append(card);
+ }
+ if(!rows.length)grid.append(create("p","No published source-linked stories in this topic yet."));
+}
+async function loadNews(){
+ try{
+  const data=await request("/news?limit=100");
+  articles=(data.news||[]).filter(a=>topics.has(String(a.category||"").toLowerCase()));
+  drawNews();
+ }catch(error){$("fcHubNewsStatus").textContent="Could not load news";$("fcHubNews").replaceChildren(create("p","Try again later."))}
+}
+async function loadPrices(){
+ try{
+  const data=await request("/prices?limit=750"),catalogue=await request("/commodities?limit=200");
+  const types=new Map((catalogue.commodities||[]).map(c=>[c.name,c.category]));
+  const selected=new Map();
+  const validCategories=new Set(["Poultry","Livestock","Meat","Fish","Dairy","Feed"]);
+  for(const p of data.prices||[]){
+   const commodity=p.commodity_name||p.commodity;
+   if(!validCategories.has(p.category||types.get(commodity)))continue;
+   const date=String(p.price_date||p.last_updated||"");
+   const previous=selected.get(commodity);
+   if(!commodity||!date||!Number.isFinite(Number(p.price)))continue;
+   if(!previous||date>previous.date||date===previous.date&&p.market_name==="National Average")
+      selected.set(commodity,{...p,date});
+  }
+  const prices=[...selected.values()].sort((a,b)=>String(a.commodity_name).localeCompare(String(b.commodity_name)));
+  $("fcHubPricesStatus").textContent=prices.length+" products with verified historical price observations";
+  const grid=$("fcHubPrices");grid.replaceChildren();
+  for(const p of prices){
+   const card=create("article");card.className="fc-hub-card";
+   const label=create("span",p.category||types.get(p.commodity_name)||"Livestock");label.className="fc-hub-tag";
+   const title=create("h3",p.commodity_name||p.commodity);
+   const price=create("div",cash(p.price)+" / "+(p.unit||"kg"));price.className="fc-hub-price";
+   price.append(create("small","Observed "+formatDate(p.date)+" · "+(p.market_name||"Market")));
+   const source=create("small",p.source_name||"Published original source");
+   card.append(label,title,price,source);
+   if(/^https:\/\//.test(String(p.source_url||""))){const a=create("a","Original price bulletin ↗");a.href=p.source_url;a.target="_blank";a.rel="noopener noreferrer";card.append(a)}
+   const listing=create("a","Find buying and selling offers →");listing.href="find-buyers.html?commodity="+encodeURIComponent(p.commodity_name||p.commodity);card.append(listing);
+   grid.append(card);
+  }
+  if(!prices.length)grid.append(create("p","No sourced livestock prices are available."));
+ }catch(error){$("fcHubPricesStatus").textContent="Price data is temporarily unavailable"}
+}
+for(const button of document.querySelectorAll(".fc-hub-filters button"))button.addEventListener("click",()=>{
+ active=button.dataset.category;
+ for(const b of document.querySelectorAll(".fc-hub-filters button"))b.setAttribute("aria-pressed",String(b===button));
+ drawNews();
+});
+loadNews();loadPrices();
+})();
+</script></body></html>
