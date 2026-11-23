@@ -35,10 +35,23 @@
 .fc-video{width:100%;max-height:370px;border:0;border-radius:8px;background:#151d18;aspect-ratio:16/9;margin:14px 0}
 @media(max-width:990px){.fc-news-grid{grid-template-columns:repeat(2,1fr)}.fc-ad-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.fc-news-grid{grid-template-columns:1fr}.fc-ad{grid-template-columns:1fr}.fc-ad img,.fc-ad video{height:180px}.fc-news-modal-inside{padding:17px}}
+</style><style>.fc-videos-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.fc-video-card{background:#fff;border:1px solid var(--fc-line);border-radius:12px;overflow:hidden;min-width:0}
+.fc-video-card .fc-video{margin:0;border-radius:0;width:100%;aspect-ratio:16/9;max-height:none;display:block;background:#152a1e}
+.fc-video-card-body{padding:20px}.fc-video-card-body h3{font-size:1.2rem;line-height:1.35;margin:8px 0}
+.fc-video-card-body p{color:var(--fc-muted);font-size:.88rem;line-height:1.65;margin:0 0 12px}
+.fc-video-fallback{font-size:.82rem;color:var(--fc-muted);padding:10px 14px;background:#f4f7f4}
+.fc-video-fallback a{color:var(--fc-green);font-weight:700}
+.fc-video-label{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--fc-green)}
+@media(max-width:760px){.fc-videos-grid{grid-template-columns:1fr}.fc-video-card-body{padding:16px}}
 </style><link rel="stylesheet" href="farmconnect-mobile.css?v=1"></head>
 <body class="fc-redesign">
 <main class="fc-main">
 <section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Updates for Zambian agriculture</p><h1>News &amp; farming insights</h1><p class="fc-lead">Practical agricultural updates from identified, original publishers. Read the source before acting on time-sensitive reports.</p></div></section>
+<section class="fc-section" id="fcNewsVideos" hidden><div class="fc-wrap">
+<div class="fc-section-header"><div><p class="fc-eyebrow">Watch</p><h2>Latest videos</h2><p>Watch videos published with our news stories. All videos are optional to play and will not autoplay.</p></div></div>
+<div class="fc-videos-grid" id="fcNewsVideosGrid" aria-live="polite"></div>
+</div></section>
 <section class="fc-section"><div class="fc-wrap">
 <div class="fc-section-header"><div><p class="fc-eyebrow">Latest stories</p><h2>From the field</h2><p>News summaries reference the original publication and date. Illustrations are not documentary photography.</p></div></div>
 <div class="fc-toolbar"><div class="fc-field"><label for="fcNewsSearch">Search stories</label><input id="fcNewsSearch" type="search" placeholder="Topics, crops and updates"></div>
@@ -71,7 +84,7 @@ function makeMedia(src,title,type='image'){
   const youtube=youtubeId(url);
   if(youtube){const frame=node('iframe');frame.className='fc-video';frame.loading='lazy';frame.title=title||'Video';frame.allow='accelerometer; encrypted-media; picture-in-picture';frame.allowFullscreen=true;frame.src='https://www.youtube-nocookie.com/embed/'+youtube;return frame;}
   if(!/\.(mp4|webm)(\?|$)/i.test(url) && !url.includes('/storage/v1/object/public/'))return null;
-  const video=node('video');video.className='fc-video';video.src=url;video.controls=true;video.preload='metadata';return video;
+  const video=node('video');video.className='fc-video';video.src=url;video.controls=true;video.playsInline=true;video.preload='metadata';video.setAttribute('playsinline','');video.setAttribute('controlsList','nodownload');return video;
  }
  const img=node('img');img.src=url;img.alt=title||'Editorial illustration';img.className='fc-story-media';img.loading='lazy';img.decoding='async';img.onerror=()=>{img.replaceWith(Object.assign(node('div','Agricultural news'),{className:'fc-story-placeholder'}))};return img;
 }
@@ -84,6 +97,31 @@ function showStory(item){
  const video=makeMedia(item.video_url,'Video accompanying '+item.title,'video');if(video)media.append(video);
  const source=$('fcArticleSource'),url=validHttps(item.source_url);source.hidden=!url;if(url)source.href=url;
  dialog.showModal();
+}
+function renderVideoSection(){
+ const videos=stories.filter(item=>validHttps(item.video_url));
+ const section=$('fcNewsVideos'),grid=$('fcNewsVideosGrid');
+ grid.replaceChildren();
+ if(!videos.length){section.hidden=true;return}
+ for(const item of videos){
+  const card=node('article');card.className='fc-video-card';
+  const media=makeMedia(item.video_url,item.title,'video');
+  const poster=validHttps(item.image_url);
+  if(media){
+   if(media.tagName==='VIDEO'&&poster)media.poster=poster;
+   media.addEventListener?.('error',()=>{
+     const notice=node('div','This video could not be played here. Use the open-video link below.');notice.className='fc-video-fallback';card.insertBefore(notice,card.querySelector('.fc-video-card-body'));
+   },{once:true});
+   card.append(media);
+  }
+  const body=node('div');body.className='fc-video-card-body';
+  const label=node('span','News video');label.className='fc-video-label';
+  const title=node('h3',item.title);const summary=node('p',item.summary||'Watch this FarmConnect update.');
+  const source=node('a','Open video in a new tab ↗');source.href=validHttps(item.video_url);source.target='_blank';source.rel='noopener noreferrer';source.className='fc-link';
+  const full=node('button','Read related article →');full.type='button';full.className='fc-story-open';full.style.display='block';full.style.marginTop='13px';full.addEventListener('click',()=>showStory(item));
+  body.append(label,title,summary,source,full);card.append(body);grid.append(card);
+ }
+ section.hidden=false;
 }
 function render(){
  const term=$('fcNewsSearch').value.trim().toLowerCase(),category=$('fcNewsCategory').value;
@@ -106,7 +144,7 @@ function render(){
 async function loadStories(){
  try{const data=await get('/news?limit=100');stories=data.news||[];
  const types=[...new Set(stories.map(x=>x.category).filter(Boolean))].sort();for(const category of types){const opt=node('option',category);opt.value=category;$('fcNewsCategory').append(opt)}
- render();
+ renderVideoSection();render();
  }catch(e){$('fcNewsStatus').textContent=e.message;$('fcNewsGrid').replaceChildren(Object.assign(node('div','News updates are temporarily unavailable.'),{className:'fc-empty'}));}
 }
 function renderAd(ad){
