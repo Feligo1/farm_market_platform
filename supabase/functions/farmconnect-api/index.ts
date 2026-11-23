@@ -194,7 +194,7 @@ Deno.serve(async (req: Request) => {
      for(const row of rows||[]){
        const date=String(row.price_date||"").slice(0,7);
        const price=Number(row.price);
-       if(!/^\\d{4}-\\d{2}$/.test(date)||!Number.isFinite(price)||price<=0)continue;
+       if(!/^\d{4}-\d{2}$/.test(date)||!Number.isFinite(price)||price<=0)continue;
        const record=byMonth.get(date)||{total:0,count:0};
        record.total+=price;record.count++;byMonth.set(date,record);
      }
