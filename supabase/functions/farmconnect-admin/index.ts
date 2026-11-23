@@ -11,7 +11,7 @@ const schema:Record<string,string[]>={
   price_history:["commodity_id","market_id","price","unit","volume","quality","source_type","source_name","source_url","external_id","currency","data_kind","is_verified","trend","price_date","notes"],
   live_prices:["commodity_id","market_id","current_price","price_7d","price_14d","price_30d","trend","recommendation","confidence"],
   buyers:["business_name","contact_person","contact_phone","contact_email","commodity","location","max_price","min_volume","notes","is_verified","rating","added_by","status"],
-  sellers:["farm_name","contact_person","contact_phone","contact_email","commodity","available_volume","price_per_kg","location","is_verified","rating","status"],
+  sellers:["farm_name","contact_person","contact_phone","contact_email","commodity","available_volume","price_per_kg","location","notes","is_verified","rating","status"],
   news:["title","content","summary","image_url","video_url","source_url","category","author_name","status","published_at"],
   advertisements:["title","description","image_url","video_url","target_url","placement","status","starts_at","ends_at","sort_order"],
   sms_subscriptions:["user_id","commodity","market","alert_type","threshold","active"],
@@ -84,6 +84,35 @@ Deno.serve(async(req:Request)=>{
     const {data:publicUrl}=db.storage.from("farmconnect-media").getPublicUrl(fileName);
     await audit(actor,"upload","farmconnect-media",fileName);
     return reply({success:true,url:publicUrl.publicUrl,mime});
+  }
+  if(resource==="pending_listings" && req.method==="GET"){
+    const [buyerResult,sellerResult]=await Promise.all([
+      db.from("buyers").select("id,business_name,contact_person,contact_phone,commodity,location,min_volume,max_price,notes,created_at").eq("status","pending").eq("is_verified",false).order("created_at",{ascending:false}).limit(100),
+      db.from("sellers").select("id,farm_name,contact_person,contact_phone,commodity,location,available_volume,price_per_kg,notes,created_at").eq("status","pending").eq("is_verified",false).order("created_at",{ascending:false}).limit(100)
+    ]);
+    if(buyerResult.error||sellerResult.error)throw buyerResult.error||sellerResult.error;
+    const pending=[
+      ...(buyerResult.data||[]).map((v:any)=>({...v,kind:"buyer",name:v.business_name,quantity:v.min_volume,price:v.max_price})),
+      ...(sellerResult.data||[]).map((v:any)=>({...v,kind:"seller",name:v.farm_name,quantity:v.available_volume,price:v.price_per_kg}))
+    ].sort((a:any,b:any)=>String(b.created_at).localeCompare(String(a.created_at)));
+    return reply({success:true,listings:pending,count:pending.length});
+  }
+  if(resource==="review_listing" && req.method==="POST"){
+    const body=await req.json().catch(()=>null);
+    const kind=String(body?.kind||"");
+    const id=Number(body?.id),action=String(body?.action||"");
+    if(!["buyer","seller"].includes(kind)||!Number.isSafeInteger(id)||id<=0||!["approve","reject"].includes(action))
+      return reply({success:false,error:"Invalid review request"},400);
+    const table=kind==="buyer"?"buyers":"sellers";
+    const {data:existing,error:findError}=await db.from(table).select("id,status,is_verified").eq("id",id).maybeSingle();
+    if(findError)throw findError;
+    if(!existing||existing.status!=="pending"||existing.is_verified===true)return reply({success:false,error:"Listing is no longer awaiting review"},409);
+    const change=action==="approve"?{status:"active",is_verified:true}:{status:"rejected",is_verified:false};
+    const {data:updated,error:updateError}=await db.from(table).update(change).eq("id",id).eq("status","pending").eq("is_verified",false).select("id,status").maybeSingle();
+    if(updateError)throw updateError;
+    if(!updated)return reply({success:false,error:"Listing status changed; refresh the queue"},409);
+    await audit(actor,action,table,id);
+    return reply({success:true,status:updated.status});
   }
   if(resource==="audit" && req.method==="GET"){
    const {data,error}=await db.from("admin_audit_log").select("id,actor_id,action,resource,record_id,occurred_at").order("occurred_at",{ascending:false}).range(offset,offset+limit-1);
