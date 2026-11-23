@@ -117,8 +117,15 @@
         const url=String(ad.image_url||'');
         if(url.startsWith('https://')){const img=node('img');img.src=url;img.alt=ad.title||'Advertisement';img.loading='lazy';img.style.cssText='width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin:12px 0';card.prepend(img);}
         const video=String(ad.video_url||'');
-        if(video.startsWith('https://')&&(/\.(mp4|webm)(\\?|$)/i.test(video)||video.includes('/storage/v1/object/public/'))){
+        if(video.startsWith('https://')&&(/\.(mp4|webm)(\?|$)/i.test(video)||video.includes('/storage/v1/object/public/'))){
           const v=node('video');v.controls=true;v.preload='metadata';v.src=video;v.style.cssText='width:100%;aspect-ratio:16/9;border-radius:8px;margin:12px 0';card.prepend(v);
+        }
+        else if(video.startsWith('https://')){
+          try{const u=new URL(video);const id=u.hostname==='youtu.be'?u.pathname.slice(1):['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname)?u.searchParams.get('v'):null;
+            if(id&&/^[a-zA-Z0-9_-]{11}$/.test(id)){
+              const iframe=node('iframe');iframe.src='https://www.youtube-nocookie.com/embed/'+id;iframe.title='Sponsored video: '+String(ad.title||'Advertisement');iframe.loading='lazy';iframe.allowFullscreen=true;iframe.style.cssText='width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin:12px 0';card.prepend(iframe);
+            }
+          }catch{}
         }
         const link=String(ad.target_url||'');
         if(link.startsWith('https://')){const anchor=node('a','','Visit advertiser →');anchor.href=link;anchor.target='_blank';anchor.rel='noopener noreferrer sponsored';anchor.className='fc-link';card.append(anchor)}
