@@ -1,4 +1,4 @@
-/* FarmConnect forecast presentation. Never present synthetic samples as actual market prices. */
+/* FarmConnect published-history forecasting interface. */
 (()=>{
   const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api';
   const el=(id)=>document.getElementById(id);
