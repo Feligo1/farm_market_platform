@@ -29,6 +29,8 @@
 .fc-market-help p{color:#53675b;margin:7px 0 0}
 @media(max-width:950px){.fc-market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.fc-market-intro{grid-template-columns:minmax(0,1fr)}.fc-market-cta{padding:20px}.fc-market-filter{grid-template-columns:1fr}.fc-market-grid{grid-template-columns:minmax(0,1fr)}.fc-market-help{flex-direction:column;align-items:flex-start;padding:20px}.fc-market-help .fc-button{width:100%}.fc-choice{flex:1}}
+.fc-listing-share{width:100%;min-height:40px;padding:9px 12px;border:1px solid #b9d1c0;background:#f3f8f4;border-radius:8px;color:#245c3f;cursor:pointer;font:inherit;font-size:.84rem;font-weight:750}
+.fc-listing-highlight{border-color:#428661;box-shadow:0 0 0 3px #cdebd3}
 </style></head>
 <body class="fc-redesign">
 <main class="fc-main"><section class="fc-page-head"><div class="fc-wrap fc-market-intro">
@@ -60,8 +62,10 @@ const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api
 const $=id=>document.getElementById(id),make=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);return n};
 const number=v=>'K'+Number(v).toLocaleString('en-ZM',{maximumFractionDigits:2,minimumFractionDigits:2});
 let data={buyers:[],sellers:[]},active='buyers';
-const initial=new URLSearchParams(location.search).get('type');
+const params=new URLSearchParams(location.search),initial=params.get('type');
+const directId=Number(params.get('id'))||0;
 if(initial==='seller'||initial==='sellers')active='sellers';
+if(initial==='buyer'||initial==='buyers')active='buyers';
 function card(record){
  const isBuyer=active==='buyers';
  const title=record.commodity||'Agricultural produce';
@@ -88,11 +92,24 @@ function card(record){
   const message=make('a','WhatsApp');message.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello, I saw your '+title+' listing on FarmConnect. Is it still available?');message.target='_blank';message.rel='noopener noreferrer';
   actions.append(call,message);
  }else{actions.append(make('span','Contact details unavailable'))}
- wrap.append(actions);return wrap;
+ wrap.append(actions);
+ const link=new URL('find-buyers.html',location.href);
+ link.searchParams.set('type',active);
+ link.searchParams.set('id',String(record.id));
+ const share=make('button','Share this listing');share.type='button';share.className='fc-listing-share';
+ share.addEventListener('click',async()=>{
+  try{
+    if(navigator.share)await navigator.share({title:title+' · FarmConnect Zambia',text:(isBuyer?'Buyer looking for ':'Seller offering ')+title,url:link.href});
+    else if(navigator.clipboard){await navigator.clipboard.writeText(link.href);share.textContent='Listing link copied ✓'}
+    else window.prompt('Copy this link to share:',link.href);
+  }catch(error){if(error.name!=='AbortError')window.prompt('Copy this listing link:',link.href)}
+ });
+ if(directId===Number(record.id))wrap.classList.add('fc-listing-highlight');
+ wrap.append(share);return wrap;
 }
 function render(){
  const text=$('fcMarketSearch').value.toLowerCase().trim(),place=$('fcMarketLocation').value.toLowerCase().trim(),crop=$('fcMarketCrop').value;
- const rows=data[active].filter(x=>(!crop||x.commodity===crop)&&(!text||[x.commodity,x.location,x.business_name,x.farm_name,x.contact_person].join(' ').toLowerCase().includes(text))&&(!place||String(x.location||'').toLowerCase().includes(place)));
+ const rows=data[active].filter(x=>(!directId||Number(x.id)===directId)&&(!crop||x.commodity===crop)&&(!text||[x.commodity,x.location,x.business_name,x.farm_name,x.contact_person].join(' ').toLowerCase().includes(text))&&(!place||String(x.location||'').toLowerCase().includes(place)));
  const grid=$('fcMarketGrid');grid.replaceChildren();
  for(const item of rows)grid.append(card(item));
  if(!rows.length){const empty=make('div','No reviewed listings match your search. Be the first to post a buying or selling request.');empty.className='fc-empty';grid.append(empty)}
