@@ -113,6 +113,25 @@ Deno.serve(async(req:Request)=>{
     await audit(actor,"update","site_appearance",1);
     return reply({success:true,appearance:data});
   }
+  if(resource==="farmer_feedback" && req.method==="GET"){
+    const {data,error,count}=await db.from("farmer_feedback")
+      .select("id,role,feature,helpfulness,ease_of_use,comment,created_at",{count:"exact"})
+      .order("created_at",{ascending:false}).limit(500);
+    if(error)throw error;
+    const rows=data||[];
+    const average=(field:"helpfulness"|"ease_of_use")=>rows.length?
+      Math.round(rows.reduce((sum:any,r:any)=>sum+Number(r[field]||0),0)*10/rows.length)/10:null;
+    const features=new Map<string,{name:string,count:number,helpful:number,ease:number}>();
+    for(const item of rows){
+      const curr=features.get(item.feature)||{name:item.feature,count:0,helpful:0,ease:0};
+      curr.count++;curr.helpful+=Number(item.helpfulness);curr.ease+=Number(item.ease_of_use);features.set(item.feature,curr);
+    }
+    return reply({success:true,count:count||0,sampled:rows.length,average_helpfulness:average("helpfulness"),
+      average_ease:average("ease_of_use"),
+      by_feature:[...features.values()].map(f=>({feature:f.name,count:f.count,helpfulness:Math.round(f.helpful*10/f.count)/10,ease:Math.round(f.ease*10/f.count)/10})),
+      comments:rows.filter((r:any)=>r.comment).slice(0,30).map((r:any)=>({feature:r.feature,role:r.role,comment:r.comment,helpfulness:r.helpfulness,ease:r.ease_of_use,created_at:r.created_at})),
+      note:"Voluntary anonymous responses. Self-selection and sample size limit representativeness. Last 500 entries only."});
+  }
   if(resource==="market_insights" && req.method==="GET"){
     const sources=await Promise.all([
       db.from("buyers").select("commodity,location,status,is_verified").limit(1000),
