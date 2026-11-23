@@ -47,19 +47,50 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 .fc-appearance-base-preview{padding:19px;background:#fff;color:#345441;font-size:.84rem}
 @media(max-width:850px){.fc-appearance-layout{grid-template-columns:1fr}}
 @media(max-width:560px){.fc-appearance-fields{grid-template-columns:1fr}.fc-appearance-field.full{grid-column:1}}
+</style><style>
+/* Single-function navigation: only selected workspace panel can be shown. */
+#fcAdminContent>section[hidden],.fc-admin-content>[hidden]{display:none!important}
+.fc-admin-shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start;margin-top:22px}
+.fc-admin-sidebar{background:#fff;border:1px solid #d9e7de;border-radius:12px;padding:15px;position:sticky;top:86px}
+.fc-admin-nav-eyebrow{text-transform:uppercase;color:#648274;letter-spacing:.11em;font-size:.72rem;font-weight:800;padding:9px 10px;margin:0 0 5px}
+.fc-admin-section-nav{display:flex;flex-direction:column;gap:5px}
+.fc-admin-section-button{display:block;width:100%;text-align:left;padding:13px 15px;background:transparent;color:#2a4c37;border:1px solid transparent;border-radius:9px;font:inherit;cursor:pointer}
+.fc-admin-section-button span{display:block;font-size:.92rem;font-weight:750}
+.fc-admin-section-button small{display:block;color:#728478;margin-top:3px;font-size:.75rem}
+.fc-admin-section-button:hover{background:#edf5ee;color:#215b3b}
+.fc-admin-section-button[aria-current=page]{background:#e5f2e9;border-color:#9fc9ac;color:#174b30;box-shadow:inset 3px 0 0 #28754c}
+.fc-admin-section-button[aria-current=page] small{color:#3c6d50}
+.fc-admin-side-note{font-size:.77rem;color:#6c8072;line-height:1.55;padding:10px;margin:15px 0 0;border-top:1px solid #e7eee9}
+.fc-admin-content{min-width:0}
+.fc-admin-content>.card{margin:0 0 15px;box-shadow:none}
+.fc-admin-content .fc-admin-overview{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))!important}
+.fc-admin-content table{min-width:520px}
+.fc-admin-content .fc-admin-resources{margin:8px 0 15px}
+@media(max-width:980px){.fc-admin-shell{grid-template-columns:1fr;gap:16px}.fc-admin-sidebar{position:static}.fc-admin-section-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.fc-admin-side-note{display:none}}
+@media(max-width:600px){.fc-admin-section-nav{grid-template-columns:1fr 1fr}.fc-admin-section-button{padding:11px}.fc-admin-section-button span{font-size:.82rem}.fc-admin-section-button small{font-size:.71rem}.fc-admin-shell{margin-top:16px}}
 </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>FarmConnect · Administration</h1><small>Mulungushi University | Zambia | Supabase</small></div>
 <nav><a href="#" id="logout">Sign out</a></nav></header>
 <main><div class="intro"><div><h2>Administrator workspace</h2><p class="muted">Publish agricultural news, manage partner advertising, and maintain verified market data in one secure workspace.</p></div><span id="who" class="pill">Checking admin access…</span></div>
 <div id="loginMessage"></div>
-<div class="grid fc-admin-overview">
-  <div class="metric"><small>Pending market listings</small><strong id="pendingMetric">—</strong><span class="muted">Review buyer and seller requests</span></div>
-  <div class="metric"><small>Published news & drafts</small><strong id="newsMetric">—</strong><span class="muted">Edit articles and media</span></div>
-  <div class="metric"><small>Advertisement campaigns</small><strong id="adMetric">—</strong><span class="muted">Manage sponsor placements</span></div>
- </div>
- <div hidden aria-hidden="true"><span id="historyMetric"></span><span id="commodityMetric"></span><span id="marketMetric"></span><span id="userMetric"></span></div>
- <section class="card" id="fcFeedbackPanel" hidden>
+<div hidden aria-hidden="true"><span id="pendingMetric"></span><span id="newsMetric"></span><span id="adMetric"></span><span id="historyMetric"></span><span id="commodityMetric"></span><span id="marketMetric"></span><span id="userMetric"></span></div>
+<div class="fc-admin-shell">
+<aside class="fc-admin-sidebar" aria-label="Admin sections">
+<p class="fc-admin-nav-eyebrow">Management</p>
+<nav class="fc-admin-section-nav" aria-label="Admin functions">
+<button type="button" id="fcQuickPending" class="fc-admin-section-button" data-view="pending" aria-controls="fcPendingWorkspace" aria-current="page"><span>Buyer &amp; seller requests</span><small>Review listings</small></button>
+<button type="button" id="fcQuickNews" class="fc-admin-section-button" data-view="news" aria-controls="workspace"><span>News articles</span><small>Publish and edit</small></button>
+<button type="button" id="fcQuickAds" class="fc-admin-section-button" data-view="ads" aria-controls="workspace"><span>Adverts</span><small>Manage campaigns</small></button>
+<button type="button" id="fcQuickInsights" class="fc-admin-section-button" data-view="insights" aria-controls="fcInsightsPanel"><span>Marketplace insights</span><small>Business overview</small></button>
+<button type="button" id="fcQuickFeedback" class="fc-admin-section-button" data-view="feedback" aria-controls="fcFeedbackPanel"><span>Farmer feedback</span><small>Research results</small></button>
+<button type="button" id="fcQuickAppearance" class="fc-admin-section-button" data-view="appearance" aria-controls="fcAppearancePanel"><span>Website appearance</span><small>Images and colours</small></button>
+<button type="button" id="fcQuickAdvanced" class="fc-admin-section-button" data-view="advanced" aria-controls="workspace"><span>Advanced data tools</span><small>Records and imports</small></button>
+</nav>
+<p class="fc-admin-side-note">Only one section is displayed at a time. Your existing records and permissions are unchanged.</p>
+</aside>
+<div class="fc-admin-content" id="fcAdminContent">
+<section class="card" id="fcFeedbackPanel" hidden>
 <div class="controls" style="justify-content:space-between"><div><p style="text-transform:uppercase;letter-spacing:.1em;color:#276344;font-size:.72rem;font-weight:800;margin-bottom:8px">Project validation</p>
 <h3 style="font-size:1.25rem;margin:0">Farmer feedback results</h3><p class="muted">Anonymous ratings and optional comments submitted through the free feedback form.</p></div>
 <button class="secondary" id="fcFeedbackRefresh" type="button">Refresh feedback</button></div>
@@ -93,12 +124,6 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 <p class="muted" id="fcAppearanceStatus" role="status"></p></form>
 <div class="fc-appearance-preview" id="fcAppearancePreview"><div class="fc-appearance-hero-preview" id="fcHeroPreview"><strong>Better prices.<br>Better opportunities.</strong><small>See how your chosen background looks behind homepage text.</small></div><div class="fc-appearance-base-preview">Website page background preview · FarmConnect Zambia</div></div>
 </div></section>
-<section class="card" id="fcEditorialQuick">
-<p style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#2a6b49;margin-bottom:8px">Editorial workspace</p>
-<h3 style="font-size:1.25rem;letter-spacing:-.035em;margin-bottom:6px">Content publishing</h3>
-<p class="muted" style="margin-top:0">Write stories, upload images and short videos, or schedule sponsored messages. Drafts are not public.</p>
-<div class="controls"><button id="fcQuickPending" type="button">Review buyer & seller requests</button><button id="fcQuickNews" type="button" class="secondary">Edit news articles</button><button id="fcQuickAds" type="button" class="secondary">Manage adverts</button><button id="fcQuickInsights" type="button" class="secondary">Marketplace insights</button><button id="fcQuickFeedback" type="button" class="secondary">Farmer feedback</button><button id="fcQuickAppearance" type="button" class="secondary">Website appearance</button><button id="fcQuickAdvanced" type="button" class="secondary">Advanced data tools</button></div>
-</section><p class="warning"><b>Data-quality rule:</b> Use traceable sources for news and market prices. Do not approve misleading listings. Sponsored posts are clearly labelled for visitors.</p>
 <section class="card" id="workspace" hidden><h3 id="fcManageTitle">Manage content and data</h3><div class="controls fc-admin-resources"><a href="news.html" target="_blank" rel="noopener noreferrer">View news ↗</a><a href="index.html" target="_blank" rel="noopener noreferrer">View website ↗</a></div><div class="controls">
 <label for="resource" id="fcAdvancedPickerLabel" hidden>Advanced resource</label><select id="resource" class="grow" hidden>
 <option value="news">News articles</option><option value="advertisements">Advertisements</option><option value="price_history">Price history</option><option value="live_prices">Live price records</option><option value="commodities">Commodities</option><option value="markets">Markets</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option><option value="users">User accounts</option><option value="sms_subscriptions">SMS subscriptions</option><option value="sms_history">SMS history</option><option value="messages">Messages</option><option value="news_comments">News comments</option><option value="news_likes">News likes</option><option value="audit">Admin audit log</option>
@@ -117,6 +142,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 <input id="sourceUrl" placeholder="https://source.example/record" aria-label="Source URL">
 <button id="csvImport" type="button">Import CSV</button></div><p id="importInfo" class="muted" role="status"></p>
 </section>
+</div></div>
 </main><footer>FarmConnect Zambia · Administrator actions are audited</footer>
 <div id="editorBackdrop"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
 <div class="controls" style="justify-content:space-between"><h2 id="editorTitle">Record</h2><button id="closeEditor" class="secondary">Close</button></div>
