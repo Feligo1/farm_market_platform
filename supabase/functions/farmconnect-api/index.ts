@@ -62,11 +62,17 @@ Deno.serve(async (req: Request) => {
   if(contact.length<3||business.length<2||commodity.length<2||location.length<3)
     return respond({success:false,error:"Complete your name, farm/business, commodity and district"},400);
   if(input.consent!==true)return respond({success:false,error:"Consent to publish your business contact number is required"},400);
+  const units=["kg","each","tray","litre","bundle","head","punnet","set","50kg bag","tonne"];
+  const {data:catalogue,error:catalogueError}=await db.from("commodities").select("unit_of_measure").ilike("name",commodity).eq("is_active",true).maybeSingle();
+  if(catalogueError)return respond({success:false,error:"Unable to validate commodity"},503);
+  if(!catalogue)return respond({success:false,error:"Choose a commodity from the published FarmConnect list"},400);
+  const quantityUnit=String(catalogue.unit_of_measure||"kg");
+  if(!units.includes(quantityUnit))return respond({success:false,error:"Unsupported commodity unit"},400);
   const quantity=Number(input.quantity);
   const price=input.price===""||input.price==null?null:Number(input.price);
   if(!Number.isFinite(quantity)||quantity<=0||quantity>1e9||
     (price!==null&&(!Number.isFinite(price)||price<=0||price>1e8)))
-    return respond({success:false,error:"Enter a valid quantity and optional price (ZMW per kg)"},400);
+    return respond({success:false,error:"Enter a valid quantity and optional price for the selected commodity unit"},400);
   const email=clean(input.email,120);
   if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return respond({success:false,error:"Enter a valid email or leave it blank"},400);
@@ -77,9 +83,9 @@ Deno.serve(async (req: Request) => {
   if((count||0)>=3)return respond({success:false,error:"Maximum of three listing requests per phone number in 24 hours. Please try again tomorrow."},429);
   const row=kind==="buyer"?
     {business_name:business,contact_person:contact,contact_phone:phone,contact_email:email||null,commodity,
-     location,min_volume:quantity,max_price:price,notes,status:"pending",is_verified:false,added_by:"public"}:
+     location,min_volume:quantity,quantity_unit:quantityUnit,max_price:price,notes,status:"pending",is_verified:false,added_by:"public"}:
     {farm_name:business,contact_person:contact,contact_phone:phone,contact_email:email||null,commodity,
-     location,available_volume:quantity,price_per_kg:price,notes,status:"pending",is_verified:false};
+     location,available_volume:quantity,quantity_unit:quantityUnit,price_per_kg:price,notes,status:"pending",is_verified:false};
   const {error:insertError}=await db.from(type).insert(row);
   if(insertError){console.error("public listing error",insertError);return respond({success:false,error:"Could not submit your listing"},503)}
   return respond({success:true,message:"Listing submitted successfully. Our administrator will review it before it appears publicly.",status:"pending"},202);
@@ -340,7 +346,7 @@ Deno.serve(async (req: Request) => {
     return respond({success:true,advertisements:ads,count:ads.length});
   }
   if(endpoint==="buyers"||endpoint==="sellers"){
-   const columns=endpoint==="buyers"?"id,business_name,contact_person,contact_phone,commodity,location,max_price,min_volume,notes,is_verified,status":"id,farm_name,contact_person,contact_phone,commodity,available_volume,price_per_kg,location,notes,is_verified,status";
+   const columns=endpoint==="buyers"?"id,business_name,contact_person,contact_phone,commodity,location,max_price,min_volume,quantity_unit,notes,is_verified,status":"id,farm_name,contact_person,contact_phone,commodity,available_volume,quantity_unit,price_per_kg,location,notes,is_verified,status";
    let query=db.from(endpoint).select(columns).eq("is_verified",true).eq("status","active").order("created_at",{ascending:false}).limit(limit);
    const commodity=u.searchParams.get("commodity");if(commodity)query=query.ilike("commodity",commodity);
    const {data,error}=await query;if(error)throw error;
@@ -360,15 +366,15 @@ Deno.serve(async (req: Request) => {
   }
   if(endpoint==="prices" || (endpoint==="real" && u.pathname.endsWith("/prices/real"))){
    // Only real verified observations, no simulated market prices.
-   let query=db.from("price_history").select("id,price,unit,trend,price_date,recorded_at,commodities!inner(name,icon_emoji),markets!inner(name,province)").eq("is_verified",true).neq("data_kind","demo").order("price_date",{ascending:false}).limit(limit);
+   let query=db.from("price_history").select("id,price,unit,trend,price_date,recorded_at,source_name,source_url,source_type,commodities!inner(name,icon_emoji,category),markets!inner(name,province)").eq("is_verified",true).neq("data_kind","demo").order("price_date",{ascending:false}).limit(limit);
    const commodity=u.searchParams.get("commodity"),market=u.searchParams.get("market");
    if(commodity)query=query.eq("commodities.name",commodity);
    if(market)query=query.eq("markets.name",market);
    const {data,error}=await query;if(error)throw error;
    const latest=new Map<string,any>();
     for(const row of data||[]){const key=String(row.commodities?.name)+"|"+String(row.markets?.name);if(!latest.has(key))latest.set(key,row)}
-    const prices=[...latest.values()].map((r:any)=>({id:r.id,commodity_name:r.commodities?.name,commodity:r.commodities?.name,icon_emoji:r.commodities?.icon_emoji,market_name:r.markets?.name,market:r.markets?.name,province:r.markets?.province,price:r.price,unit:r.unit,trend:r.trend,last_updated:r.price_date,price_date:r.price_date,is_verified:true,source_name:"Zambia Ministry of Agriculture",price_status:"historical"}));
-   return respond({success:true,prices,count:prices.length,notice:"Latest available sourced observation per commodity and market. These are historical reports, not real-time price quotations."});
+    const prices=[...latest.values()].map((r:any)=>({id:r.id,commodity_name:r.commodities?.name,commodity:r.commodities?.name,icon_emoji:r.commodities?.icon_emoji,category:r.commodities?.category,market_name:r.markets?.name,market:r.markets?.name,province:r.markets?.province,price:r.price,unit:r.unit,trend:r.trend,last_updated:r.price_date,price_date:r.price_date,is_verified:true,source_name:r.source_name||"Published source",source_url:r.source_url||null,source_type:r.source_type||null,price_status:"historical"}));
+   return respond({success:true,prices,count:prices.length,notice:"Historical government and verified source observations. Units vary by commodity (kg, bird, tray, litre, animal). These are not real-time quotations."});
   }
   return respond({success:false,error:"Unknown endpoint"},404);
  }catch(e){console.error("FarmConnect API failure",e);return respond({success:false,error:"Database request failed"},500);}
