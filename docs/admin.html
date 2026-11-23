@@ -171,6 +171,18 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
  body.fc-admin-redesign .fc-admin-record-toolbar{flex-wrap:wrap}
  body.fc-admin-redesign .fc-admin-record-toolbar input{min-width:0;width:100%}
 }
+</style><style>
+.fc-admin-snapshot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:20px 0}
+.fc-admin-snapshot-card{background:white;border:1px solid #dfe9e1;border-radius:11px;padding:24px;min-height:235px;display:flex;flex-direction:column}
+.fc-admin-snapshot-top{display:flex;flex-direction:column;gap:7px}
+.fc-admin-snapshot-top span{font-size:.65rem;letter-spacing:.14em;color:#5a8969;font-weight:800}
+.fc-admin-snapshot-top strong{font-size:1.05rem;color:#244934;letter-spacing:-.035em}
+.fc-admin-snapshot-card p{font-size:.85rem;line-height:1.6;color:#657d6c;flex:1;margin:16px 0}
+.fc-admin-snapshot-bottom{border-top:1px solid #e5eee7;padding-top:14px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.fc-admin-snapshot-bottom>span:first-child{font-size:1.45rem;letter-spacing:-.04em;font-weight:800;color:#244d37}
+.fc-admin-snapshot-bottom>span:last-child{font-size:.73rem;color:#809082}
+.fc-admin-dashboard-hint{font-size:.82rem;color:#637968;padding:14px 0;border-top:1px solid #e0e8e1}
+@media(max-width:650px){.fc-admin-snapshot{grid-template-columns:1fr}.fc-admin-snapshot-card{min-height:190px;padding:20px}}
 </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>Administration</h1><small>FarmConnect Zambia · Secure workspace</small></div>
@@ -202,16 +214,12 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 <div class="fc-admin-stat"><span>Advertisements</span><strong id="fcOverviewAds">—</strong><small>Total campaigns</small></div>
 <div class="fc-admin-stat"><span>Commodity catalogue</span><strong id="fcOverviewCrops">—</strong><small>Crops and livestock</small></div>
 </div>
-<div class="fc-admin-section-heading"><div><h3>Manage your platform</h3><p>Choose one task. Each opens in its own workspace.</p></div></div>
-<div class="fc-admin-action-grid">
-<button type="button" data-open-admin="pending"><span class="fc-admin-action-icon">01</span><strong>Review listings</strong><small>Approve buyers and sellers</small><span class="fc-admin-action-arrow">Open →</span></button>
-<button type="button" data-open-admin="news"><span class="fc-admin-action-icon">02</span><strong>Publish news</strong><small>Create and edit articles</small><span class="fc-admin-action-arrow">Open →</span></button>
-<button type="button" data-open-admin="ads"><span class="fc-admin-action-icon">03</span><strong>Manage adverts</strong><small>Review campaigns and placements</small><span class="fc-admin-action-arrow">Open →</span></button>
-<button type="button" data-open-admin="insights"><span class="fc-admin-action-icon">04</span><strong>Marketplace insights</strong><small>Monitor activity by commodity</small><span class="fc-admin-action-arrow">Open →</span></button>
-<button type="button" data-open-admin="feedback"><span class="fc-admin-action-icon">05</span><strong>Farmer feedback</strong><small>See usability results</small><span class="fc-admin-action-arrow">Open →</span></button>
-<button type="button" data-open-admin="appearance"><span class="fc-admin-action-icon">06</span><strong>Website appearance</strong><small>Manage images and colours</small><span class="fc-admin-action-arrow">Open →</span></button>
+<div class="fc-admin-section-heading"><div><h3>Operational snapshot</h3><p>What needs attention and when your market data was last updated.</p></div></div>
+<div class="fc-admin-snapshot">
+<div class="fc-admin-snapshot-card"><div class="fc-admin-snapshot-top"><span>01 / MODERATION</span><strong>Marketplace review</strong></div><p id="fcOverviewReviewNote">Checking buyer and seller submissions…</p><div class="fc-admin-snapshot-bottom"><span id="fcOverviewReviewCount">—</span><span>Requests awaiting review</span></div></div>
+<div class="fc-admin-snapshot-card"><div class="fc-admin-snapshot-top"><span>02 / DATA QUALITY</span><strong>Price information</strong></div><p>Market prices are sourced observations, not live quotations. Always check their dates before publishing.</p><div class="fc-admin-snapshot-bottom"><span id="fcOverviewPriceDate">—</span><span>Most recent verified observation</span></div></div>
 </div>
-<div class="fc-admin-overview-foot"><div><strong>Data management</strong><p>Edit commodities, verified prices, markets and audit records in Advanced data tools.</p></div><button type="button" class="secondary" data-open-admin="advanced">Open advanced tools →</button></div>
+<p class="fc-admin-dashboard-hint">Choose a section from the left navigation to manage it. Every function has one workspace.</p>
 <p class="muted" id="fcOverviewStatus" role="status"></p>
 </section>
 <section class="card" id="fcFeedbackPanel" hidden>
@@ -309,6 +317,15 @@ async function loadOverview(){
   $(id).textContent=String(name==='pending_listings'?result.count??result.listings?.length??0:result.count??result.records?.length??0);
  }));
  $('fcOverviewStatus').textContent=outcome.some(x=>x.status==='rejected')?'Some totals are unavailable. You can still open each management section.':'Dashboard updated.';
+ const pending=Number($('fcOverviewPending').textContent);
+ $('fcOverviewReviewCount').textContent=Number.isFinite(pending)?String(pending):'—';
+ $('fcOverviewReviewNote').textContent=Number.isFinite(pending)?(pending===0?'The review queue is clear. New submissions will appear in Buyer & seller requests.':pending+' submitted '+(pending===1?'listing needs':'listings need')+' administrator review before publication.'):'The moderation queue is temporarily unavailable.';
+ try{
+  const details=await api('GET','market_insights');
+  const when=details.latest_price_observation;
+  $('fcOverviewPriceDate').textContent=when?dateLabel(when):'Not available';
+ }catch{$('fcOverviewPriceDate').textContent='Unavailable'}
+
 }
 $('fcOverviewRefresh').onclick=loadOverview;
 $('fcQuickOverview').onclick=()=>selectAdminSection('overview');
