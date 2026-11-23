@@ -31,9 +31,9 @@
 <div class="fc-field"><label for="fcLatestSearch">Search</label><input id="fcLatestSearch" type="search" placeholder="Search crop or market"></div>
 <button type="button" id="fcLatestRefresh" class="fc-button secondary">Refresh</button>
 </div>
-<div class="fc-data-caption"><strong id="fcLatestCount">Loading prices…</strong><small>All prices in Zambian kwacha per kilogram unless specified</small></div>
+<div class="fc-data-caption"><strong id="fcLatestCount">Loading prices…</strong><small>All prices in Zambian kwacha per the unit shown (kg, bird, animal, tray, litre or other)</small></div>
 <div class="fc-table-wrap"><table class="fc-table"><thead><tr><th scope="col">Commodity</th><th scope="col">Market coverage</th><th scope="col">Published price</th><th scope="col">Observation date</th></tr></thead><tbody id="fcLatestRows"><tr><td colspan="4">Loading published prices…</td></tr></tbody></table></div>
-<p class="fc-source">Price data: Zambia Ministry of Agriculture, national monthly averages. Local market rates can differ. Historical data should not be presented as a real-time quote.</p>
+<p class="fc-source">Historical sources: Zambia Ministry of Agriculture and Ministry of Fisheries and Livestock. National averages are not live local offers.</p>
 </section>
 
 <section class="fc-panel" id="fcHistoryPanel" role="tabpanel" aria-labelledby="fcHistoryTab" hidden>
@@ -115,7 +115,7 @@ function renderLatest(){
  const term=$('fcLatestSearch').value.trim().toLowerCase(),commodity=$('fcLatestCommodity').value;
  const rows=latest.filter(p=>(!commodity||p.commodity===commodity)&&(!term||(p.commodity+' '+p.market).toLowerCase().includes(term)));
  const t=$('fcLatestRows');t.replaceChildren();
- for(const p of rows)appendRow(t,[p.commodity,p.market,kwacha(p.price)+'/kg',month(p.date)],[2]);
+ for(const p of rows)appendRow(t,[p.commodity,p.market,kwacha(p.price)+' / '+(p.unit||'kg'),month(p.date)],[2]);
  if(!rows.length)emptyTable('fcLatestRows',4,'No published prices match these filters.');
  $('fcLatestCount').textContent=rows.length+' published commodity prices';
 }
@@ -125,7 +125,7 @@ async function loadLatest(){
    const response=await request('/prices?limit=500');
    const unique=new Map();
    for(const p of response.prices||[]){
-     const item={commodity:p.commodity_name||p.commodity,market:p.market_name||p.market,date:String(p.price_date||p.last_updated||'').slice(0,10),price:safeNum(p.price)};
+     const item={commodity:p.commodity_name||p.commodity,market:p.market_name||p.market,date:String(p.price_date||p.last_updated||'').slice(0,10),price:safeNum(p.price),unit:p.unit||'kg',category:p.category||'Other',source:p.source_name||'Published source'};
      if(!item.commodity||!item.market||item.price<=0)continue;
      const key=item.commodity+'|'+item.market,prev=unique.get(key);
      if(!prev||item.date>prev.date)unique.set(key,item);
@@ -151,7 +151,7 @@ function showChart(id,existing,labels,series){
   backgroundColor:i===0?'rgba(35,92,64,.09)':'rgba(209,163,74,.09)',
   borderWidth:2.5,pointRadius:3,pointHoverRadius:5,tension:.18,spanGaps:false,
   borderDash:i===0?[]:[6,5]
- }))},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:series.length>1,position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+kwacha(c.parsed.y)+'/kg'}}},scales:{y:{title:{display:true,text:'ZMW per kg'},beginAtZero:false},x:{ticks:{maxRotation:0,autoSkip:true,maxTicksLimit:10}}}}});
+ }))},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:series.length>1,position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+kwacha(c.parsed.y)+' / '+(latest.find(p=>p.commodity===$('fcHistoryCommodity').value)?.unit||'kg')}}},scales:{y:{title:{display:true,text:'ZMW per selected unit'},beginAtZero:false},x:{ticks:{maxRotation:0,autoSkip:true,maxTicksLimit:10}}}}});
 }
 async function loadHistory(){
  const commodity=$('fcHistoryCommodity').value,market=$('fcHistoryMarket').value;
@@ -161,7 +161,7 @@ async function loadHistory(){
    const response=await request('/prices/history?days=3650&commodity='+encodeURIComponent(commodity)+'&market='+encodeURIComponent(market));
    const rows=(response.history||[]).filter(x=>x.is_verified&&x.data_kind!=='demo'&&safeNum(x.price)>0).sort((a,b)=>String(a.price_date).localeCompare(String(b.price_date)));
    const tbody=$('fcHistoryRows');tbody.replaceChildren();
-   for(const p of [...rows].reverse())appendRow(tbody,[month(p.price_date),p.commodity||commodity,p.market||market,kwacha(p.price)+'/kg',p.source_name||'Published source'],[3]);
+   for(const p of [...rows].reverse())appendRow(tbody,[month(p.price_date),p.commodity||commodity,p.market||market,kwacha(p.price)+' / '+(p.unit||'kg'),p.source_name||'Published source'],[3]);
    if(!rows.length)emptyTable('fcHistoryRows',5,'No sourced historical prices found for this selection.');
    $('fcHistoryCount').textContent=rows.length+' historical observations';
    status('fcHistoryStatus',rows.length?'Showing published observations for '+commodity+' · '+market:'No sourced monthly observations for this selection.');
@@ -177,15 +177,15 @@ async function loadForecast(){
  try{
    const data=await request('/forecast?'+new URLSearchParams({commodity,market,months}));
    if(!Array.isArray(data.forecast)||!data.forecast.length)throw Error('No forecast observations were returned.');
-   $('fcLastPrice').textContent=kwacha(data.current_price)+'/kg';
+   $('fcLastPrice').textContent=kwacha(data.current_price)+' / '+(latest.find(p=>p.commodity===commodity)?.unit||'kg');
    $('fcLastDate').textContent='Recorded '+month(data.last_observed_date);
-   $('fcNextPrice').textContent=kwacha(data.forecast[0].predicted_price)+'/kg';
+   $('fcNextPrice').textContent=kwacha(data.forecast[0].predicted_price)+' / '+(latest.find(p=>p.commodity===commodity)?.unit||'kg');
    $('fcNextMonth').textContent=month(data.forecast[0].date);
    $('fcForecastMethod').textContent='Monthly trend';
    $('fcForecastObservations').textContent=data.observations+' recorded months';
    $('fcForecastNotice').textContent=data.notice||'Experimental forecast; interpret cautiously.';
    const t=$('fcForecastRows');t.replaceChildren();
-   for(const item of data.forecast)appendRow(t,[month(item.date),kwacha(item.predicted_price)+'/kg',kwacha(item.lower_estimate)+'/kg',kwacha(item.upper_estimate)+'/kg'],[1,2,3]);
+   for(const item of data.forecast)appendRow(t,[month(item.date),kwacha(item.predicted_price)+' / '+(latest.find(p=>p.commodity===commodity)?.unit||'kg'),kwacha(item.lower_estimate)+' / '+(latest.find(p=>p.commodity===commodity)?.unit||'kg'),kwacha(item.upper_estimate)+' / '+(latest.find(p=>p.commodity===commodity)?.unit||'kg')],[1,2,3]);
    const historical=data.historical||[], forecasts=data.forecast||[];
    const labels=[...historical.map(x=>month(x.date)),...forecasts.map(x=>month(x.date))];
    const recorded=[...historical.map(x=>safeNum(x.price)),...forecasts.map(()=>null)];
