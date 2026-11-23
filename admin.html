@@ -571,8 +571,63 @@ $('fcQuickNews').onclick=()=>selectAdminSection('news');
 $('fcQuickAds').onclick=()=>selectAdminSection('ads');
 
 const reviewed=(text)=>String(text??'');
+let pendingItems=[],pendingSelection=new Set();
+const selectionKey=row=>row.kind+':'+row.id;
+function updatePendingSelected(){
+ const n=pendingSelection.size;
+ $('fcPendingSelected').textContent=n+' selected (maximum 20 per action)';
+ $('fcPendingApproveSelected').disabled=n===0||n>20;
+ $('fcPendingRejectSelected').disabled=n===0||n>20;
+ const visible=pendingItems.filter(pendingMatches);
+ $('fcPendingSelectAll').checked=visible.length>0&&visible.every(row=>pendingSelection.has(selectionKey(row)));
+}
+function pendingMatches(row){
+ const term=$('fcPendingSearch').value.trim().toLowerCase();
+ const type=$('fcPendingType').value;
+ return (!type||row.kind===type)&&(!term||[row.commodity,row.location,row.name,row.contact_person,row.contact_phone].join(' ').toLowerCase().includes(term));
+}
+function renderPending(){
+ const list=pendingItems.filter(pendingMatches).sort((a,b)=>$('fcPendingSort').value==='oldest'?String(a.created_at).localeCompare(String(b.created_at)):String(b.created_at).localeCompare(String(a.created_at)));
+ const root=$('fcPendingCards');root.replaceChildren();
+ for(const entry of list)root.append(listingCard(entry));
+ if(!list.length){const note=document.createElement('p');note.className='muted';note.textContent=pendingItems.length?'No submissions match the filters.':'No pending submissions. New requests appear here for review.';root.append(note)}
+ $('fcPendingStatus').textContent=list.length+' of '+pendingItems.length+' pending requests shown';
+ updatePendingSelected();
+}
+async function reviewSelected(action){
+ const items=pendingItems.filter(x=>pendingSelection.has(selectionKey(x)));
+ if(!items.length||items.length>20)return;
+ const operation=action==='approve'?'publish':'reject';
+ if(!confirm('Confirm '+operation+' for '+items.length+' selected request(s)? Each action is audited.'))return;
+ const buttons=[$('fcPendingApproveSelected'),$('fcPendingRejectSelected')];
+ buttons.forEach(b=>b.disabled=true);
+ try{
+  const result=await api('POST','bulk_review',{action,listings:items.map(x=>({kind:x.kind,id:x.id}))});
+  pendingSelection.clear();
+  await loadPending();
+  $('fcPendingStatus').textContent=result.updated+' processed; '+result.failed+' failed. '+(result.failed?'Reload and review any conflicts.':'');
+ }catch(e){$('fcPendingStatus').textContent='Bulk review failed: '+e.message}
+ finally{updatePendingSelected()}
+}
+$('fcPendingSearch').addEventListener('input',renderPending);
+$('fcPendingType').addEventListener('change',renderPending);
+$('fcPendingSort').addEventListener('change',renderPending);
+$('fcPendingSelectAll').addEventListener('change',e=>{
+ const visible=pendingItems.filter(pendingMatches);
+ for(const row of visible){
+  if(e.target.checked && pendingSelection.size<20)pendingSelection.add(selectionKey(row));
+  else if(!e.target.checked)pendingSelection.delete(selectionKey(row));
+ }
+ renderPending();
+});
+$('fcPendingApproveSelected').onclick=()=>reviewSelected('approve');
+$('fcPendingRejectSelected').onclick=()=>reviewSelected('reject');
 const listingCard=(entry)=>{
   const div=document.createElement('article');div.className='fc-admin-pending';
+  const select=document.createElement('label');select.className='fc-admin-pending-check';
+  const box=document.createElement('input');box.type='checkbox';box.checked=pendingSelection.has(selectionKey(entry));
+  box.addEventListener('change',()=>{if(box.checked)pendingSelection.add(selectionKey(entry));else pendingSelection.delete(selectionKey(entry));updatePendingSelected()});
+  select.append(box,document.createTextNode('Select for batch review'));div.append(select);
   const title=document.createElement('h4');title.textContent=(entry.kind==='buyer'?'Buying request':'Selling offer')+' · '+reviewed(entry.commodity);div.append(title);
   const info=document.createElement('p');info.className='muted';
   info.textContent=[entry.name||'Unnamed',entry.contact_person,entry.location].filter(Boolean).join(' · ');div.append(info);
@@ -594,11 +649,10 @@ async function loadPending(){
  $('fcPendingStatus').textContent='Loading requests…';
  try{
   const data=await api('GET','pending_listings');
-  const items=data.listings||[],root=$('fcPendingCards');root.replaceChildren();
-  for(const entry of items)root.append(listingCard(entry));
-  if(!items.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='No submissions awaiting review. New buyer and seller requests will appear here.';root.append(empty)}
-  $('pendingMetric').textContent=String(items.length);
-  $('fcPendingStatus').textContent=items.length+' pending '+(items.length===1?'request':'requests');
+  pendingItems=data.listings||[];
+  pendingSelection=new Set([...pendingSelection].filter(key=>pendingItems.some(x=>selectionKey(x)===key)));
+  $('pendingMetric').textContent=String(pendingItems.length);
+  renderPending();
  }catch(e){$('pendingMetric').textContent='—';$('fcPendingStatus').textContent=e.message}
 }
 $('fcPendingRefresh').onclick=loadPending;
