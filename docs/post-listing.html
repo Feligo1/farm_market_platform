@@ -1,0 +1,123 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Post what you need to buy or sell on FarmConnect Zambia. Free farmer and buyer listings without account registration."><title>Post a Buyer or Seller Listing | FarmConnect Zambia</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="farmconnect-redesign.css?v=4"><link rel="stylesheet" href="farmconnect-mobile.css?v=1"><meta name="theme-color" content="#235c40"><script src="farmconnect-nav.js?v=20261123-2" defer></script>
+<style>
+.fc-post-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(240px,.75fr);gap:24px;align-items:start}
+.fc-post-form{background:#fff;border:1px solid var(--fc-line);border-radius:12px;padding:30px}
+.fc-post-type{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:28px}
+.fc-role{border:1.5px solid #d6e3d9;border-radius:10px;background:#f9fbf9;text-align:left;padding:19px;cursor:pointer;min-height:105px;font:inherit}
+.fc-role strong{display:block;font-size:1rem;color:#22372a}
+.fc-role span{display:block;font-size:.83rem;line-height:1.55;color:#6b796e;margin-top:5px}
+.fc-role[aria-pressed=true]{border-color:#235c40;background:#eaf4eb;box-shadow:inset 0 0 0 1px #235c40}
+.fc-form-section{border-top:1px solid #e6eee8;margin-top:24px;padding-top:24px}
+.fc-form-section h2{font-size:1.15rem;margin:0 0 4px;letter-spacing:-.025em}
+.fc-form-section>p{font-size:.85rem;color:#617368;margin-bottom:15px}
+.fc-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.fc-form-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fc-form-field.full{grid-column:1/-1}
+.fc-form-field label{font-size:.83rem;font-weight:750;color:#344c3b}
+.fc-form-field label small{font-size:.74rem;color:#778579;font-weight:500}
+.fc-form-field input,.fc-form-field textarea,.fc-form-field select{width:100%;font:inherit;font-size:16px;min-height:47px;padding:11px 12px;background:#fff;border:1px solid #bacfbe;border-radius:8px;color:#1e3424}
+.fc-form-field textarea{min-height:95px;resize:vertical}
+.fc-form-field input:focus,.fc-form-field textarea:focus{outline:3px solid #d5e6d9;border-color:#235c40}
+.fc-form-field .fc-note{margin:0;font-size:.76rem}
+.fc-consent{display:flex;gap:11px;align-items:flex-start;padding:15px;border:1px solid #dae7dd;background:#f3f8f4;border-radius:9px;margin:22px 0;font-size:.87rem;color:#405847}
+.fc-consent input{width:19px;height:19px;flex-shrink:0;margin-top:2px;accent-color:#235c40}
+.fc-post-submit{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.fc-post-submit .fc-button{min-width:200px}
+.fc-post-info{background:#edf5ee;border:1px solid #d9e6db;border-radius:12px;padding:24px;position:sticky;top:98px}
+.fc-post-info h2{font-size:1.24rem;letter-spacing:-.035em;margin-bottom:18px}
+.fc-post-step{display:grid;grid-template-columns:32px 1fr;gap:12px;margin:16px 0}
+.fc-post-step>strong{background:#235c40;color:white;border-radius:50%;display:grid;place-items:center;font-size:.82rem;width:30px;height:30px}
+.fc-post-step b{display:block;font-size:.91rem}
+.fc-post-step p{font-size:.82rem;color:#5d7162;margin:2px 0}
+.fc-post-status{margin-top:16px;padding:13px;border-radius:8px;min-height:48px}
+.fc-post-status:empty{display:none}
+.fc-post-status.ok{background:#e8f7e9;color:#1e633c;border:1px solid #bce0c4}
+.fc-post-status.error{background:#fff2ef;color:#a33a30;border:1px solid #e8c4bf}
+.fc-hidden-field{position:absolute;left:-99999px;opacity:0}
+@media(max-width:900px){.fc-post-layout{grid-template-columns:1fr}.fc-post-info{position:static}}
+@media(max-width:650px){.fc-post-form{padding:18px}.fc-post-type{gap:9px}.fc-role{padding:14px;min-height:120px}.fc-role strong{font-size:.91rem}.fc-role span{font-size:.77rem}.fc-form-grid{grid-template-columns:1fr}.fc-post-submit .fc-button{width:100%}.fc-post-info{padding:19px}}
+</style></head>
+<body class="fc-redesign">
+<main class="fc-main">
+<section class="fc-page-head"><div class="fc-wrap"><p class="fc-eyebrow">Free marketplace posting</p><h1>Tell Zambia what you buy or sell.</h1><p class="fc-lead">Create a clear produce listing in a few steps. No password, account or payment needed. Your listing is reviewed before it becomes public.</p></div></section>
+<section class="fc-section"><div class="fc-wrap fc-post-layout">
+<form id="fcPostForm" class="fc-post-form" novalidate>
+<p class="fc-eyebrow">Step 1 · Choose your role</p>
+<div class="fc-post-type" role="group" aria-label="Choose listing type">
+<button type="button" id="fcSellRole" class="fc-role" aria-pressed="true" data-role="seller"><strong>I want to sell</strong><span>Tell buyers what produce you have available.</span></button>
+<button type="button" id="fcBuyRole" class="fc-role" aria-pressed="false" data-role="buyer"><strong>I want to buy</strong><span>Tell farmers what crops and quantities you need.</span></button>
+</div>
+<div class="fc-form-section"><h2>About you</h2><p>So interested people know who to contact and where you are located.</p>
+<div class="fc-form-grid">
+<div class="fc-form-field"><label for="fcContactPerson">Your name *</label><input id="fcContactPerson" name="contact_person" type="text" maxlength="90" minlength="3" autocomplete="name" required placeholder="Your full name"></div>
+<div class="fc-form-field"><label for="fcBusinessName" id="fcBusinessLabel">Farm / business name *</label><input id="fcBusinessName" name="business_name" type="text" maxlength="90" minlength="2" required placeholder="Your farm or business"></div>
+<div class="fc-form-field"><label for="fcPhone">Phone / WhatsApp number *</label><input id="fcPhone" name="phone" type="tel" autocomplete="tel" maxlength="32" required placeholder="097XXXXXXX"><p class="fc-note">Use a Zambian mobile number: 09… or 07…</p></div>
+<div class="fc-form-field"><label for="fcEmail">Email <small>(optional)</small></label><input id="fcEmail" type="email" name="email" maxlength="120" autocomplete="email" placeholder="you@example.com"></div>
+<div class="fc-form-field full"><label for="fcLocation">Town / district / province *</label><input id="fcLocation" name="location" type="text" maxlength="120" minlength="3" required placeholder="e.g. Kabwe, Central Province"></div>
+</div></div>
+<div class="fc-form-section"><h2 id="fcProduceHeading">What are you selling?</h2><p id="fcProduceIntro">Provide enough details for buyers to understand your offer.</p>
+<div class="fc-form-grid">
+<div class="fc-form-field full"><label for="fcCommodity">Commodity *</label><input id="fcCommodity" name="commodity" list="fcCropList" maxlength="90" required placeholder="e.g. Maize"><datalist id="fcCropList"></datalist></div>
+<div class="fc-form-field"><label for="fcQuantity" id="fcQuantityLabel">Quantity available (kg) *</label><input id="fcQuantity" name="quantity" type="number" min="1" max="1000000000" step="0.01" inputmode="decimal" placeholder="e.g. 500" required></div>
+<div class="fc-form-field"><label for="fcPrice" id="fcPriceLabel">Asking price per kg (K) <small>(optional)</small></label><input id="fcPrice" name="price" type="number" min="0.01" max="100000000" step="0.01" inputmode="decimal" placeholder="e.g. 12.50"></div>
+<div class="fc-form-field full"><label for="fcNotes">Additional details <small>(optional)</small></label><textarea id="fcNotes" name="notes" maxlength="500" placeholder="Crop quality, collection location, expected availability, preferred contact hours…"></textarea></div>
+</div></div>
+<div class="fc-hidden-field" aria-hidden="true"><label for="fcWebsite">Website</label><input id="fcWebsite" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+<label class="fc-consent"><input id="fcConsent" name="consent" type="checkbox" required><span>I agree that FarmConnect may display this listing, my name, business name, location and phone number publicly after administrator review. I understand that other people can call or message me about the listing.</span></label>
+<div class="fc-post-submit"><button id="fcPostSubmit" type="submit" class="fc-button">Submit listing for review →</button><a class="fc-link" href="find-buyers.html">Back to marketplace</a></div>
+<div class="fc-post-status" id="fcPostStatus" role="status" aria-live="polite"></div>
+</form>
+<aside class="fc-post-info"><p class="fc-eyebrow">How it works</p><h2>Simple and secure</h2>
+<div class="fc-post-step"><strong>1</strong><div><b>Describe what you need</b><p>Choose buying or selling and tell farmers about the crop, quantity and location.</p></div></div>
+<div class="fc-post-step"><strong>2</strong><div><b>We review your listing</b><p>New listings are checked by a FarmConnect administrator before publication.</p></div></div>
+<div class="fc-post-step"><strong>3</strong><div><b>Interested people contact you</b><p>Buyers and sellers can call or WhatsApp the mobile number you provide.</p></div></div>
+<hr style="border:0;border-top:1px solid #d2e1d6;margin:20px 0">
+<p class="fc-note"><strong>Safety:</strong> Never send an advance payment to someone you have not verified. Confirm commodity quality, quantities, price and meeting arrangements independently. Do not post someone else's phone number.</p>
+</aside>
+</div></section></main>
+<footer class="fc-footer"><div class="fc-wrap fc-footer-row"><span>FarmConnect Zambia · Free public listing requests</span><span><a href="find-buyers.html">Browse marketplace</a> · <a href="prices.html">Compare prices</a></span></div></footer>
+<script>
+(()=>{
+'use strict';
+const API='https://qlfsmwvehigoildkuevq.supabase.co/functions/v1/farmconnect-api';
+const $=id=>document.getElementById(id);let kind='seller';
+function selectRole(type){
+ kind=type==='buyer'?'buyer':'seller';
+ $('fcSellRole').setAttribute('aria-pressed',String(kind==='seller'));
+ $('fcBuyRole').setAttribute('aria-pressed',String(kind==='buyer'));
+ $('fcBusinessLabel').textContent=kind==='seller'?'Farm / business name *':'Business / buyer name *';
+ $('fcQuantityLabel').textContent=kind==='seller'?'Quantity available (kg) *':'Quantity wanted (kg) *';
+ $('fcPriceLabel').textContent=kind==='seller'?'Asking price per kg (K) (optional)':'Maximum buying price per kg (K) (optional)';
+ $('fcProduceHeading').textContent=kind==='seller'?'What are you selling?':'What do you want to buy?';
+ $('fcProduceIntro').textContent=kind==='seller'?'Give buyers enough information about your produce.':'Tell sellers exactly what crop and quantity you need.';
+ $('fcPostSubmit').textContent=kind==='seller'?'Submit selling offer →':'Submit buying request →';
+}
+$('fcSellRole').addEventListener('click',()=>selectRole('seller'));
+$('fcBuyRole').addEventListener('click',()=>selectRole('buyer'));
+const requested=new URLSearchParams(location.search).get('type');selectRole(requested);
+async function loadCrops(){try{
+ const r=await fetch(API+'/commodities?limit=100');if(!r.ok)return;const data=await r.json();const list=$('fcCropList');
+ for(const crop of data.commodities||[]){const option=document.createElement('option');option.value=crop.name;list.append(option)}
+}catch{}}
+function status(message,error=false){const n=$('fcPostStatus');n.className='fc-post-status '+(error?'error':'ok');n.textContent=message;n.scrollIntoView({behavior:'smooth',block:'nearest'})}
+$('fcPostForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const form=$('fcPostForm');if(!form.reportValidity())return;
+ if(!$('fcConsent').checked){status('Please agree to make your contact details public after review.',true);return}
+ const button=$('fcPostSubmit');button.disabled=true;button.textContent='Submitting…';
+ const body={kind,contact_person:$('fcContactPerson').value.trim(),business_name:$('fcBusinessName').value.trim(),phone:$('fcPhone').value.trim(),
+ email:$('fcEmail').value.trim(),location:$('fcLocation').value.trim(),commodity:$('fcCommodity').value.trim(),quantity:$('fcQuantity').value,
+ price:$('fcPrice').value,notes:$('fcNotes').value.trim(),website:$('fcWebsite').value,consent:$('fcConsent').checked};
+ try{
+  const response=await fetch(API+'/listings',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(body)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||data.success===false)throw Error(data.error||'Unable to submit listing');
+  status('Your '+(kind==='buyer'?'buying request':'selling offer')+' has been submitted successfully. It will appear in the marketplace after an administrator reviews it.');
+  form.reset();selectRole(kind);
+ }catch(err){status(err.message||'Please check the details and try again.',true)}
+ finally{button.disabled=false;button.textContent=kind==='seller'?'Submit selling offer →':'Submit buying request →'}
+});
+loadCrops();
+})();
+</script></body></html>
