@@ -277,7 +277,7 @@
             </section>
 
             <section class="tabs" aria-label="Price views">
-                <button class="tab-btn active" data-tab="live"><i class="fas fa-bolt"></i> Live Prices</button>
+                <button class="tab-btn active" data-tab="live"><i class="fas fa-book-open"></i> Latest Published Prices</button>
                 <button class="tab-btn" data-tab="historical"><i class="fas fa-clock-rotate-left"></i> Historical Prices</button>
                 <button class="tab-btn" data-tab="forecast"><i class="fas fa-chart-simple"></i> Forecast Prices</button>
             </section>
@@ -307,7 +307,7 @@
                     <div style="overflow-x:auto;">
                         <table class="data-table">
                             <thead><tr><th>Commodity</th><th>Market</th><th>Province</th><th>Price</th><th>Trend</th><th>Recommendation</th><th>Updated</th></tr></thead>
-                            <tbody id="liveTableBody"><tr><td colspan="7" class="empty-state"><span class="loading-spinner"></span> Loading live prices...</td></tr></tbody>
+                            <tbody id="liveTableBody"><tr><td colspan="7" class="empty-state"><span class="loading-spinner"></span> Loading published prices...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -322,7 +322,7 @@
                     <button class="btn" id="applyHistFilters"><i class="fas fa-filter"></i> Load History</button>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-header"><h3><i class="fas fa-clock-rotate-left"></i> Historical Trend (demo records clearly marked)</h3><span class="badge" id="historyCountBadge">Waiting</span></div>
+                    <div class="chart-header"><h3><i class="fas fa-clock-rotate-left"></i> Historical Price Trends (published observations)</h3><span class="badge" id="historyCountBadge">Waiting</span></div>
                     <div class="chart-wrapper"><canvas id="historyChart"></canvas></div>
                 </div>
                 <div class="table-card">
@@ -480,7 +480,9 @@
             fillSelect('forecastCommodity', commodityNames.length ? commodityNames : ['Maize'], null);
             fillSelect('liveMarket', ['all', ...marketNames], 'All Markets');
             fillSelect('histMarket', ['all', ...marketNames], 'All Markets');
-            fillSelect('forecastMarket', ['all', ...marketNames], 'All Markets');
+            if (marketNames.includes('National Average')) document.getElementById('histMarket').value='National Average';
+            fillSelect('forecastMarket', marketNames, null);
+            if (marketNames.includes('National Average')) document.getElementById('forecastMarket').value='National Average';
             if (commodityNames.includes('Maize')) {
                 document.getElementById('histCommodity').value = 'Maize';
                 document.getElementById('forecastCommodity').value = 'Maize';
@@ -504,7 +506,9 @@
                 trend: item.trend || 'stable',
                 recommendation: item.recommendation || 'Monitor',
                 confidence: number(item.confidence, 60),
-                updated: item.last_updated || item.updated_at
+                updated: item.last_updated || item.updated_at,
+                is_verified: item.is_verified === true,
+                price_date: item.price_date
             };
         }
 
@@ -526,7 +530,7 @@
                 renderLiveInsights();
                 updateHero();
             } catch (error) {
-                showToast(error.message || 'Failed to load live prices.', 'error');
+                showToast(error.message || 'Failed to load published prices.', 'error');
             }
         }
 
@@ -564,7 +568,7 @@
             const tbody = document.getElementById('liveTableBody');
             const rows = state.filteredLive;
             if (!rows.length) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No live prices match your filters.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No published historical prices match your filters.</td></tr>';
                 return;
             }
             tbody.innerHTML = rows.map(item => `
@@ -572,7 +576,7 @@
                     <td><strong>${safe(item.commodity)}</strong></td>
                     <td>${safe(item.market)}</td>
                     <td>${safe(item.province)}</td>
-                    <td class="price-cell">${money(item.price)} ${item.data_kind === 'demo' ? '<span style="display:inline-block;background:#fff0bb;color:#684600;font-size:11px;padding:3px 6px;border-radius:5px">DEMO — NOT REAL</span>' : (item.is_verified ? '<span style="font-size:11px;color:#167442">Verified</span>' : '<span style="font-size:11px;color:#945400">Unverified</span>')}</td>
+                    <td class="price-cell">${money(item.price)} ${'<span style="font-size:11px;color:#167442">Published historical price</span>'}</td>
                     <td class="${trendClass(item.trend)}"><i class="fas ${trendIcon(item.trend)}"></i> ${safe(item.trend)}</td>
                     <td><span class="badge">${safe(item.recommendation)}</span></td>
                     <td><small>${formatDateTime(item.updated)}</small></td>
@@ -699,7 +703,7 @@
         function renderForecastChart() {
             const forecast = state.forecast;
             if (!forecast) return;
-            const labels = ['Last recorded', ...forecast.rows.map(row => formatDate(row.date))];
+            const labels = [formatDate(forecast.lastObserved), ...forecast.rows.map(row => formatDate(row.date))];
             const values = [forecast.current, ...forecast.rows.map(row => number(row.predicted_price))];
             if (forecastChart) forecastChart.destroy();
             forecastChart = new Chart(document.getElementById('forecastChart'), {
