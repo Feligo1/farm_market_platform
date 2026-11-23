@@ -72,17 +72,84 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 .fc-admin-content .fc-admin-resources{margin:8px 0 15px}
 @media(max-width:980px){.fc-admin-shell{grid-template-columns:1fr;gap:16px}.fc-admin-sidebar{position:static}.fc-admin-section-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.fc-admin-side-note{display:none}}
 @media(max-width:600px){.fc-admin-section-nav{grid-template-columns:1fr 1fr}.fc-admin-section-button{padding:11px}.fc-admin-section-button span{font-size:.82rem}.fc-admin-section-button small{font-size:.71rem}.fc-admin-shell{margin-top:16px}}
+</style><style>
+/* Distinct, app-style administrator workspace. No public navigation or decoration. */
+body.fc-admin-redesign{background:#f5f7f5!important;color:#1c2e25!important;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+body.fc-admin-redesign #fc-global-nav{display:none!important}
+body.fc-admin-redesign>header{background:#fff!important;color:#223c2b!important;border-bottom:1px solid #e0e7e1;padding:14px max(24px,3vw)!important;box-shadow:none!important;position:relative;z-index:2}
+body.fc-admin-redesign>header h1{font-size:1.02rem!important;font-weight:780;color:#213b2b;margin:0}
+body.fc-admin-redesign>header small{color:#7a8d7e!important;font-size:.73rem}
+body.fc-admin-redesign>header a{color:#245b40!important;font-size:.84rem;font-weight:700}
+body.fc-admin-redesign>main{max-width:1680px;padding:30px clamp(18px,3vw,44px);margin:0 auto}
+body.fc-admin-redesign .intro{padding:0 0 13px;border-bottom:1px solid #e0e8e1}
+body.fc-admin-redesign .intro h2{font-size:clamp(1.65rem,2.5vw,2.25rem);font-weight:800;letter-spacing:-.048em;color:#1b3626;margin:5px 0 4px}
+body.fc-admin-redesign .intro p{font-size:.88rem;line-height:1.5;margin:0}
+.fc-admin-kicker{font-size:.67rem;letter-spacing:.14em;font-weight:800;color:#508064}
+body.fc-admin-redesign #loginMessage.ok{font-size:.77rem;margin:12px 0 0;padding:6px 0;background:transparent;color:#5b7967}
+body.fc-admin-redesign #loginMessage.error{margin:12px 0}
+body.fc-admin-redesign #who{font-size:.73rem;padding:8px 12px;background:#e9f4eb;border-radius:100px;color:#256040;font-weight:750}
+body.fc-admin-redesign .fc-admin-shell{grid-template-columns:238px minmax(0,1fr);gap:30px;margin-top:25px}
+body.fc-admin-redesign .fc-admin-sidebar{padding:0;border:0;background:transparent;box-shadow:none;top:20px}
+.fc-admin-brand{display:flex;align-items:center;gap:10px;padding:8px 10px 23px;margin-bottom:16px;border-bottom:1px solid #e0e7e0}
+.fc-admin-brand-mark{display:grid;place-items:center;flex-shrink:0;width:37px;height:37px;border-radius:9px;background:#184d35;color:white;font-weight:800;font-size:.85rem;letter-spacing:-.06em}
+.fc-admin-brand strong{display:block;font-size:.92rem;letter-spacing:-.025em;color:#203d2b}
+.fc-admin-brand small{display:block;font-size:.7rem;color:#708779;margin-top:2px}
+body.fc-admin-redesign .fc-admin-nav-eyebrow{padding:9px 13px;font-size:.64rem;color:#879a8b}
+body.fc-admin-redesign .fc-admin-section-nav{gap:4px}
+body.fc-admin-redesign .fc-admin-section-button{padding:11px 12px;border-radius:8px}
+body.fc-admin-redesign .fc-admin-section-button span{font-size:.88rem}
+body.fc-admin-redesign .fc-admin-section-button small{font-size:.71rem;margin-top:2px}
+body.fc-admin-redesign .fc-admin-section-button[aria-current=page]{background:#e7f2e9;box-shadow:none;border-color:transparent;color:#174a30}
+body.fc-admin-redesign .fc-admin-side-note{border-top:1px solid #e0e7e0;margin-top:25px;font-size:.7rem}
+.fc-admin-content{max-width:100%;overflow:visible}
+.fc-admin-content>.card{border:1px solid #e0e7e1;border-radius:12px;padding:26px;background:#fff;box-shadow:none}
+.fc-admin-overview-page[hidden]{display:none!important}
+.fc-admin-section-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:5px 0 22px}
+.fc-admin-section-heading h3{font-size:1.4rem;letter-spacing:-.04em;margin:6px 0;color:#1d3929}
+.fc-admin-section-heading p{font-size:.84rem;color:#6c7f70;margin:5px 0 0}
+.fc-admin-dashboard-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:40px}
+.fc-admin-stat{border:1px solid #dfe9e1;border-radius:11px;background:#fff;padding:21px;min-width:0}
+.fc-admin-stat>span{font-size:.77rem;font-weight:700;color:#587363}
+.fc-admin-stat strong{font-size:2.1rem;font-weight:800;letter-spacing:-.07em;display:block;margin:9px 0;color:#1d3b29}
+.fc-admin-stat small{font-size:.72rem;color:#778b7c}
+.fc-admin-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+body.fc-admin-redesign .fc-admin-action-grid button{background:#fff;color:#1d3929;border:1px solid #dfe8e1;border-radius:11px;text-align:left;padding:22px;display:flex;flex-direction:column;min-height:173px;box-shadow:none}
+body.fc-admin-redesign .fc-admin-action-grid button:hover{background:#f8fbf8;border-color:#78ac87}
+.fc-admin-action-icon{font-size:.7rem;font-weight:800;color:#4b8760;background:#eaf4ec;border-radius:7px;display:grid;place-items:center;width:32px;height:32px}
+.fc-admin-action-grid strong{display:block;font-size:.99rem;letter-spacing:-.025em;margin-top:16px}
+.fc-admin-action-grid small{font-size:.78rem;color:#718678;margin-top:5px;line-height:1.5}
+.fc-admin-action-arrow{font-size:.76rem;color:#276c47;font-weight:750;margin-top:auto;padding-top:13px}
+.fc-admin-overview-foot{background:#edf5ef;border:1px solid #dcebe0;border-radius:11px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:21px 23px;margin-top:22px}
+.fc-admin-overview-foot strong{color:#274834;font-size:.93rem}
+.fc-admin-overview-foot p{font-size:.82rem;color:#647d6c;margin:5px 0 0}
+body.fc-admin-redesign button:not(.fc-admin-section-button):not(.fc-admin-action-grid button){font-weight:700}
+body.fc-admin-redesign .table-wrap{max-height:650px;overflow:auto;border:1px solid #e1e8e2;border-radius:9px}
+body.fc-admin-redesign table{font-size:.78rem;min-width:0}
+body.fc-admin-redesign td,body.fc-admin-redesign th{padding:13px 12px;border-color:#edf1ed}
+body.fc-admin-redesign th{position:sticky;top:0;background:#f6f9f6;color:#526a58;font-size:.69rem;letter-spacing:.025em;text-transform:uppercase;white-space:nowrap}
+body.fc-admin-redesign td{max-width:240px;color:#334b3c;vertical-align:middle}
+body.fc-admin-redesign tbody tr:hover{background:#fafcf9}
+body.fc-admin-redesign td button{white-space:nowrap;border-radius:6px}
+.fc-admin-record-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 17px}
+.fc-admin-record-toolbar label{font-size:.79rem;font-weight:750;color:#4e6857}
+.fc-admin-record-toolbar input{min-height:41px;min-width:200px;flex:1;padding:9px 12px;background:white;border:1px solid #cddbd0;border-radius:7px;font:inherit;font-size:14px}
+body.fc-admin-redesign #fcSourceTools{margin-top:0}
+body.fc-admin-redesign #workspace .fc-admin-resources{display:none}
+@media(max-width:1180px){.fc-admin-dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.fc-admin-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){body.fc-admin-redesign .fc-admin-shell{grid-template-columns:1fr;gap:20px}.fc-admin-brand{display:none}body.fc-admin-redesign .fc-admin-section-nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}}
+@media(max-width:600px){body.fc-admin-redesign>main{padding:17px 13px}.fc-admin-dashboard-stats{gap:9px}.fc-admin-stat{padding:13px}.fc-admin-stat strong{font-size:1.65rem}.fc-admin-action-grid{grid-template-columns:1fr}.fc-admin-overview-foot{flex-direction:column;align-items:flex-start}body.fc-admin-redesign .fc-admin-section-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.fc-admin-content>.card{padding:16px}body.fc-admin-redesign .intro{align-items:flex-start}}
 </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>FarmConnect · Administration</h1><small>Mulungushi University | Zambia | Supabase</small></div>
 <nav><a href="#" id="logout">Sign out</a></nav></header>
-<main><div class="intro"><div><h2>Administrator workspace</h2><p class="muted">Publish agricultural news, manage partner advertising, and maintain verified market data in one secure workspace.</p></div><span id="who" class="pill">Checking admin access…</span></div>
+<main><div class="intro"><div><span class="fc-admin-kicker">FARMCONNECT / CONTROL CENTER</span><h2 id="fcCurrentPageTitle">Overview</h2><p class="muted" id="fcCurrentPageIntro">Your publishing, marketplace and data operations in one place.</p></div><span id="who" class="pill">Verifying access…</span></div>
 <div id="loginMessage"></div>
 <div hidden aria-hidden="true"><span id="pendingMetric"></span></div>
 <div class="fc-admin-shell">
 <aside class="fc-admin-sidebar" aria-label="Admin sections">
-<p class="fc-admin-nav-eyebrow">Management</p>
+<div class="fc-admin-brand"><span class="fc-admin-brand-mark">FC</span><div><strong>FarmConnect</strong><small>Administration</small></div></div><p class="fc-admin-nav-eyebrow">WORKSPACE</p>
 <nav class="fc-admin-section-nav" aria-label="Admin functions">
+<button type="button" id="fcQuickOverview" class="fc-admin-section-button" data-view="overview" aria-controls="fcOverviewPanel"><span>Overview</span><small>Activity and quick actions</small></button>
 <button type="button" id="fcQuickPending" class="fc-admin-section-button" data-view="pending" aria-controls="fcPendingWorkspace" aria-current="page"><span>Buyer &amp; seller requests</span><small>Review listings</small></button>
 <button type="button" id="fcQuickNews" class="fc-admin-section-button" data-view="news" aria-controls="workspace"><span>News articles</span><small>Publish and edit</small></button>
 <button type="button" id="fcQuickAds" class="fc-admin-section-button" data-view="ads" aria-controls="workspace"><span>Adverts</span><small>Manage campaigns</small></button>
@@ -91,9 +158,29 @@ table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{p
 <button type="button" id="fcQuickAppearance" class="fc-admin-section-button" data-view="appearance" aria-controls="fcAppearancePanel"><span>Website appearance</span><small>Images and colours</small></button>
 <button type="button" id="fcQuickAdvanced" class="fc-admin-section-button" data-view="advanced" aria-controls="workspace"><span>Advanced data tools</span><small>Records and imports</small></button>
 </nav>
-<p class="fc-admin-side-note">Only one section is displayed at a time. Your existing records and permissions are unchanged.</p>
+<div class="fc-admin-side-note">FarmConnect Zambia<br><small>Secure administrator workspace</small></div>
 </aside>
 <div class="fc-admin-content" id="fcAdminContent">
+<section id="fcOverviewPanel" class="fc-admin-overview-page" hidden>
+<div class="fc-admin-section-heading"><div><span class="fc-admin-kicker">WORKSPACE OVERVIEW</span><h3>Good evening, administrator.</h3><p>Start with the work that needs your attention.</p></div><button type="button" class="secondary" id="fcOverviewRefresh">Refresh overview</button></div>
+<div class="fc-admin-dashboard-stats">
+<div class="fc-admin-stat"><span>Pending approvals</span><strong id="fcOverviewPending">—</strong><small>New marketplace requests</small></div>
+<div class="fc-admin-stat"><span>Published articles</span><strong id="fcOverviewNews">—</strong><small>Agricultural news</small></div>
+<div class="fc-admin-stat"><span>Advertisements</span><strong id="fcOverviewAds">—</strong><small>Total campaigns</small></div>
+<div class="fc-admin-stat"><span>Commodity catalogue</span><strong id="fcOverviewCrops">—</strong><small>Crops and livestock</small></div>
+</div>
+<div class="fc-admin-section-heading"><div><h3>Manage your platform</h3><p>Choose one task. Each opens in its own workspace.</p></div></div>
+<div class="fc-admin-action-grid">
+<button type="button" data-open-admin="pending"><span class="fc-admin-action-icon">01</span><strong>Review listings</strong><small>Approve buyers and sellers</small><span class="fc-admin-action-arrow">Open →</span></button>
+<button type="button" data-open-admin="news"><span class="fc-admin-action-icon">02</span><strong>Publish news</strong><small>Create and edit articles</small><span class="fc-admin-action-arrow">Open →</span></button>
+<button type="button" data-open-admin="ads"><span class="fc-admin-action-icon">03</span><strong>Manage adverts</strong><small>Review campaigns and placements</small><span class="fc-admin-action-arrow">Open →</span></button>
+<button type="button" data-open-admin="insights"><span class="fc-admin-action-icon">04</span><strong>Marketplace insights</strong><small>Monitor activity by commodity</small><span class="fc-admin-action-arrow">Open →</span></button>
+<button type="button" data-open-admin="feedback"><span class="fc-admin-action-icon">05</span><strong>Farmer feedback</strong><small>See usability results</small><span class="fc-admin-action-arrow">Open →</span></button>
+<button type="button" data-open-admin="appearance"><span class="fc-admin-action-icon">06</span><strong>Website appearance</strong><small>Manage images and colours</small><span class="fc-admin-action-arrow">Open →</span></button>
+</div>
+<div class="fc-admin-overview-foot"><div><strong>Data management</strong><p>Edit commodities, verified prices, markets and audit records in Advanced data tools.</p></div><button type="button" class="secondary" data-open-admin="advanced">Open advanced tools →</button></div>
+<p class="muted" id="fcOverviewStatus" role="status"></p>
+</section>
 <section class="card" id="fcFeedbackPanel" hidden>
 <div class="controls" style="justify-content:space-between"><div><p style="text-transform:uppercase;letter-spacing:.1em;color:#276344;font-size:.72rem;font-weight:800;margin-bottom:8px">Project validation</p>
 <h3 style="font-size:1.25rem;margin:0">Farmer feedback results</h3><p class="muted">Anonymous ratings and optional comments submitted through the free feedback form.</p></div>
