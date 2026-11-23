@@ -224,6 +224,12 @@ body.fc-admin-redesign tr[hidden]{display:none!important}
 </style><style>
 #workspace.fc-composing > :not(#fcComposer):not(#fcManageTitle){display:none!important}
 #workspace.fc-composing #fcComposer{display:block}
+</style><style>
+.fc-review-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.fc-review-controls select,.fc-review-controls textarea{border:1px solid #ccdcd0;padding:8px 11px;background:white;border-radius:7px;font:inherit;font-size:.81rem;color:#304c39}
+.fc-review-controls textarea{min-width:min(100%,250px);flex:1}
+.fc-review-controls small{font-size:.73rem;color:#598269}
+@media(max-width:660px){.fc-review-controls select,.fc-review-controls textarea{width:100%}}
 </style></head>
 <body class="fc-admin-redesign">
 <header><div><h1>Administration</h1><small>FarmConnect Zambia · Secure workspace</small></div>
@@ -981,7 +987,24 @@ async function loadFeedbackSummary(){
   for(const row of data.comments||[]){
     const card=document.createElement('div');card.style.cssText='padding:13px 15px;margin-bottom:9px;border:1px solid #dbe6df;border-radius:9px;background:#fff';
     const title=document.createElement('strong');title.textContent=row.feature+' · '+row.role+' · '+row.helpfulness+'/5 helpful · '+row.ease+'/5 easy';
-    const p=document.createElement('p');p.textContent=row.comment;p.style.margin='6px 0 0';card.append(title,p);comments.append(card);
+    const p=document.createElement('p');p.textContent=row.comment;p.style.margin='6px 0 13px';card.append(title,p);
+    const controls=document.createElement('div');controls.className='fc-review-controls';
+    const select=document.createElement('select');select.setAttribute('aria-label','Feedback review status');
+    for(const [value,label] of [['new','New'],['in_progress','Working on it'],['resolved','Resolved'],['ignored','No action needed']])select.add(new Option(label,value));
+    select.value=row.status||'new';
+    const priority=document.createElement('select');priority.setAttribute('aria-label','Feedback priority');
+    for(const [value,label] of [['1','High priority'],['2','Normal priority'],['3','Low priority']])priority.add(new Option(label,value));
+    priority.value=String(row.priority||2);
+    const notes=document.createElement('textarea');notes.placeholder='Private follow-up notes';notes.maxLength=800;notes.value=row.admin_notes||'';notes.rows=2;notes.setAttribute('aria-label','Private follow-up notes');
+    const save=document.createElement('button');save.type='button';save.textContent='Save review';save.className='secondary';
+    const info=document.createElement('small');info.setAttribute('role','status');
+    save.onclick=async()=>{
+      save.disabled=true;info.textContent='Saving…';
+      try{await api('POST','feedback_review',{feedback_id:row.id,status:select.value,priority:Number(priority.value),admin_notes:notes.value.trim()});info.textContent='Saved to the private review register.'}
+      catch(error){info.textContent='Failed: '+error.message}
+      finally{save.disabled=false}
+    };
+    controls.append(select,priority,notes,save,info);card.append(controls);comments.append(card);
   }
   if(!comments.children.length){const p=document.createElement('p');p.className='muted';p.textContent='No written suggestions yet.';comments.append(p)}
   $('fcFeedbackSummaryStatus').textContent='Voluntary responses are not a representative population sample. Summaries use the most recent '+(data.sampled||0)+' responses.';
